@@ -1,0 +1,169 @@
+# --------------------------------------
+# South African Astronomical Observatory
+# PO Box 9
+# Observatory 7935
+# South Africa
+# --------------------------------------
+.help specrectify Jul2011 pysalt.saltspec
+.ih
+NAME
+specrectify-- Correct images for wavelength dispersion
+.ih
+USAGE
+specrectify images solfile outimages outpref (caltype) (function) (order)
+(inttype) (w1) (w2) (dw) (nw) (blank) (clobber) (logfile) (verbose)
+.ih
+PARAMETERS
+.ls images
+String. List of FITS images to prepare. Data can be provided as a
+comma-separated list, or a string with a wildcard
+(e.g. 'images=S20061210*.fits'), or a foreign file containing an ascii
+list of image filenames. For the ascii list option, the filename
+containing the list must be provided preceded by a '@' character,
+e.g. 'images=@listoffiles.lis'. The list can contain data files from
+multiple SALT instruments.
+.le
+.ls solfile
+String.  File or list of files with wavelength solution for each
+solution.  The solfile should be the output from specidentify based
+on the measured wavelength calibration from an arc lamp.  It does
+not need to be supplied if the caltype='rss'. 
+.le
+.ls outimage
+String. A list of images. Data can be provided as a comma-separated
+list, or a string with a wildcard (e.g. 'outimages=rS20061210*.fits'), or
+a foreign file containing an ascii list of image filenames. For ascii 
+list option, the filename containing the list must be provided 
+preceded by a '@' character, e.g. 'outimages=@listoffiles.lis'. This list
+must be of the same size as the images argument list. 
+.le
+.ls outpref
+String. If the outpref string is non-zero in length and contains
+characters other than a blank space, it will override any value of the
+outimages argument. Output file names will use the name list provided
+in the images argument, but adding a prefix to each output file
+defined by outpref. An absolute or relative directory path can be
+included in the prefix, e.g. 'outpref=/Volumes/data/p'.
+.le
+.ls (caltype)
+String.  The type of wavelength calibration to be done.  If 'lines' 
+the task will assume that a wavelength solution was provided in the 
+solfile.  If 'rss' the task will use the RSS model to correct the
+data.
+.le
+.ls (function)
+String.  Functional form for the fit to the model.  It is only needed if calytpe='rss'.
+.le
+.ls (order)
+Int.  Order for the fit to the model.  It is only needed if caltype='rss'.
+.le
+.ls (inttype)
+String.  Interpolation type for the flux transformation.  When transforming
+the flux from the calibrated to uncalibrated data, it is the interpolation
+type to use in the calculation.  It can either be 'linear' or 'spline'.
+.le
+.ls (w1)
+Real.  The starting wavelength for the output data.  If it is not specified,
+it is the minimum wavelength value of the central row of the 
+input data.
+.le
+.ls (w2)
+Real.  The end wavelength for the output data.  If it is not specified, 
+it is the maximum wavelength value of the central row fo the input data.
+.le
+.ls (dw)
+Reale.  The dispersion for the output data.  It is given in terms of 
+angstroms per pixels.   If it is not specificied, it is calculated
+based on the input data.
+.le
+.ls (nw)
+Int.  Number of pixel in the output data in the dispersion direction.
+If this is set to None, it will default to the number of pixels in
+the input data in the wavelength direction.
+.le
+.ls (blank)
+Real.  The value to use for regions in the output data that do not
+correspond to regions in the input data.
+.le
+.ls (clobber)
+Hidden boolean. If set to 'yes' files contained within the outpath
+directory will be overwritten by newly created files of the same
+name.
+.le
+.ls (logfile)
+String. Name of an ascii file for storing log and error messages
+from the tool. The file may be new, or messages can also be appended to a
+pre-existing file.
+.le
+.ls (verbose)
+Hidden Boolean. If verbose=n, log messages will be suppressed.
+.le
+.ih
+DESCRIPTION
+
+Specrectify will wavelength calibrate a spectroscopic image based either
+on a solution from an arc lamp or based on the model of the spectrograph. 
+Given an uncalibrated science frame, spectrectify returns a image where 
+the x-axis has been transfered onto a scale with linear spacing.  For the 
+image, all of the appropriate information has been updated in the image
+header.
+
+If caltype is 'line', the task will assume that the wavelength solution 
+will be provided in solfile.  This file is the output produced from
+specidentify and may contain multiple different wavelength solutions 
+for different arc lamps and instrument setups.  The task will find the 
+calibration using the same instrument setup that is closest in time and 
+use that calibration to correct the data.
+
+If caltype is 'rss', the task will use the model parameters for RSS to 
+wavelength calibrate the data.  
+
+In either case, the output will be a wavelength calibrated data set.  If
+w1, w2, dw, or nw are set, it will use these parameters to determine the 
+boundaries of the output data.   Otherwise, it will calculate these 
+paramters based on the data set by determine the maximum and minimum wavelength 
+at the central row and maintining the same number of pixels in the output data.
+Currently, all spacing is assumed to be linear in wavelength space.
+
+The user can specify the type of interpolation for the flux 
+measurements with inttype.  It can either be linear sampling or spline.  With blank,  
+the user can specify a constant value for the flux in regions in the final
+data that would not appear on the original data.
+
+If the input file contains variance and bad pixel frames, it will produce
+those in the output files as well.  If there are multiple science frames
+in the image, it will wavelength calibrate each of the science frames in
+the data along with the corresponding variance and bad pixel frames.  It 
+will not use the same calibration for each science frame, but it will
+recalculate the 
+
+Finally, the task will update the WCS keywords such that the data will
+transform between pixel and wavelength space.  The default units for the 
+wavelength axis are Angstroms.
+
+
+EXAMPLES
+1. To calibrate science FITS files with specrectify using solutions
+based on an arc lamp:
+
+.nf
+    --> specrectify images='pmbxpP*.fits' solfile='dbsol'
+    	outimages= outpref='r' caltype='lines' logfile='salt.log'
+.fi
+
+.ih
+TIME AND DISK REQUIREMENTS
+Individual unbinned raw full-frame RSS files can be 112MB in size. It is
+recommended to use workstations with a minimum of 512MB RAM. On a
+linux machine with 2.8 Ghz processor and 2 Gb of RAM, one 2051x2051 image 
+in 0.15 sec.
+.ih
+BUGS AND LIMITATIONS
+Currently, the wavelengths are specified for air and not vacuum.  The
+sampling type is fixed to linear.
+
+Send feedback and bug reports to salthelp@saao.ac.za
+.ih
+SEE ALSO
+specidentify
+.endhelp

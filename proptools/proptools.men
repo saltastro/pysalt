@@ -1,0 +1,13 @@
+
+PROPTOOLS Tasks: 
+    masktool -- Create a MOS Slist mask
+
+--------------------------------------------------------------------
+PySALT is a suite of PyRAF tools for the reduction and analysis of
+data obtained from the SALTICAM and RSS instruments mounted on the
+Southern African Large Telescope (SALT). Find a description of SALT
+and the instruments at www.salt.ac.za and find the PyRAF homepage at
+www.stsci.edu/resources/software_hardware/pyraf. Send comments,
+suggestions and bug reports to salthelp@saao.ac.za.
+--------------------------------------------------------------------
+

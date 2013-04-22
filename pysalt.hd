@@ -1,0 +1,52 @@
+# Help directory for the pysalt package
+
+$saltred = "./saltred/"
+$pipetools = "./pipetools/"
+$slottools = "./slottools/"
+$saltspec = "./saltspec/"
+$bvittools = "./bvittools/"
+
+saltred     men = saltred$saltred.men,
+            hlp = saltred$saltred.men,
+            sys = saltred$saltred.hlp,
+            pkg = saltred$saltred.hd,
+            src = saltred$saltred.cl
+
+saltspec    men = saltspec$saltspec.men,
+            hlp = saltspec$saltspec.men,
+            sys = saltspec$saltspec.hlp,
+            pkg = saltspec$saltspec.hd,
+            src = saltspec$saltspec.cl
+
+
+pipetools   men = pipetools$pipetools.men,
+            hlp = pipetools$pipetools.men,
+            sys = pipetools$pipetools.hlp,
+            pkg = pipetools$pipetools.hd,
+            src = pipetools$pipetools.cl
+
+saltfp      men = saltfp$saltfp.men,
+            hlp = saltfp$saltfp.men,
+            sys = saltfp$saltfp.hlp,
+            pkg = saltfp$saltfp.hd,
+            src = saltfp$saltfp.cl
+
+slottools   men = slottools$slottools.men,
+            hlp = slottools$slottools.men,
+            sys = slottools$slottools.hlp,
+            pkg = slottools$slottools.hd,
+            src = slottools$slottools.cl
+
+bvittools   men = bvittools$bvittools.men,
+            hlp = bvittools$bvittools.men,
+            sys = bvittools$bvittools.hlp,
+            pkg = bvittools$bvittools.hd,
+            src = bvittools$bvittools.cl
+
+proptools   men = proptools$proptools.men,
+            hlp = proptools$proptools.men,
+            sys = proptools$proptools.hlp,
+            pkg = proptools$proptools.hd,
+            src = proptools$proptools.cl
+
+

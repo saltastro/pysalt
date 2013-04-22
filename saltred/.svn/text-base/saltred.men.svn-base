@@ -1,0 +1,25 @@
+
+SALTRED Tasks: 
+   saltarith -- Preform binary image arithmetic on SALT images
+    saltbias -- Create master bias frame and/or debias images
+ saltcrclean -- Clean multiple extension images of cosmic rays
+    saltgain -- Gain correct images
+ saltcombine -- Combine flatflied images to create a master flat
+    saltflat -- Flatfield correct images
+  saltobslog -- Create FITS table of observations from image headers
+  saltmosaic -- Mosaic CCD amplifier images
+ saltprepare -- Prepare FITS file for PyRAF and IRAF reduction tools
+    saltslot -- Reduce slot mode images
+   saltxtalk -- Correct images for amplifier crosstalk
+   salt2iraf -- Convert MEF files to a single extension 
+saltheadtime -- Convert header time to a different system
+
+--------------------------------------------------------------------
+PySALT is a suite of PyRAF tools for the reduction and analysis of
+data obtained from the SALTICAM and RSS instruments mounted on the
+Southern African Large Telescope (SALT). Find a description of SALT
+and the instruments at www.salt.ac.za and find the PyRAF homepage at
+www.stsci.edu/resources/software_hardware/pyraf. Send comments,
+suggestions and bug reports to salthelp@saao.ac.za.
+--------------------------------------------------------------------
+

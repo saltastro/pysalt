@@ -1,0 +1,30 @@
+# Database of PFIS CCD amplifier properties
+# 01 April 2011--Updated based on-sky measurements
+# these are the wrong gains that have been used in RSS
+# since it was installed up to 26 June 2011
+# See: http://www.salt.ac.za/~lab/pdetanom/
+# ROSPEED GAINSET   GAIN RDNOISE BIAS AMP
+SLOW FAINT   1.31  2.70 300 amp1
+SLOW FAINT   1.47  2.90 300 amp2
+SLOW FAINT   1.51  2.84 300 amp3
+SLOW FAINT   1.28  2.39 300 amp4
+SLOW FAINT   1.33  2.54 300 amp5
+SLOW FAINT   1.32  2.59 300 amp6
+SLOW BRIGHT  3.09  4.73 300 amp1
+SLOW BRIGHT  3.26  4.73 300 amp2
+SLOW BRIGHT  3.47  4.51 300 amp3
+SLOW BRIGHT  3.16  4.00 300 amp4
+SLOW BRIGHT  3.09  4.16 300 amp5
+SLOW BRIGHT  3.98  2.98 300 amp6
+FAST FAINT   7.20  5.65 300 amp1
+FAST FAINT   6.94  5.82 300 amp2
+FAST FAINT   6.23  6.03 300 amp3
+FAST FAINT   5.86  5.78 300 amp4
+FAST FAINT   6.14  5.75 300 amp5
+FAST FAINT   5.60  5.47 300 amp6
+FAST BRIGHT  21.9 13.20 300 amp1
+FAST BRIGHT  21.7 13.10 300 amp2
+FAST BRIGHT  22.3 11.90 300 amp3
+FAST BRIGHT  22.6 11.90 300 amp4
+FAST BRIGHT  19.1 11.30 300 amp5
+FAST BRIGHT  18.9 11.00 300 amp6

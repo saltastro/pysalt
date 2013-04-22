@@ -1,0 +1,98 @@
+
+# --------------------------------------
+# South African Astronomical Observatory
+# PO Box 9
+# Observatory 7935
+# South Africa
+# --------------------------------------
+.help saltfpringfilter July2010 salt.pysalt (nsl)
+.ih
+NAME
+saltfpringfilter -- To determine the centre coordinates of a ring, bin the ring radially and compute its power spectrum allowing the user to select a smoothing filter for the ring. 
+.ih
+USAGE
+saltfpcalring images axc ayc arad rxc ryc filterfreq filterwidth itmax conv fitwidth logfile calringlogfile useconfig configfile verbose
+.ih
+PARAMETERS
+.ls images
+String. Name of the input ring image, or the name of a file containing a list of ring input images. If a list file is used, it should contain one ring input file per line. In this case the name of the list file should be preceded with an "@" character to indicate that a file list is being input. No wildcards are accepted. The ring image/s must have been processed by saltprepare or saltfpprep.
+.le
+.ls axc
+
+Float. Estimate of the aperture central x pixel value.
+.le
+.ls ayc
+
+Float. Estimate of the aperture central y pixel value.
+.le
+.ls arad
+Float. Estimate of the image aperture radius in pixels.
+.le
+.ls rxc 
+Float. Estimate of the ring central x pixel value.
+.le
+.ls ryc
+
+Float. Estimate of the ring central y pixel value.
+.le
+.ls filterfreq
+Float. Central frequency for Fourier low pass filtering of the data.
+.le
+.ls filterwidth
+Float. Width of the low pass filter.
+.le
+.ls itmax (10)
+Integer. Maximum number of iterations to be conducted when determining the ring centre. If the routine does not converge upon a ring centre during itmax iterations the routine will stop recalculating the centre position at itmax iterations.
+.le
+.ls conv (0.01) 
+Float. This value determines the convergence criteria for the ring fitting. Convergence is said to occur when the correction required for the ring centre position between successive iterations is less than conv times the maximum of the estimated error in the ring centre.
+.le
+.ls fitwidth (0.5) 
+Float. This determines what portion of the ring is fitted. Only the portion of the profile that is within fitwidth times the profile FWHM of the peak is fit, and the fitted portion is reduced automatically if the peak is too near the center or edge of the aperture.
+.le
+.ls useconfig
+Boolean. (yes or no). Use config file to input parameters (yes) or not.
+.le
+.ls configfile
+String. Name of the config file containing the input parameters. 
+.le
+.ls logfile
+String. Name of an ascii file for storing log and error messages
+written by the task. The file may be new, or messages can also be
+appended to a pre-existing file.
+.le
+.ls verbose
+Boolean. Verbose (yes) or quiet (no) execution of the routine.
+.le
+.ih
+DESCRIPTION
+Low contrast reflections between the outer surfaces of the etalon plates give rise to very high resolution but low contrast ring patterns, particularly in the calibration ring images where there are several strong lines within the blocking filter passband. These artifacts can be effectively removed from the image by Fourier filtering, without distorting the main ring in the image. This program allows the user to determine the parameters of a low-pass filter that can be used in later programs to carry out this filtering.
+
+
+The program determines the centre coordinates of a ring, then extracts the radial profile of the ring and its power spectrum. The raw radial profile is plotted, and its power spectrum. The dominant feature of the power spectrum is normally the low-frequency peak associated with the main ring. Smaller peaks at higher frequencies representing the undesired rings are usually clearly visible, well separated in frequency from the main ring. The program prompts the user for a frequency and a width for the low-pass cutoff. This filter is drawn on the power spectrum, and the filtered profile is displayed. The user can iterate this process as desired to explore the effects of different filter parameters.
+
+Although one might expect that a sharp filter cut-off (i.e. narrow width) might introduce ringing into the filtered image, this does not seem to occur. Step-function filter cut-offs (width = 0) seem to work just fine. However, the filter width is left as a user-specified parameter for aesthetic reasons.
+
+This program is intended as an auxiliary, to be run on a few typical rings to determine the filter parameters for later programs. You should enter the filter frequency and width that you determine from this program if you wish to filter data subsequently.
+
+The SALTFPRINGFILTER program can only work in interactive mode. The required parameters are: axc, ayc, arad, rxc, and ryc. The optional parameters are: itmax (10), conv (0.01), and fitwidth (0.50); if these parameters are not specified in the parameter file, the default values (listed in parethenses above) will be used. 
+.ih
+EXAMPLES
+1. To display the power spectrum of a ring in the file test.fits and to interactively filter the image. Note that the initial filter frequency and width values are initially set to dummy values to be changed once the plots are displayed and the user can correctly identify the correct values:
+
+    --> saltfringfilter images=test.fits axc=1595.0 ayc=1020.0 arad=970.0 rxc=1606.0 ryc=1-58.0 filterfreq=0.0 filterwidth=0.0 fitwidth=0.9 logfile=salt.log  useconfig=no configfile=pfp.par verbose=yes
+
+.ih
+TIME AND DISK REQUIREMENTS
+Individual unbinned full frame RSS image files can be 112MB in
+size. It is recommended to use workstations with a minimum of 512MB
+RAM. On a linux machine with 2.8 Ghz processor and 2 Gb of RAM, one 
+2051x2051 image in 0.85 sec.
+
+.ih
+BUGS AND LIMITATIONS
+Send feedback and bug reports to salthelp@saao.ac.za
+.ih
+SEE ALSO
+TBD
+.endhelp

@@ -1,0 +1,79 @@
+
+# --------------------------------------
+# South African Astronomical Observatory
+# PO Box 9
+# Observatory 7935
+# South Africa
+# --------------------------------------
+.help saltfpskyring Sept2010 salt.pysalt (nsl)
+.ih
+NAME
+saltfpskyring --  Computes the night sky ring profile and subtracts the smoothed sky from
+the input image.
+.ih
+USAGE
+saltfpskyring axc ayc arad rxc ryc pmin pmax plottype image outfile logfile (verbose)
+.ih
+PARAMETERS
+.ls images
+String. Name of the input data image. No wildcards are accepted. The image must have been processed by saltprepare or saltfpprep.
+.le
+.ls outfile
+String. Output file which stores the sky ring subtracted image.
+.le
+.ls axc
+Float. Estimate of the aperture central x pixel value.
+.le
+.ls ayc
+Float. Estimate of the aperture central y pixel value.
+.le
+.ls arad
+Float. Estimate of the image aperture radius in pixels.
+.le
+.ls rxc 
+Float. Estimate of the ring central x pixel value.
+.le
+.ls ryc
+Float. Estimate of the ring central y pixel value.
+.le
+.ls pmin
+Float. Minimum accepted data value for calculating the mean sky profile.
+.le
+.ls pmax
+Float. Maximum accepted data value for calculating the mean sky profile.
+.le
+.ls plottype
+String. (xwindow or postscript). Set output graphics type to xwindow or postscript output.
+.le
+.ls logfile
+String. Name of an ascii file for storing log and error messages
+written by the task. The file may be new, or messages can also be
+appended to a pre-existing file.
+.le
+.ls verbose
+Boolean. Verbose (yes) or quiet (no) execution of the routine.
+.le
+.ih
+DESCRIPTION
+The night sky is full of emission lines, and a Fabry-Perot interferometer is an extremely
+efficient instrument for detecting them.  Since the night sky (more or less) uniformly illuminates the entrance aperture, the sky lines make rings, just  like the spectral calibration lamps do.  (You can also see the high-frequency ring patterns if there are multiple night sky lines in the order-selecting filter.) This routine computes the night sky ring profile by calculating the mean sky flux in each radial bin. It then smooths it using the Numerical Receipes smooth routine, and subtract the smoothed sky from the image. The output is a sky ring subtracted file.
+.ih
+EXAMPLES
+1. To determine the night sky ring profile and subtract it from an input data image:
+
+    --> saltfpskyring image='maskedredP200907080117.fits' outfile='skysub.fits' logfile='salt.log' axc=1595 ayc = 1020 arad=970 rxc=1606 ryc=1058 pmin=300.0 pmax=10000.0 plottype='xwindow'
+
+.ih
+TIME AND DISK REQUIREMENTS
+Individual unbinned full frame RSS image files can be 112MB in
+size. It is recommended to use workstations with a minimum of 512MB
+RAM. On a linux machine with 2.8 Ghz processor and 2 Gb of RAM, one 
+2051x2051 image in 0.85 sec.
+
+.ih
+BUGS AND LIMITATIONS
+Send feedback and bug reports to salthelp@saao.ac.za
+.ih
+SEE ALSO
+TBD
+.endhelp

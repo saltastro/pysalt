@@ -1,0 +1,11 @@
+# Help directory for the slottools package
+
+$doc = "slottools$doc/"
+
+slotphot		hlp=doc$slotphot.hlp,	    src=slottools$slotphot.py
+slotview		hlp=doc$slotview.hlp,	    src=slottools$slotview.py
+slotpreview     hlp=doc$slotpreview.hlp,    src=slottools$slotpreview.py
+slotmerge		hlp=doc$slotmerge.hlp,	    src=slottools$slotmerge.py
+slotback 		hlp=doc$slotback.hlp,	    src=slottools$slotback.py
+slotutcfix	    hlp=doc$slotutcfix.hlp,	    src=slottools$slotutcfix.py
+slotreadtimefix	    hlp=doc$slotreadtimefix.hlp,	    src=slottools$slotreadtimefix.py

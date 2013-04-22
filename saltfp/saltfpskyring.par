@@ -1,0 +1,16 @@
+images,s,a,'',,,'Input raw images or list of images'
+outimages,s,a,'',,,Output images or list of output images'
+outpref,s,a,'s',,,'Prefix for output images'
+axc,i,h,,,,'Aperture x centre in pixels'
+ayc,i,h,,,,'Aperture y centre in pixels'
+arad,i,h,,,,'Aperture radius in pixels'
+rxc,i,h,,,,'Ring x centre in pixels'
+ryc,i,h,,,,'Ring y centre in pixels'
+pmin,f,h,300.0,,,'Minimum accepted data value'
+pmax,f,h,1000.0,,,'Maximum accepted data value'
+swindow,i,h,5,,,'Smoothing window for sky profile'
+clobber,b,h,yes,,,'Overwrite exisitng files?'
+logfile,s,a,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 
+

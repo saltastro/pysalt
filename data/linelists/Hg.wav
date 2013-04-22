@@ -1,0 +1,125 @@
+# Name:
+#	lamp_NIST_blue.dat
+#
+# Purpose:
+#	arc line wavelength list for DEIMOS spectrograph at WMKO
+# 
+# Note:
+#	This file has been assembled by the DEEP2 Survey Team at UCB.
+#	It is distributed as part of the SPEC2D DEIMOS pipeline
+#	software package.
+# 
+# Revision history:
+#	2004-Jun-09	Original version	deepteam
+#------------------------------------------------------------------------
+# Wavelengths are in IAU-standard Air angstroms
+# quality scale:
+# commented out - nothing visible
+# WEAK - something barely visible, probably don't want to use in X-corr 
+#   (WBLEND = Weak blend, by analogy)
+# POOR - fairly well-formed peak visible, include for X-CORR; ~20-100 kcts
+# FAIR - very well-formed peak, use for X-CORR; tilts? ; >~100kcts
+# TILT - use for XCORR and tilts, not wavelength solution (e.g. not isolated)
+# BLEND - bright but blended, use for X-CORR (TBLEND: use for tilts too)
+# GOOD - use for everything
+#kcts = kilocounts per hour - must multiply Xe numbers by 50 to match other
+# lamps
+# Used Xel for Xe, exposure ~50-100s; Xe for Xe, exposure ~2s
+  3021.5003   300 BLEND Hg
+  3023.4698   120 BLEND Hg
+  3025.6092    30 BLEND Hg
+  3027.4888    50 BLEND Hg
+  3090.0531    15  GOOD Hg
+  3125.6742   400  GOOD Hg
+  3131.5527   320 BLEND Hg
+  3131.8426   320 BLEND Hg
+  3208.2034   400  GOOD Hg
+  3264.0592   400  GOOD Hg
+  3283.0244     5  GOOD Hg
+  3312.2770    12  GOOD Hg
+  3341.4795    80  GOOD Hg
+  3385.2483   100 BLEND Hg
+  3389.0074     8 BLEND Hg
+  3450.7716     5 BLEND Hg
+  3451.6913   400 BLEND Hg
+  3549.4162   200  GOOD Hg
+  3557.2442     5  GOOD Hg
+  3650.1502  2800  GOOD Hg
+  3654.8389   300  GOOD Hg
+  3662.8769    80 BLEND Hg
+  3663.2768   240 BLEND Hg
+  3701.4369    30 BLEND Hg
+  3704.1661    35 BLEND Hg
+  3801.6608    30 BLEND Hg
+  3803.5103    15 BLEND Hg
+  3806.3796   100 BLEND Hg
+  3901.8747    20  GOOD Hg
+  3906.3735    60  GOOD Hg
+  3918.9202   100  GOOD Hg
+  3983.9632   200  GOOD Hg
+  4046.5568  1800  GOOD Hg
+  4077.8286   150  GOOD Hg
+  4108.0506    40  WEAK Hg
+  4122.0670    70  WEAK Hg
+  4140.3421    10  WEAK Hg
+  4216.7420   100  WEAK Hg
+  4339.2197   250  WEAK Hg
+  4347.4875   400  GOOD Hg
+  4358.3247  4000  WEAK Hg
+  4398.6240   100  WEAK Hg
+  4470.5750    15  GOOD Hg
+  4552.8432    12  GOOD Hg
+  4660.2747    90  WEAK Hg
+  4797.0083    50  WEAK Hg
+  4855.7227    80  WEAK Hg
+  4869.8489    10  WEAK Hg
+  4882.9954     5  GOOD Hg
+  4889.9136     5  WEAK Hg
+  4916.0666    80  WEAK Hg
+  4970.3721     5 WBLEND Hg
+  4973.5712    80 WBLEND Hg
+  4980.6394     5  WEAK Hg
+  5102.6968    20  GOOD Hg
+  5120.6420    40  WEAK Hg
+  5128.4499   100  GOOD Hg
+  5137.9374    20  GOOD Hg
+  5210.8179    30  WEAK Hg
+  5290.7365    20  GOOD Hg
+  5316.7795     5  GOOD Hg
+  5354.0495    60  WEAK Hg
+  5384.6313    30  WEAK Hg
+  5460.7409  1100  FAIR Hg  1.7Mcts once - but bad results from it?
+  5549.6271    30  GOOD Hg
+  5675.8632   160  GOOD Hg
+  5695.7079     6  GOOD Hg
+  5769.5980   240  FAIR Hg  270 kcts
+  5789.6626   100 FBLEND Hg  280 kcts
+  5790.6623   280 FBLEND Hg
+  5803.7788   140  GOOD Hg
+  5859.2439    60  GOOD Hg
+  5871.7305    60 BLEND Hg
+  5871.9805    20 BLEND Hg
+  6072.7165    20  GOOD Hg
+  6149.4958  1000  GOOD Hg
+  6220.3467    25  GOOD Hg
+  6234.3929    30  GOOD Hg
+  6418.9731    35  POOR Hg
+  6501.3809    40  GOOD Hg
+  6521.1256    80  GOOD Hg
+  6584.2585    10  GOOD Hg
+  6610.1215     6  GOOD Hg
+  6709.2847    30  GOOD Hg
+  6716.4228   160  GOOD Hg
+  6907.5212   250  WEAK Hg
+  7081.8940   250  GOOD Hg
+  7091.8613   200  GOOD Hg
+  7346.3624    40  GOOD Hg
+  7485.8647   100  PBLEND Hg  overwhelmed by Ne?
+  7517.4561    12  PBLEND Hg  overwhelmed by Ne?
+  7728.8188    20  GOOD Hg
+  7808.0973     7  GOOD Hg
+  7944.6603   100 WBLEND Hg
+  7946.7498    25 WBLEND Hg
+  7984.5095    50  WBLEND Hg
+  8151.6342     5  PBLEND Hg
+ 10139.7439  2000  POOR Hg

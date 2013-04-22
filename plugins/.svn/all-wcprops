@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/saltiraf/!svn/ver/893/trunk/salt/pysalt/plugins
+END
+guide_stars.py
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/saltiraf/!svn/ver/880/trunk/salt/pysalt/plugins/guide_stars.py
+END
+seeing.py
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/saltiraf/!svn/ver/496/trunk/salt/pysalt/plugins/seeing.py
+END
+cleandata.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/saltiraf/!svn/ver/538/trunk/salt/pysalt/plugins/cleandata.py
+END
+sdbloadobslog.py
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/saltiraf/!svn/ver/698/trunk/salt/pysalt/plugins/sdbloadobslog.py
+END
+quickclean.py
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/saltiraf/!svn/ver/883/trunk/salt/pysalt/plugins/quickclean.py
+END
+xml_icd.py
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/saltiraf/!svn/ver/883/trunk/salt/pysalt/plugins/xml_icd.py
+END
+findcal.py
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/saltiraf/!svn/ver/883/trunk/salt/pysalt/plugins/findcal.py
+END
+fastmode.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/saltiraf/!svn/ver/883/trunk/salt/pysalt/plugins/fastmode.py
+END
+rssinfo.py
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/saltiraf/!svn/ver/828/trunk/salt/pysalt/plugins/rssinfo.py
+END
+display.py
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/saltiraf/!svn/ver/893/trunk/salt/pysalt/plugins/display.py
+END
+fpcal.py
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/saltiraf/!svn/ver/741/trunk/salt/pysalt/plugins/fpcal.py
+END
+quickphot.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/saltiraf/!svn/ver/483/trunk/salt/pysalt/plugins/quickphot.py
+END
+quickspec.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/saltiraf/!svn/ver/832/trunk/salt/pysalt/plugins/quickspec.py
+END
