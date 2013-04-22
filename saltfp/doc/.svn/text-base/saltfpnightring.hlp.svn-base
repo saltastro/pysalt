@@ -1,0 +1,134 @@
+
+# --------------------------------------
+# South African Astronomical Observatory
+# PO Box 9
+# Observatory 7935
+# South Africa
+# --------------------------------------
+.help saltfpnightring July2010 salt.pysalt (nsl)
+.ih
+NAME
+saltfpnightring -- Measures the centre coordinates and radius of one or more
+night-time calibration rings.  Calculate the current wavelength
+zero point (A) for use in tracking the etalon drifts through the night.
+.ih
+USAGE
+saltfpnightring images outfile comment logfile nightringlogfile useconfig configfile (verbose)
+.ih
+PARAMETERS
+.ls images
+String. Name of the input ring image, or the name of a file containing a list of ring input images. If a list file is used, it should contain one ring input file per line. In this case the name of the list file should be preceded with an "@" character to indicate that a file list is being input. No wildcards are accepted. The ring image/s must have been processed by saltprepare or saltfpprep.
+.le
+.ls outfile
+String. Output file which stores the updated ring measurements and A value. If this is a new file a comment line (up to 80 characters) may be added. If the output file already exists, the results of SALTFPNIGHTRING's fits will be appended to the end of the file. 
+.le
+.ls comment
+String. String comment for the header of the output file.
+.le
+.ls axc
+
+Float. Estimate of the aperture central x pixel value.
+.le
+.ls ayc
+
+Float. Estimate of the aperture central y pixel value.
+.le
+.ls arad
+Float. Estimate of the image aperture radius in pixels.
+.le
+.ls rxc 
+Float. Estimate of the ring central x pixel value.
+.le
+.ls ryc
+
+Float. Estimate of the ring central y pixel value.
+.le
+.ls filter
+Boolean. (yes or no). Controls whether lowpass filtering of the data is conducted prior to fitting the rings.
+.le
+.ls filterfreq
+Float. Central frequency for Fourier low pass filtering of the data.
+.le
+.ls filterwidth
+Float. Width of the low pass filter.
+.le
+.ls plot
+Boolean. (yes or no). If set to yes the ring profile and fit are plotted.
+.le
+.ls plottype
+String. (xwindow or postscript). Set output graphics type to xwindow or postscript output.
+.le
+.ls itmax (10)
+Integer. Maximum number of iterations to be conducted when determining the ring centre. If the routine does not converge upon a ring centre during itmax iterations the routine will stop recalculating the centre position at itmax iterations.
+.le
+.ls conv (0.01) 
+Float. This value determines the convergence criteria for the ring fitting. Convergence is said to occur when the correction required for the ring centre position between successive iterations is less than conv times the maximum of the estimated error in the ring centre.
+.le
+.ls fitwidth (0.5) 
+Float. This determines what portion of the ring is fitted. Only the portion of the profile that is within fitwidth times the profile FWHM of the peak is fit, and the fitted portion is reduced automatically if the peak is too near the center or edge of the aperture.
+.le
+.ls useconfig
+Boolean. (yes or no). Use config file to input parameters (yes) or not.
+.le
+.ls configfile
+String. Name of the config file containing the input parameters. 
+.le
+.ls cala
+Float. A parameter derived from etalon calibration using the SALTFPCALIBRATE routine. This is the effective "zero point" for wavelength calibration.
+.le
+.ls calb
+Float. B parameter derived from etalon calibration using the SALTFPCALIBRATE routine. This is the dependence of wavelength with etalon Z. 
+.le
+.ls calc
+Float. C parameter derived from etalon calibration using the SALTFPCALIBRATE routine. This is the dependence of wavelength with etalon Z squared. 
+.le
+.ls cald
+Float. D parameter derived from etalon calibration using the SALTFPCALIBRATE routine. This is the dependence of wavelength with etalon Z cubed. 
+.le
+.ls calf
+Float. F parameter derived from etalon calibration using the SALTFPCALIBRATE routine. This is the effective focal length of the etalon in pixels. 
+.le
+.ls logfile
+String. Name of an ascii file for storing log and error messages
+written by the task. The file may be new, or messages can also be
+appended to a pre-existing file.
+.le
+.ls nightringlogfile
+String. Name of an ascii file for storing log and key fitting information written by the task. The file may be new, or messages can also be appended to a pre-existing file.
+.le
+.ls verbose
+Boolean. Verbose (yes) or quiet (no) execution of the routine.
+.le
+.ih
+DESCRIPTION
+This task serves two funtions.  It is primarily intended for
+use at the telescope, to analyse the calibration rings taken over the course
+of a night, to correct the SALT FPI wavelength zero-point parameter in real time.
+It can also be used later to measure all the night rings (perhaps after
+they are flattened, or after the user has determined an improved set of
+wavelength calibration coefficients).  The output of this program is
+a file of data listing the wavelength, zero-point and ring centre coordinates
+(all of which tend to drift slowly with time, telescope angle, etc.).
+These data are needed for later analysis of Fabry-Perot observations.
+.ih
+EXAMPLES
+1. To determine the ring centres and radii of files listed in the filelist rplist and update the wavelength calibration A value. The config file 'pfp.par' containing initial guesses for axc, ayc, etc is used in this example:
+
+
+    --> saltfpnightring images=@rplist outfile=nightring.out comment='test' 
+nightringlogfile=nightring.log logfile=salt.log useconfig=yes configfile=pfp.par
+
+.ih
+TIME AND DISK REQUIREMENTS
+Individual unbinned full frame RSS image files can be 112MB in
+size. It is recommended to use workstations with a minimum of 512MB
+RAM. On a linux machine with 2.8 Ghz processor and 2 Gb of RAM, one 
+2051x2051 image in 0.85 sec.
+
+.ih
+BUGS AND LIMITATIONS
+Send feedback and bug reports to salthelp@saao.ac.za
+.ih
+SEE ALSO
+TBD
+.endhelp

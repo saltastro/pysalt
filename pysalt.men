@@ -1,0 +1,44 @@
+
+Primary Reduction Tasks: 
+    saltbias -- Create master bias frame and/or debias images
+  saltfixsec -- Fix SEC keyword bug in data taken before Aug 12, 2006
+    saltgain -- Gain correct images
+     saltlog -- Create FITS table of observations from image headers
+  saltmosaic -- Mosaic CCD amplifier images
+ saltprepare -- Prepare FITS file for PyRAF and IRAF reduction tools
+    saltslot -- Reduce slot mode images
+   saltxtalk -- Correct images for amplifier crosstalk
+
+Pipeline Tasks:
+ saltbin2fit -- Convert slot mode binary files to FITS format
+   saltclean -- Gain, debias, flat field, xtalk, mosaic etc in one step
+   saltedtky -- Edit primary fits keywords in multiple files
+   saltemail -- Send standard email message to PI of observing program
+     saltftp -- Arcive, compress and transfer data to public FTP server
+    salthtml -- Create HTML documentation of observations and reduction
+   saltedtky -- Edit or append primary FITS keywords to multiple files
+   saltobsid -- Collate data files according to observation ID
+    saltpipe -- SALT data reduction pipeline
+
+Slotttools Tasks:
+ slotpreview -- Select target, comparison and background regions for photometry
+    slotphot -- Aperture photometry extraction primarily for slot mode
+    slotview -- Analysis and display tool for slot mode data
+   slotmerge -- Task to merge mutliple amplifiers into one image
+    slotback -- Produce a background subtracted multi-extension fits
+  slotutcfix -- Correct UTC times in slotmode data headers
+
+Bvittools Tasks:
+ bvitpreview -- Select target, comparison and background regions for photometry
+    bvitphot -- Optimized aperture photometry for bvit mode data
+  bvittofits -- Converts bvit sparse data to standard FITS images
+    bvitview -- Analysis and display tool for bvit mode data
+
+--------------------------------------------------------------------
+PySALT is a suite of PyRAF tools for the reduction and analysis of
+data obtained from the SALTICAM and RSS instruments mounted on the
+Southern African Large Telescope (SALT). Find a description of SALT
+and the instruments at www.salt.ac.za and find the PyRAF homepage at
+www.stsci.edu/resources/software_hardware/pyraf. Send comments,
+suggestions and bug reports to salthelp@saao.ac.za.
+--------------------------------------------------------------------

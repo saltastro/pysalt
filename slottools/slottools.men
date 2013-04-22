@@ -1,0 +1,18 @@
+
+Slot mode Analysis Tasks:
+    slotphot -- Photometry extraction primarily for slot mode
+    slotview -- Analysis and display tool for slot mode data 
+ slotpreview -- Preview Slotmode data and set-up script for photometry
+   slotmerge -- Task to merge mutliple amplifiers into one image
+    slotback -- Produce a background subtracted multi-extension fits
+  slotutcfix -- Correct UTC times in slotmode data headers
+slotreadtimefix -- Correct UTC times in slotmode for exposure strart
+
+--------------------------------------------------------------------
+PySALT is a suite of PyRAF tools for the reduction and analysis of
+data obtained from the SALTICAM and RSS instruments mounted on the
+Southern African Large Telescope (SALT). Find a description of SALT
+and the instruments at www.salt.ac.za and find the PyRAF homepage at
+www.stsci.edu/resources/software_hardware/pyraf. Send comments,
+suggestions and bug reports to salthelp@saao.ac.za.
+--------------------------------------------------------------------

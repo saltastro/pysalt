@@ -1,0 +1,6 @@
+images,s,a,'*.fits',,,'Data files list'
+outfile,s,a,'log.fits',,,'Output keyword table'
+clobber,b,h,'no',,,'Overwrite existing file'
+logfile,s,a,'salt.log',,,'Logfile'
+verbose,b,a,'yes',,,'Verbose?'
+mode,s,h,'al' 

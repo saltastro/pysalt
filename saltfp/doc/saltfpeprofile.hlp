@@ -1,0 +1,81 @@
+
+# --------------------------------------
+# South African Astronomical Observatory
+# PO Box 9
+# Observatory 7935
+# South Africa
+# --------------------------------------
+.help saltfpeprofile Sept2010 salt.pysalt
+.ih
+NAME
+saltfpeprofile -- Quick Look display and fitting of line profiles for SALT FP data cubes.
+.ih
+USAGE
+saltfpeprofile infile plottype logfile verbose
+.ih
+PARAMETERS
+.ls infile
+String. Input data cube descriptor file. A text file with the following format:-
+First line - Dummy line with any string acceptable. 
+Second line - String:  "rest   gauss lorentz    f     gain number"
+Thirdline: Values for rest, gauss, lorentz, f, gain number
+e.g. 6563.799  1.04  4.09   11755.10  1.0   9
+Where rest is the rest wavelength of the line of interest, gauss and lorentz are the FHWM of the Gaussian and Lorentzian components of the line in pixels (obtained from the SALTFPCALPROFILE routine), f is the camera focus length in pixels (obtained from the SALTFPCALIBRATE routine) and gain number is the gain XXX.
+Fourth line - String:   "xrc     yrc    wave0   sky    norm   d(norm)  filename"
+Fifth and subsequent lines: Values for xrc, yrc, wave0, sky, norm, d(norm), filename
+e.g. 1600.0   1040.0 6580.64  10.4   1.218   0.041   file63.fit
+e.g. 1600.0   1040.0 6586.02   7.4    1.611   0.069   file70.fit
+Where xrc is the position of the x centre of the rings in the calibration ring image/s in pixels. yrc is the position of the y centre of the rings in the calibration ring image/s in pixels. wave0 is the central wavelength of the image. Sky is the sky value xxx . Norm is the relative flux normalisation for this image within the sequence compared with the other images. d(norm) is the one sigma error on the flux normalisation. Filename is the name of the fits file containing the image.
+One line is needed per file in the FP scan sequence. 
+.le
+.ls plottype
+String. (xwindow or postscript). Set output graphics type to xwindow or postscript output. Xwindow is recommended due to the interactive nature of the package.
+.le
+.ls logfile
+String. Name of an ascii file for storing log and error messages
+written by the task. The file may be new, or messages can also be
+appended to a pre-existing file.
+.le
+.ls verbose
+Boolean. Verbose (yes) or quiet (no) execution of the routine.
+.le
+.ih
+DESCRIPTION
+SALTFPEPROFILE is an interactive routine used for a quick look display and fitting of emission line profiles. A series of datafiles scanning a line of interest are needed (forming a datacube), along with a datacube descriptor file. The datacube descriptor file (DDF) format is described in more detail above. The following information needs to be specified within the DDF;  rest wavelenght of the line of interest, Gaussian and Lorentzian FWHM of the line of interest in pixels, camera focal length in pixels and  gain XXX. Additionally the x co-ordinate of the rings centre in the calibration ring image/s and the y co-ordination of the rings centre in the calibration ring image/s must be specified. For each image in the datacube the following must be specified; the central wavelength of each of the images, the relative flux normalisation for each of the images along with the one sigma error on the normalisation and finally the filename for each image. Upon running the package with the input DDF the package will prompt the user for a spatial co-ordinate in order to extract the line profile and fit it at that position within the image. The data points and fit are displayed and the results of the fit are output to the terminal. The fit parameters output are: continuum intensity, one sigma error on the continuum intensity, line strength xx, one sigma error on the line strength, line peak wavelength and one sigma error on the line peak wavelength, line Gaussian sigma and its associated uncertainty.
+ 
+.ih
+EXAMPLES
+1. To examine the line profiles in a sequence of FP images scanning Halpha. 
+
+    --> saltfpeprofile infile=ngc1365cube.dat plottype=xwindow logfile=salt.log verbose=yes
+ 
+The datacube descriptor file looks like this:
+
+NGC 1365 RSS-FP first light observations  September 22, 2006
+  rest   gauss lorentz    f     gain number
+6563.799  1.04  4.09   11755.10  1.0   9
+  xrc     yrc    wave0   sky    norm   d(norm)  filename
+1600.0   1040.0 6580.64  10.4   1.218   0.041   file63.fit
+1600.0   1040.0 6586.02   7.4   1.611   0.069   file70.fit
+1600.0   1040.0 6591.40   9.0   1.227   0.041   file64.fit
+1600.0   1040.0 6596.77   8.0   1.516   0.057   file69.fit
+1600.0   1040.0 6602.15   7.6   1.138   0.048   file65.fit
+1600.0   1040.0 6607.53   7.5   1.221   0.045   file68.fit
+1600.0   1040.0 6612.91   7.2   1.026   0.044   file66.fit
+1600.0   1040.0 6618.29   8.0   1.000   0.050   file67.fit
+1600.0   1040.0 6591.40  17.9   0.716   0.015   file71.fit
+
+.ih
+TIME AND DISK REQUIREMENTS
+Individual unbinned full frame RSS image files can be 112MB in
+size. It is recommended to use workstations with a minimum of 512MB
+RAM. On a linux machine with 2.8 Ghz processor and 2 Gb of RAM, one 
+2051x2051 image in 0.85 sec.
+
+.ih
+BUGS AND LIMITATIONS
+Send feedback and bug reports to salthelp@saao.ac.za
+.ih
+SEE ALSO
+TBD
+.endhelp

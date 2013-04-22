@@ -1,0 +1,15 @@
+# Data on PFIS filters
+# Name    Initial      Final       Transmission
+#	 Wavelength  Wavelength       File
+#          [nm]        [nm]
+PC00000    250.0      1100.0     filters/PC00000.txt
+PC03200    300.0      1100.0     filters/PC03200.txt
+PC03400    320.0      1100.0     filters/PC03400.txt
+PC03850    375.0      1100.0     filters/PC03580.txt
+PC04600    435.0      1100.0     filters/PC04600.txt
+PI04340    428.0       444.0     filters/f4340.txt     
+PI04465    440.0       457.0     filters/f4465.txt     
+PI05234    513.0       536.0     filters/f5234.txt     
+PI06055    593.0       621.0     filters/f6055.txt     
+PI06290    616.0       645.0     filters/f6290.txt     
+PI07840    765.0       803.0     filters/f7840.txt     

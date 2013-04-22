@@ -1,0 +1,6 @@
+# Help directory for the saltred package
+
+$doc = "proptools$doc/"
+
+masktool		hlp=doc$masktool.hlp,    src=proptools$masktool.py
+#finderchart	        hlp=doc$finderchart.hlp, src=proptools$finderchart.py

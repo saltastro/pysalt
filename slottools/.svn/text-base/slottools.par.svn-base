@@ -1,0 +1,4 @@
+# Package parameters for the saltred package
+
+version,s,h,"22Feb2008",,,"Package version date"
+verno,s,h,"v0.3",,,"Package version number"

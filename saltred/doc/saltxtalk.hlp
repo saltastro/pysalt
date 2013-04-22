@@ -1,0 +1,123 @@
+
+# --------------------------------------
+# South African Astronomical Observatory
+# PO Box 9
+# Observatory 7935
+# South Africa
+# --------------------------------------
+.help saltxtalk July2007 salt.pysalt
+.ih
+NAME
+saltxtalk -- Correct images for amplifier crosstalk
+.ih
+USAGE
+saltxtalk images outimages outpref (xtalkfile) (usedb) (clobber) (logfile) (verbose)
+.ih
+PARAMETERS
+.ls images
+String. List of input images including, if necessary, absolute or
+relative paths to the data. Data can be provided as a comma-separated
+list, or a string with a wildcard (e.g. 'images=S20061210*.fits'), or
+a foreign file containing an ascii list of image filenames. For ascii
+list option, the filename containing the list must be provided
+preceded by a '@' character, e.g. 'images=@listoffiles.lis'. Input
+files must have been pre-processed by the task saltprepare.
+.le
+.ls outimages
+String. A list of images. Data can be provided as a comma-separated
+list, or a string with a wildcard (e.g. 'outimages=rS20061210*.fits'), or
+a foreign file containing an ascii list of image filenames. For ascii 
+list option, the filename containing the list must be provided 
+preceded by a '@' character, e.g. 'outimages=@listoffiles.lis'. This list
+must be of the same size as the images argument list. If the
+output is intended for a different directory the absolute or relative
+path must be supplied with the file name.
+.le
+.ls outpref
+String. If the outpref string is non-zero in length and contains
+characters other than a blank space, it will override any value of the
+outimages argument. Output file names will use the name list provided
+in the images argument, but adding a prefix to each output file
+defined by outpref. An absolute or relative directory path can be
+included in the prefix, e.g. 'outpref=/Volumes/data/x'.
+.le
+.ls xtalkfile
+String. This is the name of an ascii table that contains the CCD amplifier
+crosstalk coeffcients.  The table is used to subtract cross-talk contamination
+from the CCD amplifier images. Crosstalk is assumed to occur at a constant 
+level across an individual amplifier, but the coefficients are assumed to 
+vary across amplifer pairs. An example of the table format follows:
+
+.nf
+# PFIS CCD amplifier crosstalk data
+# from 20041201 gain = bright distortion image, outer amps duplicated
+# Date    VCTM     2       1       4       3        6        5
+#         SRC      1       2       3       4        5        6
+2004-01-01     .001474 .001474 .001166  .001111  .001377  .001377  
+.fi
+
+The crosstalk-corrected amplifier image is given by SRC - VCTM * coeff.
+
+.le 
+.ls (usedb)
+Boolean.  If yes, then the task will use the coefficient values in the
+xtalkfile.  If no, then it will use the values in the headers.
+.le
+.ls (clobber)
+Hidden boolean. If set to 'yes' files contained within the outpath
+directory will be overwritten by newly created files of the same
+name.
+.le
+.ls (logfile)
+String. Name of an ascii file for storing log and error messages
+written by the task. The file may be new, or messages can also be
+appended to a pre-existing file.
+.le
+.ls (verbose)
+Boolean. If verbose=n, log messages will be suppressed.
+.le
+.ih
+DESCRIPTION
+saltxtalk corrects data listed by the images argument for amplifier
+crosstalk. Each SALTICAM and RSS CCD has two readout
+ammplifiers. There is crosstalk between them at the level of ~ 0.1%
+which results in faint ghost sources across the image. Ghosts appear
+as faint mirror images across amplifier boundaries of bright
+sources. Provided images are not saturated or non-linear, crosstalk
+can be mostly removed by simple subtraction of a scaled image of one
+amplifier from it's neighbour. The scaling factors are supplied as an
+ascii table through the xtalkfile argument or in the header keywords.
+
+The task creates new files with names specified by either the
+outimages or outpref argument. Existing files of the same name can
+overwritten if clobber='yes'.
+
+Coefficients stored in the xtalkfile must be recalibrated on a TBD
+schedule and made available to SALT users.
+.ih
+EXAMPLES
+1. To correct for crosstalk contamination in image files:
+
+.nf
+    --> saltxtalk images='@images.lis' outimages='' outpref='x'
+    	xtalkfile='/iraf/extern/salt/pfis/data/PFISxtalk.dat' 
+    	clobber='no' logfile='salt.log' verbose='yes'
+.fi
+.ih
+TIME AND DISK REQUIREMENTS
+Individual unbinned full frame RSS image files can be 112MB in
+size. It is recommended to use workstations with a minimum of 512MB
+RAM. On a linux machine with 2.8 Ghz processor and 2 Gb of RAM, one 
+2051x2051 image in 0.85 sec.
+
+.ih
+BUGS AND LIMITATIONS
+Currently no error propagation is performed through the
+calculations. This can occur once the saltprepare tool writes bad
+pixel and variance maps to raw data.
+
+Send feedback and bug reports to salthelp@saao.ac.za
+.ih
+SEE ALSO
+saltclean, saltslot
+.endhelp

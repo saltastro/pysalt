@@ -1,0 +1,25 @@
+# Spectrometer Calibration Mask  P000000N02											
+# ID	slitid	slittype	priority	slitpos_mx	slitpos_my	slitsize_mx	slitsize_my	slitsize_mr	slitsize_mw	slittilt_m	
+1	1	rectangle	1	0	-55	0.05	0.5	0	0	0	
+2	2	rectangle	1	0	-50	0.05	0.5	0	0	0	
+3	3	rectangle	1	0	-45	0.05	0.5	0	0	0	
+4	4	rectangle	1	0	-40	0.05	0.5	0	0	0	
+5	5	rectangle	1	0	-35	0.05	0.5	0	0	0	
+6	6	rectangle	1	0	-30	0.05	0.5	0	0	0	
+7	7	rectangle	1	0	-25	0.05	0.5	0	0	0	
+8	8	rectangle	1	0	-20	0.05	0.5	0	0	0	
+9	9	rectangle	1	0	-15	0.05	0.5	0	0	0	
+10	10	rectangle	1	0	-10	0.05	0.5	0	0	0	
+11	11	rectangle	1	0	0	0.05	0.5	0	0	0	
+12	12	rectangle	1	0	10	0.05	0.5	0	0	0	
+13	13	rectangle	1	0	15	0.05	0.5	0	0	0	
+14	14	rectangle	1	0	20	0.05	0.5	0	0	0	
+15	15	rectangle	1	0	25	0.05	0.5	0	0	0	
+16	16	rectangle	1	0	30	0.05	0.5	0	0	0	
+17	17	rectangle	1	0	35	0.05	0.5	0	0	0	
+18	18	rectangle	1	0	40	0.05	0.5	0	0	0	
+19	19	rectangle	1	0	45	0.05	0.5	0	0	0	
+20	20	rectangle	1	0	50	0.05	0.5	0	0	0	
+21	21	rectangle	1	0	55	0.05	0.5	0	0	0	
+22	22	rectangle	1	-50	-5	0.05	0.5	0	0	0	
+23	23	rectangle	1	50	5	0.05	0.5	0	0	0	

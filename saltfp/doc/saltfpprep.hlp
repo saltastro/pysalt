@@ -1,0 +1,105 @@
+
+# --------------------------------------
+# South African Astronomical Observatory
+# PO Box 9
+# Observatory 7935
+# South Africa
+# --------------------------------------
+.help saltfpprep July2010 salt.pysalt
+.ih
+NAME
+saltfpprep -- Pre-reduce Fabry-Perot data frames
+.ih
+USAGE
+saltfpprep inlist outpref slit plottype logfile verbose
+.ih
+PARAMETERS
+.ls images
+String. List of FITS images to prepare. Data can be provided as a
+comma-separated list, or a string with a wildcard
+(e.g. 'images=S20061210*.fits'), or a foreign file containing an ascii
+list of image filenames. For the ascii list option, the filename
+containing the list must be provided preceded by a '@' character,
+e.g. 'images=@listoffiles.lis'. The list can contain data files from
+multiple SALT instruments.  If the full_reduce option is yes, then the
+images should be the file nmae of a list of images 
+(e.g. images=listoffiles.lis').
+.le
+.ls outimage
+String. A list of images. Data can be provided as a comma-separated
+list, or a string with a wildcard (e.g. 'outimages=rS20061210*.fits'), or
+a foreign file containing an ascii list of image filenames. For ascii 
+list option, the filename containing the list must be provided 
+preceded by a '@' character, e.g. 'outimages=@listoffiles.lis'. This list
+must be of the same size as the images argument list.  This parameter is not
+used if full_reduce is yes.
+.le
+.ls outpref
+String. If the outpref string is non-zero in length and contains
+characters other than a blank space, it will override any value of the
+outimages argument. Output file names will use the name list provided
+in the images argument, but adding a prefix to each output file
+defined by outpref. An absolute or relative directory path can be
+included in the prefix, e.g. 'outpref=/Volumes/data/p'.
+.le
+.ls slit
+Boolean. (yes or no). To determine whether to run the routine in slit mode, 
+which fits the overscan vertically in three segments or not which fits 
+the overscan vertically as a whole.
+.le
+.ls plottype
+String. (xwindow or postscript). Set output graphics type to xwindow or postscript output in 
+.le
+.ls (clobber)
+Hidden boolean. If set to 'yes' files contained within the outpath
+directory will be overwritten by newly created files of the same
+name.
+.le
+.ls logfile
+String. Name of an ascii file for storing log and error messages
+written by the task. The file may be new, or messages can also be
+appended to a pre-existing file.
+.le
+.ls verbose
+Boolean. Verbose (yes) or quiet (no) execution of the routine.
+.le
+.ih
+DESCRIPTION
+SALTFPPREP has two modes:  (1)  If full_reduce='no', then SALTFPPREP will
+reduce data as if it is from the SALT pipeline.  (2) If full_reduce='yes', 
+SALTFPPREP will assume the data are raw and produce an output file
+after that reduction.   The key step of SALTFPPREP is to produce a FITS file
+with only a single extension as that is needed by the other tasks.
+
+If full_reduce is 'no', SALTFPPREP assumes the data have already been run through
+the PySALT reduction pipeline including any basic CCD reduction and mosaicking.
+The task then runs salt2iraf on the data, which converts the data from MEF files
+to a single extension FITS files that is expected for the other SALTFP tools. 
+
+If full_reduce is 'yes', SALTFPPREP prepares a clean single-extension FITS format 
+image for later analysis. Processing steps include: 1) Assembling the 6 
+amplifier segments into a single image. 2) Measuring and subtracting the 
+overscan bias. The overscan is fit with a polynomial to smooth the noise.
+Fitting can be done in slit mode, which fits three segments (vertically), or
+non-slit mode, which fits the entire overscan vector. The output image is 
+converted to real pixel type. 
+.ih
+EXAMPLES
+1. To prepare a list of raw data files which are listed in "plist". 
+
+    --> saltfpprep inlist=plist outpref=red slit=no plottype=xwindow logfile=salt.log verbose=yes
+ 
+.ih
+TIME AND DISK REQUIREMENTS
+Individual unbinned full frame RSS image files can be 112MB in
+size. It is recommended to use workstations with a minimum of 512MB
+RAM. On a linux machine with 2.8 Ghz processor and 2 Gb of RAM, one 
+2051x2051 image in 0.85 sec.
+
+.ih
+BUGS AND LIMITATIONS
+Send feedback and bug reports to salthelp@saao.ac.za
+.ih
+SEE ALSO
+salt2iraf
+.endhelp

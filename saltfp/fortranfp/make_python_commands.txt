@@ -1,0 +1,162 @@
+---------------------------------------------------------------------------
+
+RSSPREP.F
+
+*OBSOLETE*
+
+f2py -m RSSPrep_wrapper -h RSSPrep_wrapper.pyf --overwrite-signature RSSPrep.f biwgt.f polyfit.f gaussj.f getpfp.f
+
+f2py -c --fcompiler=gfortran RSSPrep_wrapper.pyf RSSPrep.f biwgt.f polyfit.f gaussj.f getpfp.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+---------------------------------------------------------------------------
+
+MASKING.F
+
+
+*OBSOLETE*
+f2py -m masking_wrapper -h masking_wrapper.pyf --overwrite-signature masking.f biwgt.f getpfp.f deletefile.f
+
+f2py -c --fcompiler=gfortran masking_wrapper.pyf masking.f biwgt.f getpfp.f deletefile.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+---------------------------------------------------------------------------
+
+CALRING.F
+
+*OBSOLETE*
+
+f2py -m calring_wrapper -h calring_wrapper.pyf --overwrite-signature calring.f ringcen.f ringpro.f  evoigt.f biwgt.f center.f lowpass.f mrqfit.f gaussj.f realft.f four1.f getpfp.f
+
+f2py -c --fcompiler=gfortran calring_wrapper.pyf calring.f ringcen.f ringpro.f evoigt.f biwgt.f center.f lowpass.f mrqfit.f gaussj.f realft.f four1.f getpfp.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+----------------------------------------------------------------------------
+
+CALPROFILE
+
+*OBSOLETE*.F
+
+f2py -m calprofile_wrapper -h calprofile_wrapper.pyf --overwrite-signature calprofile.f ringcen.f ringpro.f biwgt.f lowpass.f center.f evoigt.f  getpfp.f realft.f four1.f mrqfit.f gaussj.f
+
+f2py -c --fcompiler=gfortran calprofile_wrapper.pyf calprofile.f ringcen.f ringpro.f biwgt.f lowpass.f center.f evoigt.f  getpfp.f realft.f four1.f mrqfit.f gaussj.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+-----------------------------------------------------------------------------
+
+CALIBRATE.
+
+*OBSOLETE*F
+
+f2py -m calibrate_wrapper -h calibrate_wrapper.pyf --overwrite-signature  calibrate.f mrqfit2.f gaussj.f 
+
+f2py -c --fcompiler=gfortran calibrate_wrapper.pyf calibrate.f mrqfit2.f gaussj.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+----------------------------------------------------------------------------
+
+NIGHTRING.
+
+*OBSOLETE*F
+
+f2py -m nightring_wrapper -h nightring_wrapper.pyf --overwrite-signature nightring.f biwgt.f lowpass.f center.f evoigt.f getpfp.f realft.f four1.f mrqfit.f gaussj.f
+
+f2py -c --fcompiler=gfortran nightring_wrapper.pyf nightring.f biwgt.f lowpass.f center.f evoigt.f getpfp.f realft.f four1.f mrqfit.f gaussj.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+----------------------------------------------------------------------------
+
+RINGFILTER
+
+*OBSOLETE*.F
+
+f2py -m ringfilter_wrapper -h ringfilter_wrapper.pyf --overwrite-signature ringfilter.f biwgt.f center.f realft.f four1.f evoigt.f lowpass.f mrqfit.f gaussj.f getpfp.f
+
+f2py -c --fcompiler=gfortran ringfilter_wrapper.pyf ringfilter.f biwgt.f center.f realft.f four1.f evoigt.f lowpass.f mrqfit.f gaussj.f getpfp.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+-------------------------------------------------------------------------------
+
+MASKING2.F
+
+f2py -m masking_wrapper2 -h masking_wrapper2.pyf --overwrite-signature masking2.f biwgt.f getpfp.f deletefile.f
+
+f2py -c --fcompiler=gfortran masking_wrapper2.pyf masking2.f biwgt.f getpfp.f deletefile.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+-------------------------------------------------------------------------------
+
+CALRING2.F
+
+f2py -m calring_wrapper2 -h calring_wrapper2.pyf --overwrite-signature calring2.f ringcen2.f ringpro2.f evoigt.f biwgt.f center.f lowpass.f mrqfit.f gaussj.f realft.f four1.f getpfp.f
+
+f2py -c --fcompiler=gfortran calring_wrapper2.pyf calring2.f ringcen2.f ringpro2.f evoigt.f biwgt.f center.f lowpass.f mrqfit.f gaussj.f realft.f four1.f getpfp.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+-------------------------------------------------------------------------------
+
+CALPROFILE2.F
+
+f2py -m calprofile_wrapper2 -h calprofile_wrapper2.pyf --overwrite-signature calprofile2.f ringcen2.f ringpro2.f biwgt.f lowpass.f center.f evoigt.f  getpfp.f realft.f four1.f mrqfit.f gaussj.f
+
+f2py -c --fcompiler=gfortran calprofile_wrapper2.pyf calprofile2.f ringcen2.f ringpro2.f biwgt.f lowpass.f center.f evoigt.f  getpfp.f realft.f four1.f mrqfit.f gaussj.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+-----------------------------------------------------------------------------
+
+CALIBRATE2.F
+
+f2py -m calibrate_wrapper2 -h calibrate_wrapper2.pyf --overwrite-signature  calibrate2.f mrqfit2.f gaussj.f 
+
+f2py -c --fcompiler=gfortran calibrate_wrapper2.pyf calibrate2.f mrqfit2.f gaussj.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+----------------------------------------------------------------------------
+
+NIGHTRING2.F
+
+f2py -m nightring_wrapper2 -h nightring_wrapper2.pyf --overwrite-signature nightring2.f biwgt.f lowpass.f center.f evoigt.f getpfp.f realft.f four1.f mrqfit.f gaussj.f
+
+f2py -c --fcompiler=gfortran nightring_wrapper2.pyf nightring2.f biwgt.f lowpass.f center.f evoigt.f getpfp.f realft.f four1.f mrqfit.f gaussj.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+------------------------------------------------------------------------------
+
+
+RINGFILTER2.F
+
+f2py -m ringfilter_wrapper2 -h ringfilter_wrapper2.pyf --overwrite-signature ringfilter2.f biwgt.f center.f realft.f four1.f evoigt.f lowpass.f mrqfit.f gaussj.f getpfp.f
+
+f2py -c --fcompiler=gfortran ringfilter_wrapper2.pyf ringfilter2.f biwgt.f center.f realft.f four1.f evoigt.f lowpass.f mrqfit.f gaussj.f getpfp.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+-------------------------------------------------------------------------------
+
+RSSPREP2.F
+
+f2py -m RSSPrep_wrapper2 -h RSSPrep_wrapper2.pyf --overwrite-signature RSSPrep2.f biwgt.f polyfit.f gaussj.f getpfp.f
+
+On OS X:
+f2py -c --fcompiler=gfortran RSSPrep_wrapper2.pyf RSSPrep2.f biwgt.f polyfit.f gaussj.f getpfp.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+In linux:
+f2py -c --fcompiler=gfortran RSSPrep_wrapper2.pyf RSSPrep2.f biwgt.f polyfit.f gaussj.f getpfp.f -lX11 -lpgplot /usr/lib/libcfitsio.a
+
+-------------------------------------------------------------------------------
+
+EPROFILE2.F
+
+f2py -m eprofile_wrapper2 -h eprofile_wrapper2.pyf --overwrite-signature eprofile2.f evoigt.f mrqfit.f gaussj.f
+
+f2py -c --fcompiler=gfortran eprofile_wrapper2.pyf eprofile2.f evoigt.f mrqfit.f gaussj.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+-------------------------------------------------------------------------------
+
+EVELOCITY2.F
+
+f2py -m evelocity_wrapper2 -h evelocity_wrapper2.pyf --overwrite-signature evelocity2.f evoigt.f mrqfit.f gaussj.f
+
+f2py -c --fcompiler=gfortran evelocity_wrapper2.pyf evelocity2.f evoigt.f mrqfit.f gaussj.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+-------------------------------------------------------------------------------
+
+EPROFILE_NEW2.F
+
+f2py -m eprofile_wrapper2 -h eprofile_wrapper2.pyf --overwrite-signature eprofile_new2.f evoigt.f mrqfit.f gaussj.f
+
+f2py -c --fcompiler=gfortran eprofile_wrapper2.pyf eprofile_new2.f evoigt.f mrqfit.f gaussj.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
+
+----------------------------------------------------------------------
+
+SKYRING.F
+
+f2py -m skyring_wrapper2 -h skyring_wrapper2.pyf --overwrite-signature skyring2.f realft.f four1.f spline.f deletefile.f
+
+f2py -c --fcompiler=gfortran skyring_wrapper2.pyf skyring2.f realft.f four1.f spline.f deletefile.f -lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
