@@ -1,0 +1,203 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/saltiraf/!svn/ver/908/trunk/salt/pysalt/saltfp
+END
+saltfpcalibrate.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/324/trunk/salt/pysalt/saltfp/saltfpcalibrate.py
+END
+saltfpskyring.py
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/saltiraf/!svn/ver/889/trunk/salt/pysalt/saltfp/saltfpskyring.py
+END
+saltfpzeropoint.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/888/trunk/salt/pysalt/saltfp/saltfpzeropoint.py
+END
+saltfpmask.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/saltiraf/!svn/ver/526/trunk/salt/pysalt/saltfp/saltfpmask.py
+END
+saltfpevelocity.par
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/318/trunk/salt/pysalt/saltfp/saltfpevelocity.par
+END
+saltfpringfilter.par
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/saltiraf/!svn/ver/318/trunk/salt/pysalt/saltfp/saltfpringfilter.par
+END
+saltfpringfind.py
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/saltiraf/!svn/ver/891/trunk/salt/pysalt/saltfp/saltfpringfind.py
+END
+saltfpprep.par
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/saltiraf/!svn/ver/540/trunk/salt/pysalt/saltfp/saltfpprep.par
+END
+saltfpeprofile.py
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/saltiraf/!svn/ver/325/trunk/salt/pysalt/saltfp/saltfpeprofile.py
+END
+saltfpprep.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/saltiraf/!svn/ver/440/trunk/salt/pysalt/saltfp/saltfpprep.py
+END
+saltfpcalring.par
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/saltiraf/!svn/ver/890/trunk/salt/pysalt/saltfp/saltfpcalring.par
+END
+FPRing.py
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/saltiraf/!svn/ver/889/trunk/salt/pysalt/saltfp/FPRing.py
+END
+getpfp.py
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/saltiraf/!svn/ver/323/trunk/salt/pysalt/saltfp/getpfp.py
+END
+fptools.py
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/saltiraf/!svn/ver/889/trunk/salt/pysalt/saltfp/fptools.py
+END
+fpsafeio.py
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/saltiraf/!svn/ver/318/trunk/salt/pysalt/saltfp/fpsafeio.py
+END
+saltfpzeropoint.par
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/921/trunk/salt/pysalt/saltfp/saltfpzeropoint.par
+END
+saltfpmask.par
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/saltiraf/!svn/ver/442/trunk/salt/pysalt/saltfp/saltfpmask.par
+END
+saltfp.cl
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/saltiraf/!svn/ver/907/trunk/salt/pysalt/saltfp/saltfp.cl
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/saltiraf/!svn/ver/889/trunk/salt/pysalt/saltfp/__init__.py
+END
+saltfpnightring.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/324/trunk/salt/pysalt/saltfp/saltfpnightring.py
+END
+saltfpeprofile.par
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/318/trunk/salt/pysalt/saltfp/saltfpeprofile.par
+END
+saltfpringfit.py
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/saltiraf/!svn/ver/850/trunk/salt/pysalt/saltfp/saltfpringfit.py
+END
+saltfpevelocity.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/318/trunk/salt/pysalt/saltfp/saltfpevelocity.py
+END
+saltfpringfilter.py
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/324/trunk/salt/pysalt/saltfp/saltfpringfilter.py
+END
+saltfp.men
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/saltiraf/!svn/ver/908/trunk/salt/pysalt/saltfp/saltfp.men
+END
+saltfp.par
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/saltiraf/!svn/ver/317/trunk/salt/pysalt/saltfp/saltfp.par
+END
+saltfpcalprofile.par
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/saltiraf/!svn/ver/318/trunk/salt/pysalt/saltfp/saltfpcalprofile.par
+END
+saltfpcalring.py
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/saltiraf/!svn/ver/889/trunk/salt/pysalt/saltfp/saltfpcalring.py
+END
+saltfpcalprofile.py
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/324/trunk/salt/pysalt/saltfp/saltfpcalprofile.py
+END
+saltfpcalibrate.par
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/318/trunk/salt/pysalt/saltfp/saltfpcalibrate.par
+END
+saltfpskyring.par
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/saltiraf/!svn/ver/890/trunk/salt/pysalt/saltfp/saltfpskyring.par
+END
+saltfp.hd
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/saltiraf/!svn/ver/908/trunk/salt/pysalt/saltfp/saltfp.hd
+END
+saltfpnightring.par
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/318/trunk/salt/pysalt/saltfp/saltfpnightring.par
+END

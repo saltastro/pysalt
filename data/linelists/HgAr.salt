@@ -1,0 +1,66 @@
+# HgAr Spectrum 
+# Oct 2011: ACS: adjusted original HgAr.txt
+# Apr 2012: ACS: refinement using more data (HgAr.wav, Hg.wav, and NIST data base)
+# Wavelength Intensity
+2000         10    acs: dummy line to improve first real line
+#
+3125.670     14    acs: change 142 to 14
+3131.550     20    acs: change 204 to 20
+3341.480     113
+#3649.8320    15000   acs: add
+3650.150     14556
+3654.840     3503
+3663.280     2750
+3901.870     119
+3906.370     132
+4046.560     43534
+4077.830     3895
+4348.0630    4000    acs: add
+4358.330     86268
+4916.070     2000     acs: increase
+#5017.1621    500      acs: add
+5460.740     70000
+5769.600     50000    acs: increase
+5790.660     23296
+5882.6226    1000     acs: add
+#5942.6665    1000     acs: add
+6032.1244    500      acs: add
+#6072.720     500      acs: increase
+# acs: add all
+#6098.8004    500
+#6145.4389    500
+6234.3929    400
+6384.7144    500
+6416.3038    300
+6598.6840    500
+6677.2784    500
+6716.4228    500
+6752.8300    200
+6871.2860    200
+6907.5212    2000
+6965.4265    10000
+#7030.2520    250
+7067.2170    1000
+#7068.7300    1000
+7081.8940    250  
+7091.8613    200  
+7147.0410    250
+7272.9350    200
+7383.9796    150
+7503.8685    150
+7514.6514    150
+7635.1056    100
+7723.7599    100
+#7944.6603    100
+7948.1755    100
+8006.157        500      acs: from Argon.dat
+8014.786        500    acs: from Argon.dat
+8103.693        500     acs: from Argon.dat
+8115.311        500    acs: from Argon.dat
+8264.523        500       acs: from Argon.dat
+8408.2096    50      acs: from goodman
+8424.6475    50      acs: from goodman
+8521.4422    50      acs: from goodman
+9122.9674    20      acs: from goodman
+#
+19000.0       10       acs: add dummy line

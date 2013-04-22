@@ -1,0 +1,10 @@
+images,s,a,'P*.fits',,,'Input raw images or list of images'
+outimages,s,a,'',,,Output images or list of output images'
+outpref,s,a,'p',,,'Prefix for output images'
+slit,b,h,no,,,'Slitmode? yes or no'
+plottype,s,h,'xwindow','xwindow|postscript',,'Plotting device' 
+full_reduce,b,h,no,,,'Reduce the data from a raw state'
+clobber,b,h,no,,,'Overwrite exisitng files?'
+logfile,s,h,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 

@@ -1,0 +1,79 @@
+
+	Installation of the PySALT external package V0.4
+	----------------------------------------------
+
+[0] This package requires IRAF version 2.12.2 or later, Pyraf version 1.7
+    or later and the PyQt4 GUI toolkit.
+
+[1] The package is distributed via the SALT web pages, see
+    http://www.salt.ac.za
+    The README file contains these instructions.
+
+[2] To install the package as root, create a directory to contain the
+    PySALT external package files.  This directory should be outside
+    the IRAF directory tree and must be owned by the IRAF account. In
+    the following example, this root directory is named
+    /iraf/extern/pysalt/ (UNIX and Linux). Make the appropriate file
+    name substitutions for your site.
+
+    [a] Log in as IRAF and edit the extern.pkg file in the hlib
+    directory to define the package to the CL. From the IRAF account,
+    outside the CL, you can move to this directory with the commands:
+
+	% cd /iraf/iraf/unix/hlib/
+
+    Define the environment variable salt to be the pathname to the salt
+    root directory. UNIX pathnames must be terminated with a '/'.  
+    Edit extern.pkg to include:
+
+	reset pysalt     = /iraf/extern/pysalt/
+	task  pysalt.pkg = pysalt$pysalt.cl
+
+    Near the end of the hlib$extern.pkg file, update the definition of helpdb
+    so it includes the salt help database, copying the syntax already used
+    in the string. Add this line before the line containing a closing quote:
+        
+                ,pysalt$lib/helpdb.mip\
+
+   [b] Change directories to the PySALT root directory created above
+   and unpack the download file pysalt.tar.gz
+
+        % cd /iraf/extern/pysalt/
+        % tar zxvf <path>/pysalt.tar.gz 
+
+    where <path> is the relative path from /iraf/extern/pysalt to the 
+    downloaded file.
+
+[4] To install the package under your home directory, unpack the 
+    downloaded file pysalt.tar.gz.  Then add the following line to your
+    loginuser.cl:
+	
+	reset pysalt   = "[your path]"
+        task  pysalt.pkg   = "pysalt$pysalt.cl"
+        reset helpdb    = (envget("helpdb") // ",pysalt$lib/helpdb.mip")
+
+[5] To run some of the additional packages, it requires the user to compile the software associated with those packages.
+  [a] To install the Fabry-Perot packages on a linux system, follow these steps:
+     cd pysalt/saltfp/fortranfp/
+     cp Makefile.linux Makefile
+     make
+  If you working in OSX, then copy the Makefile.osx to Makefile instead.
+  [b] To install the BVIT packages (optional and only for the development version), follow these steps:
+     cd pysalt/bvittools/accelerate/
+     make
+        % cd /iraf/extern/pysalt/
+        % make
+
+[6] (Optional) build the HTML documentation.
+    Make sure you have Sphinx installed and run.
+
+        % cd /iraf/extern/pysalt/
+        % make documentation
+
+    Then point your webbrowser to:
+
+        /iraf/extern/pysalt/doc/build/html/index.html
+
+[7] Please use the SALT help desk for submitting questions:
+    salthelp@salt.ac.za
+

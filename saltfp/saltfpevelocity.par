@@ -1,0 +1,9 @@
+infile,s,a,'icd.txt',,,'Input data cube descriptor file'
+usefits,b,h,no,,,'Use previous fit values?' 
+xc,f,h,1000,,,'x centre in pixels'
+yc,f,h,1000,,,'y centre in pixels'
+rmax,f,h,500,,,'Radius of fit in pixels'
+logfile,s,a,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 
+

@@ -1,0 +1,5 @@
+# SALTICAM CCD Geometry data
+# Translation and rotation of chip1 relative to chip2
+#
+# Date       gap   xshift(1)   yshift(1)   rot(1) 
+2004-01-01   109     0.0        0.0        0.0

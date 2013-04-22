@@ -1,0 +1,47 @@
+
+*Instructions-
+-Update the instructions
+--how are the center ra and dec calculated? (If at start-up, they are
+not specified, then they are calculated from the center of all
+selected slits)
+--better description on mode
+--complete catalag tab
+--complete slit tab
+--complete optimize tab--what does optimize do?
+--complete refstars tab
+--complete finalize tab
+
+*Info tab
+-add a button like 'center mask'
+-V2 udpates:
+--allow adding the RSS config
+
+*Catalog tab
+-complete!
+-v2 updates: 
+--add a sort on column
+--allow editing of columns
+
+
+* Slit tab
+x-import from image not working
+x-delete from image not working
+x-Does manual import work?
+
+* Ref tab
+x-Does manual import work?
+x-import from image not working
+x-delete from image not working
+
+* Finalize tab
+-create finder chart does not work
+-write RSMT should be larger
+-does create RSMT work?
+-the xml is writing out all the files
+
+*Displaying the slits
+x-match frame to WCS so that N is up
+-is the position angle correct?
+x-slits should be deleted when position angle changes
+x-slits should delete when removed
+-add RSS footpring

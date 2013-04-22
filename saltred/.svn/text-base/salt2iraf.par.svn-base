@@ -1,0 +1,8 @@
+images,s,a,'',,,'Input raw images or list of images'
+outimages,s,a,'',,,Output images or list of output images'
+outpref,s,a,'i',,,'Prefix for output images'
+ext,i,h,'1',,,'Extension to copy data into primary extension'
+clobber,b,h,no,,,'Overwrite exisitng files?'
+logfile,s,h,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 

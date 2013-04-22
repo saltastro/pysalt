@@ -1,0 +1,162 @@
+.. _saltprepare:
+
+***********
+saltprepare
+***********
+
+
+Name
+====
+
+saltprepare -- Prepare FITS files for PyRAF and IRAF reduction tasks
+
+Usage
+=====
+
+saltprepare images rawpath outimage outpref (clobber) logfile (verbose)
+
+Parameters
+==========
+
+
+*images*
+    String. List of FITS images to prepare. Data can be provided as a
+    comma-separated list, or a string with a wildcard
+    (e.g. 'images=S20061210*.fits'), or a foreign file containing an ascii
+    list of image filenames. For the ascii list option, the filename
+    containing the list must be provided preceded by a '@' character,
+    e.g. 'images=@listoffiles.lis'. The list can contain data files from
+    multiple SALT instruments.
+
+*outimage*
+    String. A list of images. Data can be provided as a comma-separated
+    list, or a string with a wildcard (e.g. 'outimages=rS20061210*.fits'), or
+    a foreign file containing an ascii list of image filenames. For ascii
+    list option, the filename containing the list must be provided
+    preceded by a '@' character, e.g. 'outimages=@listoffiles.lis'. This list
+    must be of the same size as the images argument list.
+
+*outpref*
+    String. If the outpref string is non-zero in length and contains
+    characters other than a blank space, it will override any value of the
+    outimages argument. Output file names will use the name list provided
+    in the images argument, but adding a prefix to the basename of
+    each  output file defined by outpref. An absolute or relative directory
+    path can be included in the prefix, e.g. 'outpref=/Volumes/data/p'.
+
+*(createvar)*
+    Hidden boolean.  If set to 'yes', the task will add on variance
+    and bad pixel extensions to the data.
+
+*(badpixelimage)*
+    Hidden string.  If createvar is set to 'yes' and this file is not None,
+    then saltprepare will use this file to add the badpixelmask.  If badpixelimage
+    is not set, then it will create the badpixelmask from the file itself.
+
+*(clobber)*
+        Hidden boolean. If set to 'yes' files contained within the outpath
+        directory will be overwritten by newly created files of the same
+        name.
+
+*(logfile)*
+        String. Name of an ascii file for storing log and error messages
+        from the tool. The file may be new, or messages can also be appended to a
+        pre-existing file.
+
+*(verbose)*
+        Hidden Boolean. If verbose=n, log messages will be suppressed.
+
+Description
+===========
+
+SALTPREPARE prepares the SALT data for pipeline processing.  The main
+purpose of this task is to verify the correct header key words and the
+data file format.
+
+Saltprepare is currently a relatively trivial task that adds several
+missing but required keywords to the keyword headers of FITS data
+files. These keywords are not written to the file at the telescope but
+are required in order to improve efficiency in the data reduction
+pipeline and retain consistency with the IRAF-based tools.
+
+The user may also select to create variance and bad pixel frames for
+the data by setting the createvar varialble.  If selected, variance
+frames will be created based on the pixel variance and the readnoise.
+The user can also supply a bad pixel frame, but if one is not supplied,
+one can be created from the data itself assuming all pixels
+are good.
+
+
+The following list describes each new keyword:
+
+*NSCIEXT (integer)*
+    Primary HDU. The number of HDU in the file containing data images.
+
+*NEXTEND (integer)*
+    Primary HDU. The number of HDU containing an image. The number will be
+    greater than NSCIEXT if bad pixel and variance maps are added to the
+    file for future statistical error propagation (not currently
+    implemented).
+
+*SAL-TLM (string)*
+    Primary HDU. The time and date that the file was last altered by a
+    SALT task.
+
+*PPREPARE or SPREPARE (string)*
+    Primary HDU. The time and date that the file was processed by the
+    saltprepare task. The 'P' and 'S' prefix refers to whether the data
+    was recorded by RSS (PFIS) or SALTICAM. The difference is retained for
+    back-compatibility with the SALT IRAF tools that make a distinction
+    between the two instruments.
+
+*EXTNAME (string)*
+    Image HDUs. The Name of the HDU. All science images are given the name
+    'SCI'. Bad pixel and variance maps will be given alternative names, to
+    be decided upon.
+    
+
+*EXTVER (integer)*
+    Image HDUs. The HDU number which refers to the order of the image in
+    the sequence of FITS extensions.
+
+Examples
+========
+
+1. To prepare raw FITS files residing in the /Volumes/data1/ and create
+new files with paths and names stored in the ascii list outimages.lis::
+
+    --> saltprepare images='P*.fits'
+    outimages='@outimages.lis' outpref='' logfile='salt.log'
+
+2. To prepare raw FITS files residing in the /Volumes/data1/ and create
+new files in the directory /Volumes/data2 with prefix 'p', over-write
+existing files, create variance frames and badpixelmasks,  and suppress
+log messages::
+
+    --> saltprepare images='/Volumes/data2/P*.fits'
+    outimages='' outpref='/Volumes/data2/p'
+    createvar='yes', badpixelmask='bpm.fits'
+    clobber='yes' logfile='salt.log' verbose='no'
+
+Time and disk requirements
+==========================
+
+Individual unbinned raw full-frame RSS files can be 112MB in size. It is
+recommended to use workstations with a minimum of 512MB RAM. On a
+linux machine with 2.8 Ghz processor and 2 Gb of RAM, one 2051x2051 image
+in 0.15 sec.
+
+Bugs and limitations
+====================
+
+Currently there is no statistical error propagation in the SALT
+pipeline tasks. However, saltprepare can
+create multiple new image extensions containing a) bad
+pixel maps and b) varaiance maps for all amplifiers.
+
+Send feedback and bug reports to salthelp@saao.ac.za
+
+See also
+========
+
+ :ref:`saltpipe` :ref:`saltclean`

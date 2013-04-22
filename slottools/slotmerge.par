@@ -1,0 +1,8 @@
+images,s,a,'*.fits',,,'Input images or list of images'
+outimages,s,a,'',,,'Output images or list of output images'
+outpref,s,a,'m',,,'Prefix for output images'
+geomfile,s,a,'/iraf/extern/pysalt/data/scam/SALTICAMgeom.dat',,,'CCD geometry definition file'
+clobber,b,h,no,,,'Overwrite existing files?'
+logfile,s,h,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 

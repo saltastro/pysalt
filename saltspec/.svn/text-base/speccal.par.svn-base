@@ -1,0 +1,10 @@
+specfile,s,a,,,,'Input spectrum'
+outfile,s,a,,,,'Output file '
+calfile,s,a,,,,'calibration curve file '
+extfile,s,a,,,,'Extinction file '
+airmass,r,h,,,,'Airmass of observations'
+exptime,r,h,,,,'Exposure time of the observations'
+clobber,b,h,no,,,'Overwrite exisitng files?'
+logfile,s,h,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 

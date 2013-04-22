@@ -1,0 +1,174 @@
+# Adapted from the Gemini (v1.7) IRAF Package (copyright below)
+#    for the Southern African Large Telescope.  
+#
+# South African Astronomical Observatory
+# PO Box 9
+# Observatory 7935
+# South Africa
+# ******************************************************************
+.help slotback Febuary2007 pysalt.slottools
+.ih
+NAME
+slotback -- Produce background subtracted slotmode images
+.ih
+USAGE
+slotback images outfits extension imgtype (subbacktype) 
+         (sigback) (mbin) (iter) (sorder) (ignorexp)  
+         (clobber) (logfile) (verbose) (debug)
+.ih
+PARAMETERS
+.ls images
+String. List of images to reduce. Data can be provided as a comma-delineated
+list, or a string with a wildcard (e.g. 'images=S20061210*.fits'), or
+a foreign file containing an ascii list of image filenames. For ascii 
+list option, the filename containing the list must be provided 
+preceded by a '@' character, e.g. 'images=@listoffiles.lis'. Note 
+that SLOT mode fits files often contain more than one exposed frame.
+In such cases, all frames will be reduced by default from any file 
+specified in the list of images. saltphot works specifcally only on 
+un-mosaiced data. Do not provide any files in this list that have
+been created by either the pmosaic, smosaic or saltmosaic tools.
+.le
+.ls outfits 
+String.  If outfits contains a value, then an output fits file only
+containing extensions with the target and companion star will be
+written out.  If outfits contains none or is left empty, no data will
+be written out.  The output images will be background subtracted (if
+selected) or just the background image.
+.le
+.ls extension
+Int.  The first exstension (or amplifier) that the target and comparison
+star appear on.  This extesnion will be extracted from all of the input
+fits files and compiled into a single fits frame.
+.le
+.ls imgtype = [image|background]
+String.  The type of outfits image that is produced. The
+options are: 
+.ls "image"
+A image withe the selected type of background subtraction.
+.le
+.ls "background"
+The background which would be subtracted from the image.
+.le
+.le
+.ls subbacktype
+Type of background subtraction used for the sources.  Currently these 
+are the options:
+.ls none
+No background subtraction is done
+.le
+.ls median
+After removing pixels which are sigback above the background
+deviation, the image is median smoothed with a bin size set by mbin.
+The smoothing is repeated iter number of times.  The smoothed image is
+then subtracted from the original image.
+.le
+.ls surf
+After removing pixels which are sigback above the background, a 2-D
+polynomial surface with order set by sorder is fit to the image.  The
+surface is then subtracted from the image.
+.le
+.ls both
+The image is clipped,  median smoothed, and then fit by a 2-D polynomial.  
+The result is subtracted from the image. 
+.le
+.le
+.ls sigback
+Real.  Pixels that are sigback times above the background deviation are 
+replaced with the average value for the purposes of smoothing or surface 
+fitting the image.
+.le
+.ls mbin
+Int.   The bin size of the median smoothing box.  Assumed to be odd integers 
+and will be rounded up to the next odd integer if even.
+.le
+.ls niter
+Int.  The number of repeats to apply when smoothing the image.  
+.le
+.ls sorder
+Int.  The order of the 2-D polynomial fit to the image for background 
+subtraction.
+.le
+.ls ampperccd 
+Int. The number of amplifiers per CCD.  If it is the newfits file and has already
+been processed by slotphot, then set to zero.
+.le
+.ls ignorexp
+Integer >= 0. If ignorexp > 0 the first ignorexp frames will be skipped
+over before extraction is performed on ignorexp + 1 and all subsequent
+frames. This functionality is useful for SLOT mode data because the 
+first few frames are generally empty. This is simply because SLOT 
+mode involves continuous readout. The exposed area of the chip is some
+way from the readout boundary, so the first few frames of a sequence
+will contain CCD bias only.  
+.le
+.ls clobber
+Hidden Boolean. If clobber=y the tool is permitted to overwrite an exisiting
+file with name outfile.
+.le
+.ls logfile
+String. Name of an ascii file for storing log and error messages
+from the tool. The file may be new, or messages can also be appended to a
+pre-existing file.
+.le
+.ls verbose
+Boolean. If verbose=n, log messages will be suppressed.
+.le
+.ih
+DESCRIPTION
+
+This task produces an output fits file that either contains background
+selected images or the background that would be subtracted from the
+images.  The task will select all frames from a given amplifier (as specified 
+by extension) and compile them into a single, master fits file.  If imgtype='image',
+then the output image will be background subtracted (if selected) images.  If
+imgtype='background', the output will be the background that would have been
+subtracted from the images.  The outfits file can be placed directly into
+slotphot for the purposes of photometry.
+
+If selected, a global background will be subtracted from the data.
+The user options allow for four different options.  One, no background
+can be subtrated.  Two, the subtracted background can be created from a
+median smoothing of the image.  Bright sources will be excluded from
+the image by setting the sigback value, and any pixel above that value
+will be replaced with the sigma-clipped mean background value.  The median smoothed
+image will have a filter window equal to mbin and the filtering will
+be repeated the number of times indicated by the iter parameter.
+Three, a 2-D polynomial surface of order, sorder, can be fit to the
+image and then subtracted.  Bright sources will once again be
+excluded.  Finally, the image can be median smoothed and then have a
+2-D polynomial subtracted from the unsmoothed image.
+
+Once the outfits file has been satisfactorily created, this file can
+be used in slotphot by setting ampperccd=0 and updating the other 
+settings.  The srcfile must be updated so the amplifier of the sources
+is set to 1.  In addition, the newfits file should be set to 'none', the 
+subbacktype should be updated, and ignorexp should be set to zero.  Then, 
+by setting the just created newfits file as the input img, slotphot will
+only perform photometry on this image.
+
+.ih
+EXAMPLES
+1. To create the background images for stars on amplifier 2:
+
+.nf
+    --> slotback images="*.fits" outfits='out.fits', extension=2, 
+        subbacktype='median', imgtype='background',
+	sigback=2.5, mbin=7, iter=3, sorder=3, 
+        ignorexp=0 clobber=y logfile=salt.log verbose=y
+.fi
+.ih
+TIME REQUIREMENTS
+A linux machine with 2 GB of RAM and a 2.8 Ghz processer was able to 
+process one 4x4 binned SALTICAM slotmode exposures in 0.08 seconds.   
+The data were median backgroun subtracted. 
+.ih
+BUGS AND LIMITATIONS
+The current version of SLOTBACK has been tested only on SALTICAM slot
+mode data. 
+
+Send feedback and bug reports to salthelp@saao.ac.za
+.ih
+SEE ALSO
+saltslot, slotview
+.endhelp

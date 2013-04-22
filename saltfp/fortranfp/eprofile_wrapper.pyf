@@ -1,0 +1,95 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module mrqcof__user__routines 
+    interface mrqcof_user_interface 
+        subroutine funk(e_x_i_e,a,npar,yfit,dyda) ! in :eprofile_wrapper:mrqfit.f:mrqcof:unknown_interface
+            real :: e_x_i_e
+            real dimension(npar) :: a
+            integer optional,check(len(a)>=npar),depend(a) :: npar=len(a)
+            real :: yfit
+            real dimension(20) :: dyda
+        end subroutine funk
+    end interface mrqcof_user_interface
+end python module mrqcof__user__routines
+python module eprofile_wrapper ! in 
+    interface  ! in :eprofile_wrapper
+        subroutine eprofile(plottype,icdname) ! in :eprofile_wrapper:eprofile.f
+            character*4 :: plottype
+            character*80 :: icdname
+        end subroutine eprofile
+        subroutine evfit(wave,flux,sigma,num,fit,flag,errs,chisq) ! in :eprofile_wrapper:evoigt.f
+            real dimension(num) :: wave
+            real dimension(num),depend(num) :: flux
+            real dimension(num),depend(num) :: sigma
+            integer optional,check(len(wave)>=num),depend(wave) :: num=len(wave)
+            real dimension(5) :: fit
+            logical dimension(5) :: flag
+            real dimension(5) :: errs
+            real :: chisq
+        end subroutine evfit
+        subroutine evinit(wave,flux,num,fit) ! in :eprofile_wrapper:evoigt.f
+            real dimension(num) :: wave
+            real dimension(num),depend(num) :: flux
+            integer optional,check(len(wave)>=num),depend(wave) :: num=len(wave)
+            real dimension(5) :: fit
+        end subroutine evinit
+        subroutine evoigt(wave,a,npar,vgt,dvda) ! in :eprofile_wrapper:evoigt.f
+            real :: wave
+            real dimension(npar) :: a
+            integer optional,check(len(a)>=npar),depend(a) :: npar=len(a)
+            real :: vgt
+            real dimension(npar),depend(npar) :: dvda
+        end subroutine evoigt
+        subroutine evstat(a,vcen,fwhm) ! in :eprofile_wrapper:evoigt.f
+            real dimension(5) :: a
+            real :: vcen
+            real :: fwhm
+        end subroutine evstat
+        subroutine voi(x,y,v,dvdx,dvdy) ! in :eprofile_wrapper:evoigt.f
+            real :: x
+            real :: y
+            real :: v
+            real :: dvdx
+            real :: dvdy
+        end subroutine voi
+        subroutine mrqfit(x,y,sig,ndata,a,afit,npar,covar,chisq,funk) ! in :eprofile_wrapper:mrqfit.f
+            real dimension(ndata) :: x
+            real dimension(ndata),depend(ndata) :: y
+            real dimension(ndata),depend(ndata) :: sig
+            integer optional,check(len(x)>=ndata),depend(x) :: ndata=len(x)
+            real dimension(npar) :: a
+            logical dimension(npar),depend(npar) :: afit
+            integer optional,check(len(a)>=npar),depend(a) :: npar=len(a)
+            real dimension(npar,npar),depend(npar,npar) :: covar
+            real :: chisq
+            real :: funk
+        end subroutine mrqfit
+        subroutine mrqcof(x,y,sig,ndata,a,afit,npar,nfit,alpha,beta,nalp,chisq,funk) ! in :eprofile_wrapper:mrqfit.f
+            use mrqcof__user__routines
+            real dimension(ndata) :: x
+            real dimension(ndata),depend(ndata) :: y
+            real dimension(ndata),depend(ndata) :: sig
+            integer optional,check(len(x)>=ndata),depend(x) :: ndata=len(x)
+            real dimension(npar) :: a
+            logical dimension(npar),depend(npar) :: afit
+            integer optional,check(len(a)>=npar),depend(a) :: npar=len(a)
+            integer :: nfit
+            real dimension(nalp,nalp) :: alpha
+            real dimension(nalp),depend(nalp) :: beta
+            integer optional,check(shape(alpha,0)==nalp),depend(alpha) :: nalp=shape(alpha,0)
+            real :: chisq
+            external funk
+        end subroutine mrqcof
+        subroutine gaussj(a,b,n,np,trouble) ! in :eprofile_wrapper:gaussj.f
+            real dimension(np,np) :: a
+            real dimension(np),depend(np) :: b
+            integer :: n
+            integer optional,check(shape(a,0)==np),depend(a) :: np=shape(a,0)
+            logical :: trouble
+        end subroutine gaussj
+    end interface 
+end python module eprofile_wrapper
+
+! This file was auto-generated with f2py (version:1).
+! See http://cens.ioc.ee/projects/f2py2e/

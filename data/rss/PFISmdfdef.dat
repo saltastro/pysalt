@@ -1,0 +1,12 @@
+# PFIS MDF column definition
+ID               I             %6d #               
+slitid           I             %4d #               
+slittype         CH*9         %-9s ""              
+priority         CH*2        %-10s c               
+slitpos_mx       R           %9.6f ""              
+slitpos_my       R           %9.6f ""              
+slitsize_mx      R           %8.6f ""              
+slitsize_my      R           %8.6f ""              
+slitsize_mr      R           %8.6f ""              
+slitsize_mw      R           %8.6f ""              
+slittilt_m       R           %6.3f ""              

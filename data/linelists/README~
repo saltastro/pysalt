@@ -1,0 +1,40 @@
+
+This directory contains the linelists that are applicable to SALT
+observations.  At this time, SALT does not have an 'official' line
+list for distribution, but several line lists created by different
+users.  We provide these various linelists for users to use at their
+convenience.
+
+Suggested Line Lists for Use:
+Currently we do not endorse any specific line list over another
+
+
+
+Line lists collect by Alexei Kniazev:
+ar.dat
+cuar.dat
+henear.dat
+hgar.dat--rename from hgar.dat.ST
+ne.dat
+thar.dat
+xe.dat
+
+Line lists collected by Ken Nordsieck--see the 'arc gospel':
+http://www.sal.wisc.edu/PFIS/docs/rss-vis/archive/protected/pfis/3170/3170AM0008_Arc_Calib_Setups_v1.1.pdf
+Ar.txt  
+CuAr.txt  
+HgAr.txt  
+Ne.txt  
+ThAr.txt  
+Xe.txt
+
+Line lists collected by Luis Balona--downloaded frm the internet
+Ar.wav  
+CuAr.wav  
+HgAr.wav  
+Hg.wav  
+Ne.wav  
+ThAr.wav  
+Xe.wav
+
+Additional Linelists:

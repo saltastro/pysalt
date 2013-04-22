@@ -1,0 +1,269 @@
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/saltiraf/!svn/ver/901/trunk/salt/pysalt/saltfp/fortranfp
+END
+mask.f
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/mask.f
+END
+gaussj.f
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/gaussj.f
+END
+FPprep.f
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/FPprep.f
+END
+evoigt.f
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/evoigt.f
+END
+Makefile.osx
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/saltiraf/!svn/ver/900/trunk/salt/pysalt/saltfp/fortranfp/Makefile.osx
+END
+mrqfit.f
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/mrqfit.f
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/saltiraf/!svn/ver/335/trunk/salt/pysalt/saltfp/fortranfp/__init__.py
+END
+evelocity.f
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/evelocity.f
+END
+eprofile.f
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/saltiraf/!svn/ver/524/trunk/salt/pysalt/saltfp/fortranfp/eprofile.f
+END
+fft.f
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/fft.f
+END
+calring.f
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/524/trunk/salt/pysalt/saltfp/fortranfp/calring.f
+END
+ringpro.f
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/324/trunk/salt/pysalt/saltfp/fortranfp/ringpro.f
+END
+calprofile.f
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/saltiraf/!svn/ver/524/trunk/salt/pysalt/saltfp/fortranfp/calprofile.f
+END
+center.f
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/center.f
+END
+Makefile.macports
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/saltiraf/!svn/ver/899/trunk/salt/pysalt/saltfp/fortranfp/Makefile.macports
+END
+delitt.f
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/delitt.f
+END
+ringcen.f
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/324/trunk/salt/pysalt/saltfp/fortranfp/ringcen.f
+END
+lowpass.f
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/886/trunk/salt/pysalt/saltfp/fortranfp/lowpass.f
+END
+mrqfit2d.f
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/saltiraf/!svn/ver/326/trunk/salt/pysalt/saltfp/fortranfp/mrqfit2d.f
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/884/trunk/salt/pysalt/saltfp/fortranfp/Makefile
+END
+four1.f
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/four1.f
+END
+quickcal.f
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/quickcal.f
+END
+RSSPrep.f
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/324/trunk/salt/pysalt/saltfp/fortranfp/RSSPrep.f
+END
+deletefile.f
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/deletefile.f
+END
+PFIScalringA.f
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/PFIScalringA.f
+END
+SaltiPrep.f
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/SaltiPrep.f
+END
+ringfilter.f
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/saltiraf/!svn/ver/324/trunk/salt/pysalt/saltfp/fortranfp/ringfilter.f
+END
+biwgt.f
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/biwgt.f
+END
+realft.f
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/realft.f
+END
+calring_MR.f
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/calring_MR.f
+END
+Bias.f
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/Bias.f
+END
+calringtest.f
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/calringtest.f
+END
+random.f
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/random.f
+END
+getpfp.f
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/getpfp.f
+END
+calibrate.f
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/saltiraf/!svn/ver/325/trunk/salt/pysalt/saltfp/fortranfp/calibrate.f
+END
+polyfit.f
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/polyfit.f
+END
+ringsky.f
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/ringsky.f
+END
+skyring.f
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/524/trunk/salt/pysalt/saltfp/fortranfp/skyring.f
+END
+getrfp.f
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/getrfp.f
+END
+Makefile.linux
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/saltiraf/!svn/ver/901/trunk/salt/pysalt/saltfp/fortranfp/Makefile.linux
+END
+make_python_commands.txt
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/saltiraf/!svn/ver/321/trunk/salt/pysalt/saltfp/fortranfp/make_python_commands.txt
+END
+masking.f
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/saltiraf/!svn/ver/324/trunk/salt/pysalt/saltfp/fortranfp/masking.f
+END
+nightring.f
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/saltiraf/!svn/ver/524/trunk/salt/pysalt/saltfp/fortranfp/nightring.f
+END
+spline.f
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/saltiraf/!svn/ver/316/trunk/salt/pysalt/saltfp/fortranfp/spline.f
+END

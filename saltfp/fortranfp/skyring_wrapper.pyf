@@ -1,0 +1,50 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module skyring_wrapper ! in 
+    interface  ! in :skyring_wrapper
+        subroutine skyring(ax,ay,ar,rx,ry,filename,pmin,pmax,plottype,outfile) ! in :skyring_wrapper:skyring.f
+            real :: ax
+            real :: ay
+            real :: ar
+            real :: rx
+            real :: ry
+            character*40 :: filename
+            real :: pmin
+            real :: pmax
+            character*3 :: plottype
+            character*40 :: outfile
+        end subroutine skyring
+        subroutine realft(data,n,isign) ! in :skyring_wrapper:realft.f
+            real dimension(n) :: data
+            integer optional,check(len(data)>=n),depend(data) :: n=len(data)
+            integer :: isign
+        end subroutine realft
+        subroutine four1(data,nn,isign) ! in :skyring_wrapper:four1.f
+            real dimension(2 * nn) :: data
+            integer optional,check((len(data))/(2)>=nn),depend(data) :: nn=(len(data))/(2)
+            integer :: isign
+        end subroutine four1
+        subroutine spline(x,y,n,y2) ! in :skyring_wrapper:spline.f
+            real dimension(n) :: x
+            real dimension(n),depend(n) :: y
+            integer optional,check(len(x)>=n),depend(x) :: n=len(x)
+            real dimension(n),depend(n) :: y2
+        end subroutine spline
+        subroutine splint(x,y,y2,n,xx,yy) ! in :skyring_wrapper:spline.f
+            real dimension(n) :: x
+            real dimension(n),depend(n) :: y
+            real dimension(n),depend(n) :: y2
+            integer optional,check(len(x)>=n),depend(x) :: n=len(x)
+            real :: xx
+            real :: yy
+        end subroutine splint
+        subroutine deletefile(filename,status) ! in :skyring_wrapper:deletefile.f
+            character*(*) :: filename
+            integer :: status
+        end subroutine deletefile
+    end interface 
+end python module skyring_wrapper
+
+! This file was auto-generated with f2py (version:1).
+! See http://cens.ioc.ee/projects/f2py2e/

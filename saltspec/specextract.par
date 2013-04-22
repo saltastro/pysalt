@@ -1,0 +1,12 @@
+images,s,a,'',,,'Input images'
+outfiles,s,a,'',,,'Output file '
+method,s,h,'normal','normal|weighted',,'Method for extraction'
+section,s,h,no,,,'Section to extract data'
+thresh,r,h,3,,,'Threshhold for object detection'
+minsize,r,h,3,,,'Minimum size for detecting an object'
+outformat,s,h,'ascii','ascii|FITS',,'Format for the output'
+convert,b,h,yes,,,'Convert from Air to Vacuum'
+clobber,b,h,no,,,'Overwrite exisitng files?'
+logfile,s,h,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 

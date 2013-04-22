@@ -1,0 +1,89 @@
+Version 0.42 (20 August 2012);
+-A range of minor bug fixes to add needed packages to the distribution
+-Update of RSS geometry
+-Added more spectrophotometric standards to the package
+
+Version 0.41 (25 June 2012):
+-Added of the proptools package--currently a standalone python package
+-relase of PySlitMask tool for making MOS masks
+-Added plugins package
+-Updated to the requirements to include the PyEphem package for the PySlitMask
+tool.
+-Improvement in matching of spectrograph set ups in the saltspec package
+-Updates to allow compatibility with python 2.7
+
+
+Version 0.401 (08 June 2012):
+-Added saltillum.py to the package
+-Added the makefile to the package
+-Made datetine in saltrectify compatible with python 2.7
+
+
+Version 0.40 (21 May 2012):
+
+- Updated all files to include error handling/logging and to use QT4 for GUI backend
+- Included the saltspec package with tools for the reduction of normal longslit data including wavelength and flux calibration
+- Included the saltfp package for Fabry-Perot reductions
+- Updated the RSS geometry files
+- Improved saltmosaic for better performance and improved transformations
+- Added saltcrclean for cosmic ray cleaning 
+- Added saltflat and saltillum for flat fielding
+- Updated the gain and xtalk handling to include reading values from the header
+- Improved saltclean for handling performance and handling of flatfield data
+
+Version 0.35 (11 August 2010):
+
+- Updated main trunk to include new error handling and tools
+- Added full set of BVIT data reduction routines: bvitpreview, bvittofits, bvitphot and bvitview.
+- Improved slottools, adding slotpreview task and allow selection of rectangular background regions as an alternative to annulus.
+- Improved error handling/logging and new GUI library.
+
+Version 0.33 (06 March 2009):
+
+- Updated parameter files to point to appropriate files included with
+the pysalt package
+- Moved slotlog to saltred
+- Corrected error in saltcrclean associated with gain and rdnoise
+needing to be included
+- Corrected error in slotphot with printing the percentage extensions
+of interest or the background images which would have been subtracted.
+- Slotphot can handle the newfits file as an input file by setting the
+new ampperccd parameter.  Help file was also updated with further
+instructions about this.  Keywords were also updated in the newfits
+file to improve the handling of this process.
+- Order of files input remains consistent and the files are not sorted
+at any point in slotphot
+- Changed the number of significant figures written out by slotphot
+- Improved the method of background subtraction for slotphot
+- Improved the drift method in slotphot
+- Circular apertures display in slotview
+- Added task slotback which produces either the background subtracted
+fits file of only
+- Fixed two star display in slotview 
+- Added slotutcfix to handle UTC timing issues
+
+Version 0.32 (3 December 2008):
+- Improved the method of background subtraction for slotphot
+- Improved the drift method in slotphot
+- Added slotutcfix
+- Changed the number of significant figures written out by slotphot
+- Moved slotlog to saltred
+
+Version 0.31 (24 July 2008):
+
+- Updated parameter files  to point to appropriate files included with the pysalt package
+- Corrected error in saltcrclean associated with gain and rdnoise needing to be included
+- Corrected error in slotphot with printing the percentage
+- Added task slotback which produces either the background subtracted fits file of only extensions of interest or the background images which would have been subtracted.
+- Slotphot can handle the newfits file as an input file by setting the new ampperccd parameter.  Help file was also updated with further instructions about this.  Keywords were also updated in the newfits file to improve the handling of this process.
+- Order of files input remains consistent and the files are not sorted at any point.
+- Circular apertures display in slotview
+- Fixed two star display in slotview 
+
+Version 0.30:
+
+First major release of the PySALT package.
+
+This includes the following packages:
+saltred
+slottools

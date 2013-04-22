@@ -1,0 +1,5 @@
+catalog,s,a,'',,,'Input Catalog of objects'
+images,s,a,'',,,'Input image for mask'
+logfile,s,h,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 

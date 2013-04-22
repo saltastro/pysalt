@@ -1,0 +1,10 @@
+images,s,a,'',,,'Input images'
+outimages,s,a,'',,,'Output images or list of output images'
+outpref,s,a,'x',,,'Prefix for output images'
+flatimage,s,a,'',,,'Flatfield image'
+minflat,r,h,1,,,'Minimum flatfield value'
+allext, b, h, no,,,'Noramlzie using all extensions'
+clobber,b,h,no,,,'Overwrite existing files?'
+logfile,s,h,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 
