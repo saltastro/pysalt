@@ -150,14 +150,14 @@ def saltflat(images,outimages,outpref, flatimage,minflat=1, allext=False, clobbe
 
            #add any header keywords like history 
            fname, hist=history(level=1, wrap=False)
-           saltkey.housekeeping(struct[0],'SFLAT', 'File flatfield correctd', hist)
+           saltkey.housekeeping(struct[0],'SFLAT', 'File flatfield corrected', hist)
 
            #write it out and close it
            saltio.writefits(outstruct,outfile,clobber=clobber)
            saltio.closefits(struct)
 
            #output the information
-           log.message('FLatfields image %s using %s' % (infile, flatimage), with_header=False, with_stdout=verbose)
+           log.message('Flatfields image %s using %s' % (infile, flatimage), with_header=False, with_stdout=verbose)
 
        #clost the flatfield image
        saltio.closefits(flatstruct)

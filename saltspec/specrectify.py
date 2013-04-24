@@ -434,6 +434,7 @@ def findlinesol(soldict, yc, timeobs, exptime, instrume, grating, grang, arang, 
               pass
        w_ave = w_ave/wei
        #for the purposes of speed, we can sparsely sample the arrays
+     
        j=int(len(xarr)/order/4)
        ws=WavelengthSolution.WavelengthSolution(xarr[::j], w_ave[::j], function=function, order=order)
        ws.fit()
