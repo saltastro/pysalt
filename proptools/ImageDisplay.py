@@ -46,7 +46,7 @@ import ds9
 
 class ImageDisplay:
     def __init__(self, target='ImageDisplay:*'):
-        self.ds9=ds9.ds9()
+        self.ds9 = ds9.ds9()
 
     def display(self, filename, pa=None):
         cmd='file %s'  % filename
@@ -60,7 +60,7 @@ class ImageDisplay:
            self.ds9.set('rotate to %f' % 0)
 
     def regions(self, rgnstr):
-        cmd='regions %s'
+        cmd = 'regions %s'
 
     def rssregion(self, ra, dec):
         """Plot the FOV for RSS"""
@@ -87,25 +87,27 @@ class ImageDisplay:
     def getregions(self):
         """Return a list of regions"""
         rgnstr=self.ds9.get('regions -system fk5')
-        i=0
-        newslits={}
+        i = 0
+        newslits = {}
         #print rgnstr
         for l in rgnstr.split('\n'): 
-            tags=''
+            tags = ''
             # work out how to use tags and just deal with "slit" tags
             if l.startswith('box'):
-               #first look for tags
-               l=l[4:].split('#')
-               if len(l)>1: tags=l[-1]
-               l=l[0][:-2].split(',')
-               newslits[i]=[l, tags]
-               i+=1
+                #first look for tags
+                l = l[4:].split('#')
+                if len(l) > 1:
+                    tags = l[-1]
+                l = l[0][:-2].split(',')
+                newslits[i] = [l, tags]
+                i += 1
             elif l.startswith('circle'):
-               l=l[7:].split('#')
-               #print l
-               if len(l)>1: tags=l
-               l=l[0][:-2].split(',')
-               newslits[i]=[l, tags]
-               i+=1
+                l = l[7:].split('#')
+                #print l
+                if len(l) > 1:
+                    tags=l
+                l = l[0][:-2].split(',')
+                newslits[i] = [l, tags]
+                i += 1
         return newslits
          

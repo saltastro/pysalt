@@ -1,7 +1,0 @@
-images,s,a,'*.fits',,,'Input images or list of images'
-timetype,s,h,'JD(UTC)','JD(UTC)|JD(TT)|MJD(TT)|HJD(TT)|BJD(TDB)',,'System to which time is converted.'
-writetoheader,b,h,no,,,'Write new time to header?'
-clobber,b,h,yes,,,'Overwrite existing header times?'
-logfile,s,h,'salt.log',,,'Logfile'
-verbose,b,h,yes,,,'Verbose?'
-debug,b,h,no,,,'Debug?'

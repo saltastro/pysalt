@@ -1,9 +1,0 @@
-images,s,a,'',,,'Input images'
-outimages,s,a,'',,,Output images or list of output images'
-outpref,s,a,'s',,,'Prefix for output images'
-method,s,h,'normal','normal|',,'Method for extraction'
-section,s,h,no,,,'Section to measure sky'
-clobber,b,h,no,,,'Overwrite exisitng files?'
-logfile,s,h,'salt.log',,,'Logfile'
-verbose,b,h,yes,,,'Verbose?'
-mode,s,h,"al" 

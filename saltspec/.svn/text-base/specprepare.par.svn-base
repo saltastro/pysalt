@@ -1,8 +1,0 @@
-images,s,a,'P*.fits',,,'Input raw images or list of images'
-outimages,s,a,'',,,Output images or list of output images'
-outpref,s,a,'p',,,'Prefix for output images'
-badpixelimage,s,a,'',,,'Bad pixel map'
-clobber,b,h,no,,,'Overwrite exisitng files?'
-logfile,s,a,'salt.log',,,'Logfile'
-verbose,b,h,yes,,,'Verbose?'
-mode,s,h,"al" 

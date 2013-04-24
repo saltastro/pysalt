@@ -1,7 +1,0 @@
-images,s,a,'',,,'Input images or list of images'
-outimages,s,a,'',,,'Output images or list of images'
-outpref,s,a,'r',,,'Prefix to append to input images'
-clobber, b, h, no,,,'Delete files if they already exist?'
-logfile,s,h,'salt.log',,,'Logfile'
-verbose,b,h,yes,,,'Verbose?'
-mode,s,h,"al" 

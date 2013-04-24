@@ -40,9 +40,10 @@ class OptimizeTab:
         cdec = self.slitmask.center_dec
         rotang = self.slitmask.position_angle
         equinox = 2000
-#        is_in_fov = np.where(self.slitlets.data['fov_flag'] == 1)
+        is_in_fov = np.where(self.slitlets.data['fov_flag'] == 1)[0]
 
-        is_in_fov = np.where((self.slitlets.data['inmask_flag'] == 1) * (self.slitlets.data['fov_flag'] == 1))[0]
+        # jpk: this will need to be added in the next version
+#        is_in_fov = np.where((self.slitlets.data['inmask_flag'] == 1) * (self.slitlets.data['fov_flag'] == 1))[0]
 
         ra = self.slitlets.data['targ_ra']
         dec = self.slitlets.data['targ_dec']

@@ -1,8 +1,0 @@
-images,s,a,'',,,'Input images'
-outimages,s,a,'',,,'Output images or list of output images'
-outpref,s,a,'x',,,'Prefix for output images'
-mbox,i,a,11,,,'Median smoothing box size'
-clobber,b,h,no,,,'Overwrite existing files?'
-logfile,s,h,'salt.log',,,'Logfile'
-verbose,b,h,yes,,,'Verbose?'
-mode,s,h,"al" 

@@ -15,6 +15,10 @@ from reftab import RefTab
 from optimizetab import OptimizeTab
 from finalizetab import FinalizeTab
 
+# added these two import to avoid a seg fault
+from pyraf import iraf
+from iraf import pysalt
+
 from ImageDisplay import ImageDisplay
 
 class SlitMaskGui(QtGui.QMainWindow, InfoTab, CatalogTab, OptimizeTab, SlitTab, RefTab, FinalizeTab):
