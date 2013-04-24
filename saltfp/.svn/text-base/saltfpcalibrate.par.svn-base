@@ -1,8 +1,0 @@
-plottype,s,h,'xwindow','xwindow|postscript',,'Plotting device' 
-infile,s,a,'infile',,,'Input file containing SALTFPCALRING output'
-outfile,s,a,'calibrate.out',,,'Output filename for results'
-calibratelogfile,s,a,'calibrate.log',,,'Calibrate Logfile' 
-logfile,s,a,'salt.log',,,'Logfile'
-verbose,b,h,yes,,,'Verbose?'
-mode,s,h,"al" 
-

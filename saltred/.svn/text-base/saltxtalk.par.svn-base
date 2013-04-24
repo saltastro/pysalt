@@ -1,9 +1,0 @@
-images,s,a,'*.fits',,,'Input images or list of images'
-outimages,s,a,'',,,'Output images or list of output images'
-outpref,s,a,'x',,,'Prefix for output images'
-xtalkfile,s,a,'',,,'Crosstalk coefficient data'
-usedb,b,h,no,,,'Use xtalkfile'
-clobber,b,h,no,,,'Overwrite existing files?'
-logfile,s,a,'salt.log',,,'Logfile'
-verbose,b,h,yes,,,'Verbose?'
-mode,s,h,"al" 

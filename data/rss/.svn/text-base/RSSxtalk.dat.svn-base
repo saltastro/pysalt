@@ -1,6 +1,0 @@
-# PFIS CCD amplifier crosstalk data
-# from 20041201 gain = bright distortion image, outer amps duplicated
-# Date    VCTM     2       2       4       3        6        5
-#         SRC      1       2       3       4        5        6
-20040101     .001474 .001474 .001166  .001111  .001377  .001377  
-20090511     0.00026 0.00022 0.00022 0.00022  0.00029  0.00030

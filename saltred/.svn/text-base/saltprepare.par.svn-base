@@ -1,9 +1,0 @@
-images,s,a,'P*.fits',,,'Input raw images or list of images'
-outimages,s,a,'',,,Output images or list of output images'
-outpref,s,a,'p',,,'Prefix for output images'
-createvar,b,h,no,,,'Create Variance Frame?'
-badpixelimage,s,h,'',,,'Badpixel image?'
-clobber,b,h,no,,,'Overwrite exisitng files?'
-logfile,s,h,'salt.log',,,'Logfile'
-verbose,b,h,yes,,,'Verbose?'
-mode,s,h,"al" 
