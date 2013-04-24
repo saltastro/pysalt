@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'pysalt_slit20111003.ui'
+# Form implementation generated from reading ui file 'rsmt_gui_v1.ui'
 #
-# Created: Thu Oct  6 23:00:36 2011
+# Created: Thu Apr  4 13:45:54 2013
 #      by: PyQt4 UI code generator 4.7.2
 #
 # WARNING! All changes made in this file will be lost!
+
 
 from PyQt4 import QtCore, QtGui
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1129, 821)
+        MainWindow.resize(1121, 817)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtGui.QTabWidget(self.centralwidget)
@@ -31,7 +32,7 @@ class Ui_MainWindow(object):
         self.InstructionsTab = QtGui.QWidget()
         self.InstructionsTab.setObjectName("InstructionsTab")
         self.textEditInstructions = QtGui.QTextEdit(self.InstructionsTab)
-        self.textEditInstructions.setGeometry(QtCore.QRect(0, 0, 1051, 531))
+        self.textEditInstructions.setGeometry(QtCore.QRect(0, 0, 1091, 531))
         self.textEditInstructions.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.textEditInstructions.setObjectName("textEditInstructions")
         self.tabWidget.addTab(self.InstructionsTab, "")
@@ -50,6 +51,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2 = QtGui.QGridLayout()
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.labelInfo_Mode = QtGui.QLabel(self.layoutWidget)
+        self.labelInfo_Mode.setEnabled(False)
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(12)
@@ -59,15 +61,19 @@ class Ui_MainWindow(object):
         self.labelInfo_Mode.setObjectName("labelInfo_Mode")
         self.gridLayout_2.addWidget(self.labelInfo_Mode, 0, 0, 1, 2)
         self.radioButtonInfo_Catalogue = QtGui.QRadioButton(self.layoutWidget)
+        self.radioButtonInfo_Catalogue.setEnabled(False)
         self.radioButtonInfo_Catalogue.setChecked(True)
         self.radioButtonInfo_Catalogue.setObjectName("radioButtonInfo_Catalogue")
         self.gridLayout_2.addWidget(self.radioButtonInfo_Catalogue, 1, 0, 1, 2)
         self.radioButtonInfo_Manual = QtGui.QRadioButton(self.layoutWidget)
+        self.radioButtonInfo_Manual.setEnabled(False)
         self.radioButtonInfo_Manual.setObjectName("radioButtonInfo_Manual")
         self.gridLayout_2.addWidget(self.radioButtonInfo_Manual, 2, 0, 1, 2)
         spacerItem = QtGui.QSpacerItem(20, 20, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Minimum)
         self.gridLayout_2.addItem(spacerItem, 3, 0, 1, 1)
         self.checkBoxInfo_CentroidOn = QtGui.QCheckBox(self.layoutWidget)
+        self.checkBoxInfo_CentroidOn.setEnabled(False)
+        self.checkBoxInfo_CentroidOn.setChecked(True)
         self.checkBoxInfo_CentroidOn.setObjectName("checkBoxInfo_CentroidOn")
         self.gridLayout_2.addWidget(self.checkBoxInfo_CentroidOn, 3, 1, 1, 1)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
@@ -145,6 +151,7 @@ class Ui_MainWindow(object):
         self.comboBoxInfo_Filter.addItem("")
         self.gridLayout.addWidget(self.comboBoxInfo_Filter, 0, 1, 1, 1)
         self.labelInfo_Grating = QtGui.QLabel(self.layoutWidget)
+        self.labelInfo_Grating.setEnabled(False)
         self.labelInfo_Grating.setObjectName("labelInfo_Grating")
         self.gridLayout.addWidget(self.labelInfo_Grating, 1, 0, 1, 1)
         self.comboBoxInfo_Grating = QtGui.QComboBox(self.layoutWidget)
@@ -275,16 +282,8 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.SlitsTab.sizePolicy().hasHeightForWidth())
         self.SlitsTab.setSizePolicy(sizePolicy)
         self.SlitsTab.setObjectName("SlitsTab")
-        self.labelSlit_Infotext_1 = QtGui.QLabel(self.SlitsTab)
-        self.labelSlit_Infotext_1.setGeometry(QtCore.QRect(9, 9, 657, 16))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setPointSize(9)
-        font.setItalic(True)
-        self.labelSlit_Infotext_1.setFont(font)
-        self.labelSlit_Infotext_1.setObjectName("labelSlit_Infotext_1")
         self.labelSlit_Infotext_2 = QtGui.QLabel(self.SlitsTab)
-        self.labelSlit_Infotext_2.setGeometry(QtCore.QRect(9, 29, 567, 16))
+        self.labelSlit_Infotext_2.setGeometry(QtCore.QRect(10, 20, 567, 16))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(9)
@@ -635,7 +634,7 @@ class Ui_MainWindow(object):
         self.textEditFin_ErrorMessages.setTextInteractionFlags(QtCore.Qt.TextSelectableByKeyboard|QtCore.Qt.TextSelectableByMouse)
         self.textEditFin_ErrorMessages.setObjectName("textEditFin_ErrorMessages")
         self.layoutWidget5 = QtGui.QWidget(self.FinalizeTab)
-        self.layoutWidget5.setGeometry(QtCore.QRect(9, 11, 483, 253))
+        self.layoutWidget5.setGeometry(QtCore.QRect(9, 11, 492, 253))
         self.layoutWidget5.setObjectName("layoutWidget5")
         self.gridLayout_19 = QtGui.QGridLayout(self.layoutWidget5)
         self.gridLayout_19.setObjectName("gridLayout_19")
@@ -730,11 +729,8 @@ class Ui_MainWindow(object):
         self.line_4.setFrameShape(QtGui.QFrame.VLine)
         self.line_4.setFrameShadow(QtGui.QFrame.Sunken)
         self.line_4.setObjectName("line_4")
-        self.pushButtonMain_Save = QtGui.QPushButton(self.centralwidget)
-        self.pushButtonMain_Save.setGeometry(QtCore.QRect(20, 160, 121, 27))
-        self.pushButtonMain_Save.setObjectName("pushButtonMain_Save")
         self.layoutWidget6 = QtGui.QWidget(self.centralwidget)
-        self.layoutWidget6.setGeometry(QtCore.QRect(510, 20, 511, 171))
+        self.layoutWidget6.setGeometry(QtCore.QRect(510, 20, 511, 175))
         self.layoutWidget6.setObjectName("layoutWidget6")
         self.verticalLayout_2 = QtGui.QVBoxLayout(self.layoutWidget6)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -808,6 +804,7 @@ class Ui_MainWindow(object):
         self.verticalLayoutMain_RSSSetup = QtGui.QVBoxLayout()
         self.verticalLayoutMain_RSSSetup.setObjectName("verticalLayoutMain_RSSSetup")
         self.labelMain_RSSHeading = QtGui.QLabel(self.layoutWidget6)
+        self.labelMain_RSSHeading.setEnabled(False)
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(11)
@@ -820,6 +817,7 @@ class Ui_MainWindow(object):
         self.gridLayoutMain_RSSSetup = QtGui.QGridLayout()
         self.gridLayoutMain_RSSSetup.setObjectName("gridLayoutMain_RSSSetup")
         self.labelMain_Filter = QtGui.QLabel(self.layoutWidget6)
+        self.labelMain_Filter.setEnabled(False)
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setWeight(75)
@@ -828,6 +826,7 @@ class Ui_MainWindow(object):
         self.labelMain_Filter.setObjectName("labelMain_Filter")
         self.gridLayoutMain_RSSSetup.addWidget(self.labelMain_Filter, 0, 0, 1, 1)
         self.labelMain_Grating = QtGui.QLabel(self.layoutWidget6)
+        self.labelMain_Grating.setEnabled(False)
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setWeight(75)
@@ -836,6 +835,7 @@ class Ui_MainWindow(object):
         self.labelMain_Grating.setObjectName("labelMain_Grating")
         self.gridLayoutMain_RSSSetup.addWidget(self.labelMain_Grating, 0, 1, 1, 1)
         self.labelMain_CamAng = QtGui.QLabel(self.layoutWidget6)
+        self.labelMain_CamAng.setEnabled(False)
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setWeight(75)
@@ -844,6 +844,7 @@ class Ui_MainWindow(object):
         self.labelMain_CamAng.setObjectName("labelMain_CamAng")
         self.gridLayoutMain_RSSSetup.addWidget(self.labelMain_CamAng, 0, 2, 1, 1)
         self.labelMain_GrAng = QtGui.QLabel(self.layoutWidget6)
+        self.labelMain_GrAng.setEnabled(False)
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setWeight(75)
@@ -919,6 +920,7 @@ class Ui_MainWindow(object):
         self.gridLayoutMain_Info.addWidget(self.lineEditMain_TargetName, 0, 1, 1, 1)
         self.verticalLayout_5.addLayout(self.gridLayoutMain_Info)
         self.labelMain_Mode = QtGui.QLabel(self.layoutWidget7)
+        self.labelMain_Mode.setEnabled(False)
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(12)
@@ -934,9 +936,11 @@ class Ui_MainWindow(object):
         self.gridLayout_7 = QtGui.QGridLayout()
         self.gridLayout_7.setObjectName("gridLayout_7")
         self.labelMain_Centroiding = QtGui.QLabel(self.layoutWidget7)
+        self.labelMain_Centroiding.setEnabled(False)
         self.labelMain_Centroiding.setObjectName("labelMain_Centroiding")
         self.gridLayout_7.addWidget(self.labelMain_Centroiding, 0, 1, 1, 1)
         self.labelMain_CentroidingOnOff = QtGui.QLabel(self.layoutWidget7)
+        self.labelMain_CentroidingOnOff.setEnabled(False)
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(11)
@@ -954,7 +958,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.addLayout(self.gridLayout_8)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1129, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1121, 23))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -992,7 +996,7 @@ class Ui_MainWindow(object):
         self.labelInfo_GrAng.setBuddy(self.horizontalSliderInfo_CamAng)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(4)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QObject.connect(self.actionQuit, QtCore.SIGNAL("activated()"), MainWindow.close)
         QtCore.QObject.connect(self.checkBoxOpt_IncRefstars, QtCore.SIGNAL("clicked(bool)"), self.labelOpt_Refstarstext.setEnabled)
         QtCore.QObject.connect(self.checkBoxOpt_IncRefstars, QtCore.SIGNAL("clicked(bool)"), self.labelOpt_Refstarstext_1.setEnabled)
@@ -1009,41 +1013,70 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "RSMT", None, QtGui.QApplication.UnicodeUTF8))
+        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "pySlitMask", None, QtGui.QApplication.UnicodeUTF8))
         self.textEditInstructions.setHtml(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Sans\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600; text-decoration: underline; color:#0055ff;\">SALT - RSS Slit Mask Tool </span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:600; text-decoration: underline; color:#0055ff;\"></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt; font-style:italic; color:#000000;\">Short instructions on how to use the RSMT. The user manual is available at: </span><a href=\"http://wiki.salt.ac.za/index.php/SALT_Wiki\"><span style=\" text-decoration: underline; color:#0000ff;\">RSMT user manual</span></a><span style=\" font-size:9pt; font-style:italic; color:#000000;\"> </span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt; color:#0055ff;\"></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Step 1 - Info Tab:</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600; text-decoration: underline;\"></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">-</span><span style=\" font-weight:600;\"> </span>Select the mode in which you plan to use the tool:</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">.</span> <span style=\" font-style:italic;\">Catalogue mode</span> will enable you to populate the <span style=\" font-weight:600;\">Slits </span>table with objects you plan to place slits on from a ASCII file loaded into the <span style=\" font-weight:600;\">Catalogue</span> table. The ASCII file needs to be formatted according to the instructions in the user manual. </p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">.</span> <span style=\" font-style:italic;\">Manual Centered mode </span>will enable you to place slits manually on objects in the ds9 display using a centroiding algorithm for precide slit placement on objects</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">.</span> <span style=\" font-style:italic;\">Manual Uncentered mode </span>will enable you to place slits on objects without centroiding. This provides you the freedom to place slits anywhere within the allowed FoV.</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">-</span><span style=\" font-weight:600;\"> </span>Fill in the mask information.</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">- </span>Choose the RSS setup you plan to use for you science observation. There settings can be obtained from the RSS simulator tool.</p>\n"
+"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:12pt; font-weight:600; text-decoration: underline; color:#0055ff;\">pySlitMask:</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:12pt; font-weight:600; text-decoration: underline; color:#0055ff;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">This is a quick start guide to design a MOS mask for the RSS on SALT. This tool was designed to be used with object catalogues. A full manual mode is not supported yet. It is therefore strongly recommended that a catalogue of target objects be created before using this tool. The tool makes use of a priority based optimization, this should be kept in mind when creating the input catalogue.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:10pt;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt; font-weight:600; text-decoration: underline;\">Preparation:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">1. Check the allowed position angle for the field:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">    </span><span style=\" font-family:\'Sans\'; font-size:10pt; font-style:italic;\">http://www.salt.ac.za/fileadmin/files/observing/documents/SALT_PA_Visibility.pdf</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">2. Prepare an image of the field with accurate astrometry. </span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">3. Prepare an input catalogue of target objects</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">    The input catalogue should be an ascii file with the following formatting:</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:10pt;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt; font-weight:600; font-style:italic;\">id  RA  DEC  epoch  magnitude  band  priority  [width]*  [length]*  [tilt]*</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:10pt; font-weight:600; font-style:italic;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt; font-weight:600;\">*</span><span style=\" font-family:\'Sans\'; font-size:10pt;\"> these are optional and can be updated in the tool. We currently suggest a minimum width of 1.5&quot; and a minimum length of 8&quot;. </span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:10pt;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">The priority should have the following values:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">    1      Object that is pre-selected to be in the mask</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">    0-1   Objects with increasing priority for the mask</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">   -1      Alignment star</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:10pt;\"></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:10pt;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt; font-weight:600; text-decoration: underline;\">Step 1: Fill in Mask Details</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">. Fill in the Target and Mask name on the main window as well as the proposal information in the Info tab.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:10pt;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt; font-weight:600; text-decoration: underline;\">Step 2: Load Image and Catalogue</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">. Load the image of the field. </span><span style=\" font-family:\'Sans\'; font-size:10pt; font-style:italic;\">File -&gt; Load Image</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">. Load the input catalogue of target objects. </span><span style=\" font-family:\'Sans\'; font-size:10pt; font-style:italic;\">File -&gt; Load Catalogue</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">. Update the Coordinates of the Mask Centre. </span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">. Ensure the Position Angle is correct.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:10pt;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt;\">Upon loading the catalogue into the tool, the Coordinates of the Mask Centre are populated with the mean RA and DEC values from the catalogue and a FoV check is run on all the objects in the catalogue. Objects assinged a priority of 1 will automatically be added to the Slit tab and will be checked for slit collisions. If any collisions were detected, they will be given in the Flags column in the table. Any obvious collisions can be resolved by deleting objects from the Slit table. Updating the Mask Centre Coordinates will automatically rerun the FoV checker.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:10pt;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt; font-weight:600; text-decoration: underline;\">Step 3: Optimize the Mask</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">. Go to the Optimize tab</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">. Set the Y spacing in arseconds if needed, the default is 1\'\'. </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">. Run the optimizer</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600; text-decoration: underline;\"></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Step 2 - Catalogue Tab:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">-</span><span style=\" font-weight:600;\"> </span>Load the ASCII catalogue file in the<span style=\" font-weight:600;\"> </span>Catalogue table. The table can be inspected to see if the correct formatting was used.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">The optimizer runs on all the target objects that lie within the RSS FoV. The optimizer will try and place as many slits on objects as possible while taking the priority into account. Currently, the tool will remove objects with a priority of 1 when a slit collision is detected. Objects to be in the mask can be inspected in the Slit table. Reference/alignment stars can be inspected in the Refstars tab. If there are undesired objects in the slit table it is recommended that their priority be updated (lowered) and the optimizer be run again. This procedure can be repeated until a suitable mask is obtained. The same applies to removing colliding/unwanted reference stars.</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Step 3 - Slits Tab:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">-</span> If you have loaded a catalogue ASCII file, you can now proceed to populate the Slits table with objects marked for slit placement using the &quot;Add slits to all objects button&quot;. This action will display all the slits in the ds9 display and mark slits with flags in the table. The &quot;col&quot; indicate slit collisions and &quot;fov&quot; indicates that a slit falls outside the FoV.</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; font-weight:600;\">-</span> I </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt; font-weight:600; text-decoration: underline;\">Step 4: Validate the Mask</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">. Go to the Finalize tab.</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Step 4 - Optimize Tab:</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600; text-decoration: underline;\"></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Step 5 - Refstars Tab:</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600; text-decoration: underline;\"></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-weight:600; text-decoration: underline;\">Step 6 - Finalize Tab:</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600; text-decoration: underline;\"></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;\"></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;\"></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;\"></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">To be able to write the final .rsmt file required by the PIPT, the mask needs to be validated. The Validate button will go through and check whether all the relevant information has been filled in and will produce errors and warnings. Masks cannot be written to file when errors have been encountered. Note that the Validator does not check the Position Angle information.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:10pt; font-weight:600; text-decoration: underline;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt; font-weight:600; text-decoration: underline;\">Step 5: Write .rsmt file</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">When the mask has been successfully validated, the mask  can be written to file. Hit the <span style=\" font-style:italic;\">Write .rsmt file</span> button. If the mask was not validated an error message will appear. The .rsmt file is a .zip format file containing a .xml file with the slit information and a finding chart in .png format.  </p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:10pt; font-weight:600; text-decoration: underline;\">Notes:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">. To add slits to objects using the ds9 interface, click on the objects of interest, which will create a region. Then click on the import from image Add slit button on the Slit tab. NOTE: the requested object needs to be loaded in the catalogue. The closest object in the catalogue from the added region will be assiged a slit. No object detection is implemented.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">. A mask can be saved and open later by saving it as a xml file.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">. Greyed out text and check boxes are space holders for future features.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">. Currently there are now checks whether a suitable guide star is available in the field. It is the responsibility of the PI to ensure that a suitable guide star is available to ensure the successful completion of the observation.</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:10pt; font-weight:600;\"></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans\'; font-size:9pt; font-style:italic; color:#000000;\">For queries please email: </span><a href=\"https://sciencewiki.salt.ac.za/index.php/PySlitMask_Tutorial\n"
+"\"><span style=\" text-decoration: underline; color:#0000ff;\">sa@salt.ac.za</span></a></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Sans\'; font-size:10pt; font-weight:600;\"></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.InstructionsTab), QtGui.QApplication.translate("MainWindow", "  I&nstructions  ", None, QtGui.QApplication.UnicodeUTF8))
         self.labelInfo_Mode.setText(QtGui.QApplication.translate("MainWindow", "Mode:", None, QtGui.QApplication.UnicodeUTF8))
         self.radioButtonInfo_Catalogue.setText(QtGui.QApplication.translate("MainWindow", "Catalogue", None, QtGui.QApplication.UnicodeUTF8))
@@ -1085,7 +1118,6 @@ class Ui_MainWindow(object):
         self.tableWidgetCat.horizontalHeaderItem(8).setText(QtGui.QApplication.translate("MainWindow", "Priority", None, QtGui.QApplication.UnicodeUTF8))
         self.tableWidgetCat.horizontalHeaderItem(9).setText(QtGui.QApplication.translate("MainWindow", "Flag", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.CatTab), QtGui.QApplication.translate("MainWindow", "  &Catalogue  ", None, QtGui.QApplication.UnicodeUTF8))
-        self.labelSlit_Infotext_1.setText(QtGui.QApplication.translate("MainWindow", "Import objects and assign slits to all objects (Catalogue mode); or add slits manually to table below (either manual mode).", None, QtGui.QApplication.UnicodeUTF8))
         self.labelSlit_Infotext_2.setText(QtGui.QApplication.translate("MainWindow", "Slit collisionons may be resolved manually by editing the table below or automatically in the Optimize tab", None, QtGui.QApplication.UnicodeUTF8))
         self.labelSlit_ImportCat.setText(QtGui.QApplication.translate("MainWindow", "Import from Catalogue:", None, QtGui.QApplication.UnicodeUTF8))
         self.labelSlit_ManEdit.setText(QtGui.QApplication.translate("MainWindow", "Manually edit slits:", None, QtGui.QApplication.UnicodeUTF8))
@@ -1149,7 +1181,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.RefstarsTab), QtGui.QApplication.translate("MainWindow", "     &Refstars      ", None, QtGui.QApplication.UnicodeUTF8))
         self.labelFin_Slitmask.setText(QtGui.QApplication.translate("MainWindow", "Slitmask:", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButtonFin_Validate.setText(QtGui.QApplication.translate("MainWindow", "Validate", None, QtGui.QApplication.UnicodeUTF8))
-        self.toolButtonFin_WriteRSMT.setText(QtGui.QApplication.translate("MainWindow", "Write RSMT file", None, QtGui.QApplication.UnicodeUTF8))
+        self.toolButtonFin_WriteRSMT.setText(QtGui.QApplication.translate("MainWindow", "Write .rsmt file", None, QtGui.QApplication.UnicodeUTF8))
         self.labelFin_WriteRSMTinfo.setText(QtGui.QApplication.translate("MainWindow", "file to load into PIPT", None, QtGui.QApplication.UnicodeUTF8))
         self.labelFin_FChart_3.setText(QtGui.QApplication.translate("MainWindow", "XML Source", None, QtGui.QApplication.UnicodeUTF8))
         self.pushButtonFin_WriteXML.setText(QtGui.QApplication.translate("MainWindow", "Write XML Source", None, QtGui.QApplication.UnicodeUTF8))
@@ -1158,7 +1190,6 @@ class Ui_MainWindow(object):
         self.pushButtonFin_CreateFChart_DSS.setText(QtGui.QApplication.translate("MainWindow", "Create finder chart from DSS image", None, QtGui.QApplication.UnicodeUTF8))
         self.labelFin_CreateFChartinfo.setText(QtGui.QApplication.translate("MainWindow", "recommended for deep science images", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.FinalizeTab), QtGui.QApplication.translate("MainWindow", "     &Finalize      ", None, QtGui.QApplication.UnicodeUTF8))
-        self.pushButtonMain_Save.setText(QtGui.QApplication.translate("MainWindow", "Save", None, QtGui.QApplication.UnicodeUTF8))
         self.labelMain_MaskHeading.setText(QtGui.QApplication.translate("MainWindow", "Coordinates of Mask Centre:", None, QtGui.QApplication.UnicodeUTF8))
         self.labelMain_CenRA.setText(QtGui.QApplication.translate("MainWindow", "Centre RA:", None, QtGui.QApplication.UnicodeUTF8))
         self.labelMain_CenDEC.setText(QtGui.QApplication.translate("MainWindow", "Centre DEC:", None, QtGui.QApplication.UnicodeUTF8))
