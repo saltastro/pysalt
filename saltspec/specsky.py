@@ -57,8 +57,11 @@ import saltsafeio as saltio
 from saltsafelog import logging
 import spectools as st
 from spectools import SALTSpecError
+import saltstat as stats
 
 from PySpectrograph.Spectra import apext
+from PySpectrograph.Utilities.fit import interfit
+
 
 import pylab as pl
 
@@ -70,6 +73,7 @@ debug=True
 # core routine
 
 def specsky(images,outimages,outpref, method='normal', section=None, 
+            function='polynomial', order=2, 
             clobber=True,logfile='salt.log',verbose=True):
 
    with logging(logfile,debug) as log:
@@ -80,7 +84,7 @@ def specsky(images,outimages,outpref, method='normal', section=None,
        # create list of output files 
        outfiles=saltio.listparse('Outfile', outimages, outpref,infiles,'')
 
-       if method not in ['normal']: 
+       if method not in ['normal', 'fit']: 
            msg='%s mode is not supported yet' % method
            raise SALTSpecError(msg)
 
@@ -98,7 +102,7 @@ def specsky(images,outimages,outpref, method='normal', section=None,
           hdu=saltio.openfits(img)
 
           #sky subtract the array
-          hdu=skysubtract(hdu, method=method, section=section) 
+          hdu=skysubtract(hdu, method=method, section=section, funct=function, order=order) 
 
           #write out the image
           if clobber and os.path.isfile(ofile): saltio.delete(ofile)
@@ -106,7 +110,7 @@ def specsky(images,outimages,outpref, method='normal', section=None,
 
 
 
-def skysubtract(hdu, method='normal', section=[]):
+def skysubtract(hdu, method='normal', section=[], funct='polynomial', order=2):
    """For a given image, extract a measurement of the sky from
       the image and then subtract that measurement from the 
       overall image
@@ -139,25 +143,57 @@ def skysubtract(hdu, method='normal', section=[]):
 
            #TODO:  The variance array does not fully work at the moment
            var_arr=None
-
-           #create the variance 
-           ap=apext.apext(xarr, data_arr, ivar=var_arr)
-  
-           #extract the regions for the sky
-           y1,y2=section
-           nrows=abs(y2-y1)
-           ap.flatten(y1,y2)
-           ap.ldata=ap.ldata/nrows
-
+ 
+           if method=='normal':
+               sdata=normalsky(xarr, data_arr, var_arr, section)
+           elif method=='fit':
+               sdata=fitsky(xarr, data_arr, var_arr, section)
 
            #subtract the data
-           hdu[i].data=data_arr-ap.ldata
+           hdu[i].data=data_arr-sdata
 
            #correct the variance frame
            if var_ext:
                hdu[var_ext].data=hdu[var_ext].data+ap.lvar/nrows
 
    return hdu
+
+def normalsky(xarr, data_arr, var_arr, section):
+    """Determine the sky from a certain section of the image
+       and subtract it from the data
+  
+       returns array
+    """
+    #create the variance 
+    ap=apext.apext(xarr, data_arr, ivar=var_arr)
+  
+    #extract the regions for the sky
+    y1,y2=section
+    nrows=abs(y2-y1)
+    ap.flatten(y1,y2)
+    ap.ldata=ap.ldata/nrows
+ 
+    return ap.ldata
+
+def fitsky(xarr, data, var_arr, function='polynomial', order=2, thresh=3):
+    """For each column, fit a function to the column after rejecting
+       sources and then create a sky image from that
+    """
+    sdata=0.0*data
+    for i in xarr:
+      yarr=data[:,i]
+      yind=np.arange(len(yarr))
+      m=np.median(yarr)
+      s=stats.median_absolute_deviation(yarr)
+      mask=(abs(yarr-m)<thresh*s)
+      try:
+        it=interfit(yind[mask], yarr[mask], function='poly', order=2)
+        it.fit()
+        sdata[:,i]=it(yind)
+      except:
+        sdata[:,i]=0.0*sdata[:,i]+m
+    return sdata
+
 
 # main code 
 

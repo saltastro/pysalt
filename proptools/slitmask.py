@@ -436,7 +436,7 @@ class SlitMask(QObject):
                         print self.slitlets.data['name'][is_in_mask[i]], self.slitlets.data['collision_flag'][is_in_mask[i]]
                         
             if self.slitlets.data['collision_flag'][is_in_mask[i]]:
-               self.slitlets.data['collision_id'][is_in_mask[i]]=" ".join(['%s' % x for x in tcoll_ids])
+               self.slitlets.data['collision_id'][is_in_mask[i]] = " ".join(['%s' % x for x in tcoll_ids])
                print self.slitlets.data['collision_id'][is_in_mask[i]]
 
         print 'Finished Checking for collisions'
@@ -542,7 +542,7 @@ class SlitMask(QObject):
         ulx = xp - (self.slitlets.data['slit_width'] /2. ) / pixscale
         uly = yp + self.slitlets.data['len1'] / pixscale
         # upper right corner
-        urx = xp + (self.slitlets.data['slit_width'] / 2.)/ pixscale
+        urx = xp + (self.slitlets.data['slit_width'] / 2.) / pixscale
         ury = yp + self.slitlets.data['len1'] / pixscale
         # lower left corner
         llx = xp - (self.slitlets.data['slit_width'] / 2.) / pixscale

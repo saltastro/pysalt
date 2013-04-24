@@ -1,6 +1,0 @@
-plottype,s,h,'xwindow','xwindow|postscript',,'Plotting device' 
-infile,s,a,'icd.txt',,,'Input data cube descriptor file'
-logfile,s,a,'salt.log',,,'Logfile'
-verbose,b,h,yes,,,'Verbose?'
-mode,s,h,"al" 
-
