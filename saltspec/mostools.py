@@ -481,6 +481,49 @@ def read_slits_from_ascii(simg):
 
     return order, allslits
 
+def read_slits_from_ds9(simg, order=1):
+    '''
+    This function reads the input from an outputslitfile if it specified as a
+    ds9 region file. It will read the slit positions return an array that resembles
+    the split_pos array that is passed to the extract_slits function and the
+    order of the spline to be fitted.
+    '''
+
+    #read in the slit file
+    slitfile = open(simg,'r')
+    slits = slitfile.read()
+    slitfile.close()
+    
+    #throw an error if the positions aren't in image format
+    if slits.count('image')==0: 
+        msg="Please use 'image' for format when saving ds9 region file"
+        raise SALTSpecError(msg)
+    slits=slits.split('\n') 
+   
+    #loop through and create all slits
+    allslits = []
+    alltext  = []
+    i=0
+    for line in slits:
+        if line.startswith('#') or line.startswith('global'):
+            pass
+        elif line.count('box'):
+            line = line.split('#')
+            if len(line)==2:
+               rtext=line[1].replace(' text={', '')
+               rtext=rtext.replace('}', '')
+               alltext.append(rtext.split(','))
+            line = line[0].replace('box(', '')
+            line = line.replace(')', '')
+            col=line.split(',')
+            slitnum = i
+            left_edge = [int(float(col[1])-0.5*float(col[3]))]
+            right_edge = [int(float(col[1])+0.5*float(col[3]))]
+            allslits.append([slitnum,left_edge,right_edge])
+            i+=1
+
+    return order, allslits, alltext
+
 
 def which_ext(hdu,ext_name,debug):
     '''
