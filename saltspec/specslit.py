@@ -97,7 +97,7 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
         # the extraction. if the extraction type is auto then use image for the
         # detection and the slit extraction
 
-        if exttype == 'rsmt' or exttype == 'fits' or exttype == 'ascii':
+        if exttype == 'rsmt' or exttype == 'fits' or exttype == 'ascii' or exttype == 'ds9':
             slitfiles = saltio.argunpack('Slitfile',slitfile)
             if len(slitfiles)==1: slitfiles=slitfiles*len(infiles)
             saltio.comparelists(infiles,slitfiles,'image','slitfile')
@@ -158,6 +158,11 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
             elif exttype=='ascii':
                 log.message('Using slits from %s' % sfile)
                 order, slit_positions=mt.read_slits_from_ascii(sfile)
+            elif exttype=='ds9':
+                log.message('Using slits from %s' % sfile)
+                order, slit_positions, slitmask=mt.read_slits_from_ds9(sfile, order=order)
+                slitmask=None
+                sections=1
             elif exttype=='auto':
                 log.message('Identifying slits in %s' % img)
                 #identify the slits in the image 
@@ -202,7 +207,12 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
                imglist[i].header.update('MINY', y1, comment='Lower Y value in original image')
                imglist[i].header.update('MAXY', y2, comment='Upper Y value in original image')
                if regprefix:
-                  regout.write('box(1520,%i, 200, %i)\n' % (0.5*(y1+y2), y2-y1))
+                  xsize=struct[1].data.shape[1]
+                  xsize=int(0.5*xsize)
+                  rtext=''
+                  if slitmask:
+                     pass#rtext='%s, %8.7f, %8.7f, %3.2f' % (slitmask.slitlets.data[i]['name'], slitmask.slitlets.data[i]['targ_ra'], slitmask.slitlets.data[i]['targ_dec'], slitmask.slitlets.data[i]['slit_width'])
+                  regout.write('box(%i,%i, %i, %i) #text={%s}\n' % (xsize, 0.5*(y1+y2), 2*xsize,y2-y1, rtext))
 
                #add slit information
                if slitmask:
