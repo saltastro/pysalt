@@ -1,0 +1,7 @@
+# Root help directory for the pysalt packages. This dummy package is
+# necessary in order to have `pysalt' appear as a module in some package,
+# so that the user can type "help pysalt" (with the `pysalt' given
+# as a task).
+
+_pysalt                 pkg = pysalt$lib/rootpysalt.hd
+
