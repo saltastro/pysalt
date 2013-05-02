@@ -1,0 +1,151 @@
+# --------------------------------------
+# South African Astronomical Observatory
+# PO Box 9
+# Observatory 7935
+# South Africa
+# --------------------------------------
+.help specslit May2013 pysalt.saltspec
+.ih
+NAME
+specslit-- Extract slits from a MOS image
+.ih
+USAGE
+specslit images outimages outpref exttype (slitfile) (outputslitfile)
+(regprefix) (sections) (width) (sigma) (thres) (order) (padding) (yoffset)
+(inter) (clobber) (logfile) (verbose)
+
+
+.ih
+PARAMETERS
+.ls images
+String. List of FITS images to prepare. Data can be provided as a
+comma-separated list, or a string with a wildcard
+(e.g. 'images=S20061210*.fits'), or a foreign file containing an ascii
+list of image filenames. For the ascii list option, the filename
+containing the list must be provided preceded by a '@' character,
+e.g. 'images=@listoffiles.lis'. The list can contain data files from
+multiple SALT instruments.
+.le
+.ls outimage
+String. A list of images. Data can be provided as a comma-separated
+list, or a string with a wildcard (e.g. 'outimages=rS20061210*.fits'), or
+a foreign file containing an ascii list of image filenames. For ascii 
+list option, the filename containing the list must be provided 
+preceded by a '@' character, e.g. 'outimages=@listoffiles.lis'. This list
+must be of the same size as the images argument list. 
+.le
+.ls outpref
+String. If the outpref string is non-zero in length and contains
+characters other than a blank space, it will override any value of the
+outimages argument. Output file names will use the name list provided
+in the images argument, but adding a prefix to each output file
+defined by outpref. An absolute or relative directory path can be
+included in the prefix, e.g. 'outpref=/Volumes/data/p'.
+.le
+.ls exttype
+String.  Method for the extraction.  The options are  RSMT, FITS, ASCII, AUTO, DS9. The 
+RSMT method uses the XML created by the slitmask tool.  The FITS method uses
+another FITS file, ASCII uses the output from specslit for another file, AUTO uses
+the image itself to extract the output, and DS9 uses a ds9 region file.
+.le
+.ls (slitfile)
+String. For ASCII extraction type, this is the slitfile that contains the 
+definition of each slit to be extracted.
+.le
+.ls (outputslitfile)
+String. If specified, an ascii list of slits to be extracted are written to this file
+.le
+.ls (regprefix)
+String. Prefix for optional DS9 region file to be created based on extracted slits.  The
+full name will be given by appending this prefix onto the image file and adding the suffix
+'.reg'
+.le
+.ls (padding)
+Int.  Additional pixels to add to the extracted slit
+.le
+.ls (yoffset)
+Real.  For RSMT method, this is a constant offset applied between the expected y-position of the
+slits and the y-position in the image.  
+.le
+.ls (clobber)
+Hidden boolean. If set to 'yes' files contained within the outpath
+directory will be overwritten by newly created files of the same
+name.
+.le
+.ls (logfile)
+String. Name of an ascii file for storing log and error messages
+from the tool. The file may be new, or messages can also be appended to a
+pre-existing file.
+.le
+.ls (verbose)
+Hidden Boolean. If verbose=n, log messages will be suppressed.
+.le
+.ih
+DESCRIPTION
+
+SPECSLIT is a task to extract slits from an RSS MOS image.  The task currently
+will use one of three methods to extract each slit from a MOS image: (1) from an 
+XML file produced by the RSMT (which can be downloaded from the Web Manager), 
+(2) based on an ascii file produced by specslit for the extraction from 
+another file, or (3) based on a ds9 region file.   After extracting the slits,
+it will produce a MEF file with a slit image in each extension.   
+
+The recommended method is to use the XML file used to cut the slit mask.  The XML
+file can be downloaded from the Webmanager for the observed block or can be the 
+one submitted by the user and created by either PySlitMask or the RSMT.   The code
+will apply the RSS distortions to the on-sky slit positions to predict the slit
+positions in the image.  The user can adjust the parameter y-offset to adjust the 
+position of the slits.  To see how well the process extracted the slits, the user
+can display the extracted slit regions on the original image by using the ds9 region
+file created if regprefix is specified. The process may need to be interated in
+order to determine the best central offset.  
+
+However, if the RSMT method does not produce a satisfactory method, then the output
+DS9 region file produced by specifying regprefix can be used to create the extracted
+slits.  The user can adjust the slits in the image and then save the region file. 
+When the region file is saved, it should be saved in 'ds9' format with 'image' set 
+for the coordinate system.  Then, specslit can be run using this file and 
+exttype='DS9'.  This will produce an MEF with the regions saved in the ds9 file
+extracted.  Likewise, the user can create their own region file but the regions
+must be specified as 'box' in order to be extracted.
+
+If a satisfactory slit mask has already been extracted, the user can use
+the outputslitfile as the input for another image and by setting exttype='ASCII'.   
+The same slits will be extracted.  Likewise, the output MEF file can also be 
+used here if the exttype='FITS'.
+
+The output for the task is a multi-extension fits file.  It will have a primary 
+header and then one extenstion corresponding to each slit.  The final extension
+will be a table containing information about each extracted slit.  The extracted
+ymin and ymax from the original image will be included in the header for
+each extension.  If exttype='RSMT', additinally information including the 
+slitname, RA, and DEC will be included in the extension header. 
+
+
+EXAMPLES
+1. To extract slits from files with specslit using an XML file produced by RSMT:
+
+.nf
+    --> specslit  image=mfxgbpP201302010032.fits outimage= outpref=t exttype=rsmt 
+slitfile=P000832N03.xml outputslitfile='' regprefix='' padding=5 yoffset=-12.0 
+clobber=yes logfile=salt.log verbose=yes
+.fi
+
+.ih
+TIME AND DISK REQUIREMENTS
+Individual unbinned raw full-frame RSS files can be 112MB in size. It is
+recommended to use workstations with a minimum of 512MB RAM. On a
+linux machine with 2.8 Ghz processor and 2 Gb of RAM, one 2051x2051 image 
+in 0.15 sec.
+.ih
+BUGS AND LIMITATIONS
+No other guess types are currently accepted.  If the user wants to change
+the function form or order and apply it to all data, they will have to 
+restart the task.
+
+
+Send feedback and bug reports to salthelp@saao.ac.za
+.ih
+SEE ALSO
+specidentify
+.endhelp

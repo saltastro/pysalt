@@ -73,7 +73,7 @@ debug=True
 # core routine
 
 def specextract(images, outfile, method='normal', section=None, thresh=3.0,    \
-                minsize=3.0, outformat='ascii', convert=True, clobber=True,    \
+                minsize=3.0, outformat='ascii', ext=1, convert=True, clobber=True,    \
                 logfile='salt.log',verbose=True):
 
    with logging(logfile,debug) as log:
@@ -101,7 +101,7 @@ def specextract(images, outfile, method='normal', section=None, thresh=3.0,    \
 
            #open the images
            hdu=saltio.openfits(img)
-           ap_list=extract(hdu, method=method, section=section, minsize=minsize, thresh=thresh, convert=convert) 
+           ap_list=extract(hdu, ext=ext, method=method, section=section, minsize=minsize, thresh=thresh, convert=convert) 
 
            #write the spectra out
            if ap_list:
@@ -109,54 +109,54 @@ def specextract(images, outfile, method='normal', section=None, thresh=3.0,    \
  
        log.message('',with_header=False, with_stdout=verbose)
 
-def extract (hdu, method='normal', section=[], minsize=3.0, thresh=3.0, convert=True):
+def extract (hdu, ext=1, method='normal', section=[], minsize=3.0, thresh=3.0, convert=True):
    """For a given image, extract a 1D spectra from the image
       and write the spectra to the output file
 
    """
 
    ap_list=[]
-   for i in range(len(hdu)):
-       if hdu[i].name=='SCI':
-          #set up the data, variance, and bad pixel frames
-          #first step is to find the region to extract
-          data_arr=hdu[i].data
-          try:
-              var_arr=hdu[hdu[i].header['VAREXT']].data
-          except:
-              var_arr=None
-          try:
-              bpm_arr=hdu[hdu[i].header['BPMEXT']].data
-          except:
-              bpm_arr=None
-          var_arr=None
-          bpm_arr=None
+   i=ext
+   if hdu[i].name=='SCI':
+       #set up the data, variance, and bad pixel frames
+       #first step is to find the region to extract
+       data_arr=hdu[i].data
+       try:
+           var_arr=hdu[hdu[i].header['VAREXT']].data
+       except:
+           var_arr=None
+       try:
+           bpm_arr=hdu[hdu[i].header['BPMEXT']].data
+       except:
+           bpm_arr=None
+       var_arr=None
+       bpm_arr=None
  
-          xarr=np.arange(len(data_arr[0]))
+       xarr=np.arange(len(data_arr[0]))
 
-          #convert using the WCS information
-          try:
-             w0=saltkey.get('CRVAL1', hdu[i])
-             dw=saltkey.get('CD1_1', hdu[i])
-          except Exception, e:
-             print 'Error on Ext %i: %s' % (i, e)
-             continue
-          warr=w0+dw*xarr
+       #convert using the WCS information
+       try:
+          w0=saltkey.get('CRVAL1', hdu[i])
+          dw=saltkey.get('CD1_1', hdu[i])
+       except Exception, e:
+          msg='Error on Ext %i: %s' % (i, e)
+          raise SaltSpecError(msg)
+       warr=w0+dw*xarr
 
-          #convert from air to vacuum
-          if convert:  warr=Spectrum.air2vac(warr)
+       #convert from air to vacuum
+       if convert:  warr=Spectrum.air2vac(warr)
 
   
-          #set up the sections in case of findobj
-          if section is None:
-             section=findobj.findObjects(data_arr, method='median', specaxis=1, minsize=minsize, thresh=thresh, niter=5)
+       #set up the sections in case of findobj
+       if section is None:
+          section=findobj.findObjects(data_arr, method='median', specaxis=1, minsize=minsize, thresh=thresh, niter=5)
  
-          #extract all of the  regions
-          for sec in section:
-              ap=apext.apext(warr, data_arr, ivar=var_arr)
-              y1,y2=sec
-              ap.flatten(y1,y2)
-              ap_list.append(ap)
+       #extract all of the  regions
+       for sec in section:
+           ap=apext.apext(warr, data_arr, ivar=var_arr)
+           y1,y2=sec
+           ap.flatten(y1,y2)
+           ap_list.append(ap)
 
    return  ap_list
 

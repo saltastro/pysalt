@@ -4,7 +4,7 @@
 # Observatory 7935
 # South Africa
 # --------------------------------------
-.help specextract Jul2011 pysalt.saltspec
+.help specextract May2013 pysalt.saltspec
 .ih
 NAME
 specextract -- Extract 1-D spectra from 2-D image
@@ -56,6 +56,13 @@ will be rejected.
 .le
 .ls (outformat)
 String.  Format for outfile.   It can either be set to 'FITS' or 'ascii'.
+.le
+.ls (ext)
+.  Extension to extract spectrum.
+.le
+.ls (convert)
+Hidden boolean. If set to 'yes' wavelength will be converted from
+air to vacuum wavelengths.
 .le
 .ls (clobber)
 Hidden boolean. If set to 'yes' files contained within the outpath
