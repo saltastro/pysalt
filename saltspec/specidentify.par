@@ -14,6 +14,6 @@ niter,i,h,5,,,'Maximum number of iterations for rejection'
 inter,b,h,no,,,'Interactive?'
 startext,i,h,0,,,'Starting Extension number'
 clobber,b,h,no,,,'Overwrite exisitng files?'
-logfile,s,a,'salt.log',,,'Logfile'
+logfile,s,h,'salt.log',,,'Logfile'
 verbose,b,h,yes,,,'Verbose?'
 mode,s,h,"al" 
