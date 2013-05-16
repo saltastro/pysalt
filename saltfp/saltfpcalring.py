@@ -60,11 +60,13 @@ import saltsafeio as saltio
 import salttime
 from saltsafelog import logging
 
-from saltfpringfind import findrings
+from fptools import findrings, findcenter
+from FPRing import ringfit
 
 debug=True
 
-def saltfpcalring(images,outfile, waves, thresh=5, niter=3, minsize=10, 
+def saltfpcalring(images,outfile, waves, method=None, thresh=5, minsize=10, niter=3, conv=0.05,  
+                  axc=None, ayc=None, 
                   clobber=False,logfile='salt.log',verbose=True):  
    """Fits rings in Fabry-Perot ring images"""
    with logging(logfile,debug) as log:
@@ -88,6 +90,9 @@ def saltfpcalring(images,outfile, waves, thresh=5, niter=3, minsize=10,
        except:
            raise SaltError('%s is not convertable to a numpy array' % waves)
 
+       #check the value of method
+       method=saltio.checkfornone(method)
+
        #setup the output file
        fout.write('#Comment\n')
        fout.write('# radius   err     xc      yc      z      ut     wave   dn  file\n')
@@ -95,8 +100,11 @@ def saltfpcalring(images,outfile, waves, thresh=5, niter=3, minsize=10,
        # open each image and detect the ring
        for img,w  in zip(infiles, waves):
 
+          #open the image
+          hdu=saltio.openfits(img)
+
           #measure the ring in each file
-          xc, yc, radius, err, z, ut=make_calring(img, thresh=5, niter=3, minsize=10)
+          xc, yc, radius, err, z, ut=make_calring(hdu, method=method, thresh=thresh, niter=niter, minsize=minsize, axc=axc, ayc=ayc)
 
           #output the results
           outstr=' %7.2f %6.2f %7.2f %7.2f %6.2f %7.4f %8.3f  0 %s\n' % (radius, err, xc, yc, z, ut, w, img)
@@ -105,15 +113,14 @@ def saltfpcalring(images,outfile, waves, thresh=5, niter=3, minsize=10,
 
        fout.close()
 
-def make_calring(image, thresh=5, niter=3, minsize=10):
+def make_calring(hdu, method=None, thresh=5, niter=3, minsize=10, axc=None, ayc=None):
    """Open each image and measure the position of the ring including its center and radius
      
       Return the information about the calibration ring
    """   
 
-   #open the image
-   hdu=saltio.openfits(image)
-    
+   #setup the data
+   data=hdu[0].data
    #extract the time and convert to decimal hours
    utctime=saltkey.get( 'UTC-OBS', hdu[0])
    utctime=salttime.time_obs2hr((utctime.split()[-1]))
@@ -130,15 +137,19 @@ def make_calring(image, thresh=5, niter=3, minsize=10):
        raise SaltError(msg)
 
    #extract the ring
-   ring_list=findrings(hdu[0].data, thresh=thresh, niter=niter, minsize=minsize)
-  
-   #TODO: Fit the data for a better deterimination of the central ring parameters
-   #iterate to improve the result
- 
+   ring_list=findrings(data, thresh=thresh, niter=niter, minsize=minsize, axc=axc, ayc=ayc)
+
    #assumes only one ring in the data set
    ring=ring_list[0]
+  
+   #determine the center and radius of the ring
+   if method is not None:
+      ring=findcenter(data, ring, method)
 
-   return ring.xc, ring.yc, ring.prad, 1.0, etz, utctime
+   if axc: ring.xc=axc
+   if ayc: ring.yc=ayc
+
+   return ring.xc, ring.yc, ring.prad, ring.prad_err, etz, utctime
   
 
 # -----------------------------------------------------------

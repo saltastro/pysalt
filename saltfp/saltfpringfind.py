@@ -48,7 +48,6 @@ import os
 import pyfits
 import math
 import numpy as np
-import scipy.ndimage as nd
 
 from pyraf import iraf 
 from pyraf.iraf import pysalt
@@ -63,7 +62,7 @@ from PySpectrograph.Spectra import findobj
 
 from salterror import SaltError
 
-from FPRing import FPRing
+from fptools import findrings, findcenter
 
 import pylab as pl
 
@@ -73,26 +72,24 @@ debug=True
 # core routine
 
 
-def saltfpringfind(images, outfile, section=None, bthresh=5, niter=5, 
-                displayimage=True, clobber=True,logfile='salt.log',verbose=True):
+def saltfpringfind(images, method=None, section=None, thresh=5, minszie=10, niter=5, conv=0.05,
+                displayimage=True, clobber=False, logfile='salt.log',verbose=True):
 
    with logging(logfile,debug) as log:
 
        # Check the input images 
        infiles = saltio.argunpack ('Input',images)
 
+       #check the method
+       method=saltio.checkfornone(method)
+
        # read in the section
-       if section is None:
+       section=saltio.checkfornone(section)
+       if section is None: 
            pass
        else:
            section=saltio.getSection(section)
  
-       #open output file to record results 
-       if clobber:
-           outfile = saltio.openascii(outfile, 'w')
-       else:
-           outfile = saltio.openascii(outfile, 'a')
-
        # open each raw image file
        for img in infiles:
 
@@ -100,22 +97,28 @@ def saltfpringfind(images, outfile, section=None, bthresh=5, niter=5,
 	  struct=saltio.openfits(img)
           data=struct[0].data
 
-          #only keep the bright pixels
+          #determine the background value for the image
           if section is None:
              #if section is none, just use all pixels greater than zero
              bdata=data[data>0]
           else:
              y1,y2,x1,x2=section
              bdata=data[y1:y2,x1:x2]
-          bmean, bmedian, bstd=iterstat(bdata, sig=bthresh, niter=niter, verbose=False)
+          bmean, bmedian, bstd=iterstat(bdata, sig=thresh, niter=niter, verbose=False)
           message="Image Background Statistics\n%30s %6s %8s %8s\n%30s %5.4f %5.4f %5.4f\n" %  \
                 ('Image', 'Mean', 'Median', 'Std',img, bmean, bmedian, bstd)
           log.message(message, with_stdout=verbose)
     
-          mdata=data*(data-bmean>bthresh*bstd)
+          mdata=data*(data-bmean>thresh*bstd)
 
           #prepare the first guess for the image
           ring_list=findrings(data, thresh=5, niter=5, minsize=10)
+
+          #if specified, find the center of the ring
+          if method is not None:
+             for i in range(len(ring_list)):
+                 ring_list[i]=findcenter(data, ring_list[i], method)
+            
 
           #if one peak: no rings.  If two peaks: one ring, if two peaks: four rings
           if len(ring_list)==1:
@@ -147,106 +150,6 @@ physical
               msg='%30s %6.2f %6.2f %6.2f\n' % (img, ring.xc, ring.yc, ring.prad)
               log.message(msg, with_header=False, with_stdout=verbose)
 
-def findpeaks(data, fpeak=0.8,minsize=10):
-    """Find peakes median filters an image and finds the peaks in the image
-    """
-    #median filter the image
-    mdata=nd.filters.median_filter(data, size=minsize)
+parfile = iraf.osfn("saltfp$saltfpringfind.par")
+t = iraf.IrafTaskFactory(taskname="saltfpringfind",value=parfile,function=saltfpringfind,pkgname='saltfp')
 
-    #take the 80% points and find the peaks
-    mask=(mdata>fpeak*mdata.max())
-
-    #find all the objects
-    obj_arr, obj_num=nd.label(mask)
-    
-    #ypeaks
-    peaks=[]
-    for i in range(obj_num):
-        pid=np.where(obj_arr==i+1)[0]
-        peaks.append((pid.min(), pid.max()))
-
-    return peaks
-    
-
-def findrings(data, thresh=5, niter=5, minsize=10):
-    """findrings makes a rough calculation for the parameters of the rings
-       based on single line cuts through the data.  It returns a list of rings
-    """
-    ring_list=[]
-
-    #first guess the middle is in the middle of the data
-    xc=int(0.5*len(data[0]))
-    yc=int(0.5*len(data))
-
-    #take a look at the y cut through the data
-    xdata=data[yc,:]
-    #take a look through the xdata.  check for the same thing and make sure they are consistent
-    ydata=data[:,xc]
-
-    #get rid of all the lower points
-    #find the peaks in the data
-
-    ypeak_list=findpeaks(ydata, 0.4, 10)
-    xpeak_list=findpeaks(xdata, 0.4, 10)
-
-    if abs(len(ypeak_list)-len(xpeak_list))>1: 
-       msg="Non-symmetrically rings in the image"
-       #raise SaltError(msg)
-
-    nrings=max(len(ypeak_list)/2, len(xpeak_list)/2)
-
-    #throw an error if no rings are detected
-    if nrings<1:
-       msg="No rings detected in image"
-       raise SaltError(msg)
-
-
-    #loop through the image and determine parameters of rings
-    for i in range(0,nrings,2):
-       #determine the y-center
-       try:
-           y1,y2=ypeak_list[i]
-           yarr=np.arange(x1,x2)
-           ypa=y1+ydata[y1:y2].argmax()
-           ysiga=(abs(np.sum((yarr-ypa)**2*ydata[y1:y2])/ydata[y1:y2].sum()))**0.5
-           y1,y2=ypeak_list[i+1]
-           ypb=y1+ydata[y1:y2].argmax() 
-           ysigb=(abs(np.sum((yarr-ypb)**2*ydata[y1:y2])/ydata[y1:y2].sum()))**0.5
-           yc=0.5*(ypa+ypb)
-           ymax=max(ydata[ypa], ydata[ypb])
-           yrad=0.5*abs(ypb-ypa)
-           ysig=0.5*(ysiga+ysigb)
-       except:
-           yc=yc
-           yrad=0
-           ysig=0
-           ymax=ydata.max()
-
-       #determine the x-center
-       try:
-           x1,x2=xpeak_list[i]
-           xarr=np.arange(x1,x2)
-           xpa=x1+xdata[x1:x2].argmax()
-           xsiga=(abs(np.sum((xarr-xpa)**2*xdata[x1:x2])/xdata[x1:x2].sum()))**0.5
-           x1,x2=xpeak_list[i+1]
-           xpb=x1+xdata[x1:x2].argmax() 
-           xarr=np.arange(x1,x2)
-           xsigb=(abs(np.sum((xarr-xpb)**2*xdata[x1:x2])/xdata[x1:x2].sum()))**0.5
-           xc=0.5*(xpa+xpb)
-           xmax=max(xdata[xpa], xdata[xpb])
-           xsig=0.5*(xsiga+xsigb)
-           xrad=0.5*abs(xpa-xpb)
-       except:
-           xc=yc
-           xrad=0
-           xsig=0
-           xmax=xdata.max()
-       ring_list.append(FPRing(xc, yc, max(yrad,xrad), max(xmax,ymax), max(xsig,ysig)))
-
-    return ring_list
-
-# -----------------------------------------------------------
-# main code 
-
-parfile = iraf.osfn("saltfp$saltfpringfind.par") 
-t = iraf.IrafTaskFactory(taskname="saltfpringfind",value=parfile,function=saltfpringfind, pkgname='saltfp')
