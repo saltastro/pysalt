@@ -37,15 +37,16 @@
 pyexecute("saltfp$saltfpprep.py",verbose=no)
 pyexecute("saltfp$saltfpmask.py",verbose=no)
 pyexecute("saltfp$saltfpcalring.py",verbose=no)
-pyexecute("saltfp$saltfpcalprofile.py",verbose=no)
-pyexecute("saltfp$saltfpcalibrate.py",verbose=no)
+pyexecute("saltfp$saltfpzeropoint.py",verbose=no)
+pyexecute("saltfp$saltfpringfind.py",verbose=no)
+
+#pyexecute("saltfp$saltfpskyring.py",verbose=no)
+#pyexecute("saltfp$saltfpringfilter.py",verbose=no)
+#pyexecute("saltfp$saltfpcalibrate.py",verbose=no)
 #pyexecute("saltfp$saltfpnightring.py",verbose=no)
-pyexecute("saltfp$saltfpringfilter.py",verbose=no)
-pyexecute("saltfp$saltfpskyring.py",verbose=no)
 #pyexecute("saltfp$saltfpeprofile.py",verbose=no)
 #pyexecute("saltfp$saltfpevelocity.py",verbose=no)
-pyexecute("saltfp$saltfpringfit.py",verbose=no)
-pyexecute("saltfp$saltfpzeropoint.py",verbose=no)
+#pyexecute("saltfp$saltfpcalprofile.py",verbose=no)
 
 package saltfp 
 

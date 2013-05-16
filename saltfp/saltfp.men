@@ -3,11 +3,7 @@ SALTFP Tasks:
    saltfpprep    -- Prepare files for Fabry-Perot reductions 
    saltfpmask    -- Mask Fabry-Perot images
 saltfpcalring    -- Calculate ring center and radius
-saltfpcalprofile -- Fit a calibration ring
-saltfpnightring  -- Fit a night time calibration ring
-saltfpringfilter -- Radial bin a ring
 saltfpskyring    --  Fit a sky line
-saltfpringfit    -- Fit an FP ring 
 saltfpzeropoint  -- Calculate the FP zeropoint for an image
 
 --------------------------------------------------------------------
