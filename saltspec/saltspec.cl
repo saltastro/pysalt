@@ -37,7 +37,6 @@
 pyexecute("saltspec$specprepare.py",verbose=no)
 pyexecute("saltspec$specidentify.py",verbose=no)
 pyexecute("saltspec$specrectify.py",verbose=no)
-#pyexecute("saltspec$specslit.py",verbose=no)
 pyexecute("saltspec$specsky.py",verbose=no)
 pyexecute("saltspec$specextract.py",verbose=no)
 pyexecute("saltspec$speccal.py",verbose=no)

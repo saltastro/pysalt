@@ -7,6 +7,7 @@ SALTSPEC Tasks:
        specsky -- Sky subtract 2D images
       specsens -- Calculate sensitivity curve from standards
        speccal -- calrect images for wavelength dispersion
+      specslit -- Extract slits from RSS MOS image
 
 --------------------------------------------------------------------
 PySALT is a suite of PyRAF tools for the reduction and analysis of
