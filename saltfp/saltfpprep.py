@@ -60,15 +60,11 @@ from saltsafelog import logging
 from salt2iraf import convertsalt
 from salterror import SaltError
 
-from fortranfp import RSSPrep_wrapper
 debug=True
 
-def saltfpprep(images, outimages, outpref, slit=False, plottype='postscript', 
-               full_reduce=False, clobber=True, logfile='saltfp.log', verbose=True):  
+def saltfpprep(images, outimages, outpref, 
+               clobber=True, logfile='saltfp.log', verbose=True):  
     """Prepares data for Fabry-Perot reductions"""
-    if full_reduce:
-       rssprep_fortran(images, outpref, slit, logfile, plottype, verbose)
-       return 
 
     with logging(logfile, debug) as log:
        # Check the input images 
@@ -87,83 +83,6 @@ def saltfpprep(images, outimages, outpref, slit=False, plottype='postscript',
                convertsalt(img, oimg, clobber=clobber)
            except SaltError, e:
                log.message('%s' %e)
-
-def rssprep_fortran(inlist, outpref, slit, logfile, plottype, verbose):
-    plottype = str(plottype)
-    plottype = plottype.strip()
-    if plottype == 'xwindow':
-        plottype = '/xw'
-    else:
-        plottype = '/ps'
-
-    pathin = os.path.dirname(inlist)
-    basein = os.path.basename(inlist)
-    pathlog = os.path.dirname(logfile)
-    baselog =  os.path.basename(logfile)
-
-# forcing logfiles to be created in the same directory as the input data
-# (we change to this directory once starting the fortran code)
-
-    if len(pathin) > 0:
-        logfile = baselog
-
-# start log now that all parameter are set up         
-
-    with logging(logfile, debug) as log:
-
-# set up the variables
-        slitstring = " "
-        if not slit:
-            slitstring = 'n'
-        else:
-            slitstring = 'y'
-
-# Some basic checks, many tests are done in the FORTRAN code itself
-# is the input file specified?
-        saltio.filedefined('Input',inlist)
-
-
-# check to see if input filelist exists, give error if it doesnt.
-#        testlistb = indir + infiles
-#        testlist = testlistb.strip()
-        saltio.fileexists(inlist)
-
-# read the file and check all the files inside exist, give and error if they do not.
-        infile= open(inlist, "r")
-        line = "dummy start"
-
-        if len(pathin) > 0:
-            indir = pathin
-        else:
-            indir = './'
-
-        while line != "":
-            line = infile.readline()
-            if line != "":
-                if len(pathin) > 0:
-                    testfileb = pathin + "/" + line
-                else:
-                    testfileb = line
-                testfile = testfileb.strip()
-                saltio.fileexists(testfile)
-# check to see if proposed output files exist, if they do remove them.
-                if len(pathin) > 0:
-                    outfileb = pathin + "/" + outpref + line
-                else:
-                    outfileb = outpref + line 
-                outfile = outfileb.strip()
-                if os.path.exists(outfile):
-                    os.remove(outfile)
-           
-        print inlist, indir, slitstring, outpref
-
-        # Get current working directory as the Fortran code changes dir
-        startdir = os.getcwd()
-
-        RSSPrep_wrapper.rss_prep(slitstring, indir, inlist, outpref, plottype)
-
-        # go back to starting directory
-        os.chdir(startdir)
 
 
 # -----------------------------------------------------------

@@ -1,4 +1,4 @@
 # Package parameters for the saltfp package
 
-version,s,h,"15Jun2010",,,"Package version date"
-verno,s,h,"v0.1",,,"Package version number"
+version,s,h,"01May2013",,,"Package version date"
+verno,s,h,"v0.2",,,"Package version number"
