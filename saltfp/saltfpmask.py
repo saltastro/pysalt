@@ -61,9 +61,6 @@ from saltsafelog import logging
 
 # This reads the FORTRAN config file if it exists
 
-from fortranfp import masking_wrapper
-from fortranfp.masking_wrapper import getpfp
-
 debug=True
 
 def saltfpmask(images, outimages, outpref, axc,ayc, arad, maskmethod='c', maskvalue=0, \
