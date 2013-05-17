@@ -9,6 +9,6 @@ fpd,r,h,0,,,'FP D coefficient'
 fpe,r,h,0,,,'FP E coefficient'
 fpf,r,h,5707.23,,,'FP F coefficient'
 clobber,b,h,no,,,'Overwrite exisitng files?'
-logfile,s,a,'salt.log',,,'Logfile'
+logfile,s,h,'salt.log',,,'Logfile'
 verbose,b,h,yes,,,'Verbose?'
 mode,s,h,"al" 
