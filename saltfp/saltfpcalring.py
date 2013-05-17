@@ -104,7 +104,7 @@ def saltfpcalring(images,outfile, waves, method=None, thresh=5, minsize=10, nite
           hdu=saltio.openfits(img)
 
           #measure the ring in each file
-          xc, yc, radius, err, z, ut=make_calring(hdu, method=method, thresh=thresh, niter=niter, minsize=minsize, axc=axc, ayc=ayc)
+          xc, yc, radius, err, z, ut=make_calring(hdu, method=method, thresh=thresh, niter=niter, conv=conv, minsize=minsize, axc=axc, ayc=ayc)
 
           #output the results
           outstr=' %7.2f %6.2f %7.2f %7.2f %6.2f %7.4f %8.3f  0 %s\n' % (radius, err, xc, yc, z, ut, w, img)
@@ -113,7 +113,7 @@ def saltfpcalring(images,outfile, waves, method=None, thresh=5, minsize=10, nite
 
        fout.close()
 
-def make_calring(hdu, method=None, thresh=5, niter=3, minsize=10, axc=None, ayc=None):
+def make_calring(hdu, method=None, thresh=5, niter=3, conv=0.05, minsize=10, axc=None, ayc=None):
    """Open each image and measure the position of the ring including its center and radius
      
       Return the information about the calibration ring
@@ -144,7 +144,7 @@ def make_calring(hdu, method=None, thresh=5, niter=3, minsize=10, axc=None, ayc=
   
    #determine the center and radius of the ring
    if method is not None:
-      ring=findcenter(data, ring, method)
+      ring=findcenter(data, ring, method, niter=niter, conv=conv)
 
    if axc: ring.xc=axc
    if ayc: ring.yc=ayc
