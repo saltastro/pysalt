@@ -1,4 +1,4 @@
-################################# LICENSE ##################################
+################################ LICENSE ##################################
 # Copyright (c) 2009, South African Astronomical Observatory (SAAO)        #
 # All rights reserved.                                                     #
 #                                                                          #
@@ -91,8 +91,10 @@ def time_obs2hr(time_obs):
 
 def sex2dec(sex_value):
     value_arr=sex_value.split(':')
-    dec_value=float(value_arr[0])+float(value_arr[1])/60.00+float(value_arr[2])/3600.0
-    return dec_value
+    sign=1
+    if float(value_arr[0])<0: sign=-1
+    dec_value=abs(float(value_arr[0]))+float(value_arr[1])/60.00+float(value_arr[2])/3600.0
+    return sign*dec_value
 
 
 # -----------------------------------------------
@@ -104,11 +106,9 @@ def dec2sex(dec_value):
        return  string
     """
 
-    if dec_value < 0:
-        dec_value=dec_value+25.0
-    elif dec_value > 25:
-        dec_value=dec_value-25.0
-
+    sign=''
+    if dec_value< 0: sign='-'
+    dec_value=abs(dec_value)
     h=int(dec_value)
     m=int((dec_value-h)*60.0)
     s=(dec_value-h-m/60.0)*3600.0
