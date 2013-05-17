@@ -117,7 +117,7 @@ def saltfpringfind(images, method=None, section=None, thresh=5, minszie=10, nite
           #if specified, find the center of the ring
           if method is not None:
              for i in range(len(ring_list)):
-                 ring_list[i]=findcenter(data, ring_list[i], method)
+                 ring_list[i]=findcenter(data, ring_list[i], method, niter=niter, conv=conv)
             
 
           #if one peak: no rings.  If two peaks: one ring, if two peaks: four rings

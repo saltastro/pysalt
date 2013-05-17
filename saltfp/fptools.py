@@ -3,6 +3,7 @@ import math
 import numpy as np
 import scipy.ndimage as nd
 
+from saltfit import interfit
 from FPRing import FPRing, ringfit
 
 
@@ -132,23 +133,30 @@ def findrings(data, thresh=5, niter=5, minsize=10, axc=None, ayc=None):
     return ring_list
 
 
-def findcenter(data, ring, method):
+def findcenter(data, ring, method, niter=5, conv=0.05):
    method=method.upper()
    if method == 'FIT':
       ring=ringfit(data, fpring=ring)
    elif method == 'MAX':
-      xc,yc=maxflux_center(data, ring.xc, ring.yc, ring.prad, 10, maxiter=20)
-      rad, rad_err=findradius(data, xc, yc, ring.prad, 10)
-      ring.xc=xc
-      ring.yc=yc
-      ring.prad=rad
-      ring.prad_err=rad_err
+      i=0
+      c=conv+1
+      while i < niter and c>conv:
+         xc,yc=maxflux_center(data, ring.xc, ring.yc, ring.prad, 10, maxiter=20)
+         c=((ring.xc-xc)**2+(ring.yc-yc)**2)**0.5
+         i+=1
+         rad, rad_err=findradius(data, xc, yc, ring.prad, 10)
+         ring.xc=xc
+         ring.yc=yc
+         ring.prad=rad
+         ring.prad_err=rad_err
    elif method == 'CENTER':
-      xc,yc,rad, rad_err=centerring(data, ring.xc, ring.yc, radmax=ring.prad, radstep=ring.sigma, nbins=8)
-      ring.xc=xc
-      ring.yc=yc
-      ring.prad=rad
-      ring.prad_err=rad_err
+         xc,yc,rad, rad_err=centerring(data, ring.xc, ring.yc, radmax=ring.prad, radstep=ring.sigma, nbins=8)
+         c=((ring.xc-xc)**2+(ring.yc-yc)**2)**0.5
+         i+=1
+         ring.xc=xc
+         ring.yc=yc
+         ring.prad=rad
+         ring.prad_err=rad_err
    elif method == 'MOMENT':
       pass
    else:
@@ -240,12 +248,19 @@ def centerring(data, axc, ayc, radmax=450, radstep=50, nbins=8):
        t1=i*nsteps
        t2=t1+nsteps
        mask=(theta>t1)*(theta<t2)*(abs(r-radmax)<radstep)
-       j=data[mask].argmax()
        theta_arr[i]=0.5*(t1+t2)
-       rad_arr[i]=r[mask][j]
+       rad_arr[i]=fitradius(r[mask], data[mask])
+       #r[mask][j]
    x_arr=rad_arr*np.cos(theta_arr-0.5*math.pi)
    y_arr=rad_arr*np.sin(theta_arr-0.5*math.pi)
    return axc+x_arr.mean(), ayc+y_arr.mean(), rad_arr.mean(), rad_arr.std()
+
+def fitradius(radius, data):
+    """Fit a line to the data"""
+    it=interfit(radius, data, function='polynomial', order=3)
+    it.interfit()
+    d=it(radius)
+    return radius[d.argmax()]
 
 
 def findpeaks(data, fpeak=0.8,minsize=10):
