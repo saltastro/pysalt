@@ -86,8 +86,8 @@ debug=True
 
 def saltcrclean(images,outimages,outpref,crtype='fast',thresh=5,mbox=3,         \
                 bthresh=3, flux_ratio=0.2, bbox=11, gain=1, rdnoise=5, fthresh=5,\
-                bfactor=2, gbox=3, maxiter=5, multithread=False, clobber=True,          \
-                logfile='salt.log', verbose=True):
+                bfactor=2, gbox=3, maxiter=5, multithread=False, update=True,
+                clobber=True,  logfile='salt.log', verbose=True):
 
 
    with logging(logfile,debug) as log:
@@ -122,7 +122,7 @@ def saltcrclean(images,outimages,outpref,crtype='fast',thresh=5,mbox=3,         
                           gain, rdnoise, bfactor, fthresh, gbox, maxiter, log, verbose=verbose)
            else:
                struct=crclean(struct, crtype, thresh, mbox, bbox, bthresh, flux_ratio, \
-                          gain, rdnoise, bfactor, fthresh, gbox, maxiter, log, verbose=verbose)
+                          gain, rdnoise, bfactor, fthresh, gbox, maxiter, update, log, verbose=verbose)
           
            #log the call
            #log.message('Cleaned %i cosmic rays from %s using %s method' % (totcr, infile, crtype), with_header=False)
@@ -142,7 +142,7 @@ def saltcrclean(images,outimages,outpref,crtype='fast',thresh=5,mbox=3,         
            saltio.closefits(struct)
 
 def multicrclean(struct, crtype='fast', thresh=5, mbox=5, bbox=11, bthresh=3, flux_ratio=0.2, \
-              gain=1, rdnoise=5, bfactor=2, fthresh=5, gbox=0, maxiter=1, log=None, verbose=True):
+              gain=1, rdnoise=5, bfactor=2, fthresh=5, gbox=0, maxiter=1, update=True, log=None, verbose=True):
    """MULTICRCLEAN cleans SALT-like data of cosmic rays.  The user has 
       three different choices for the type of cosmic ray cleaning being
       fast, median, and edge.   The process is set up to use multithreading for 
@@ -198,7 +198,7 @@ def multicrclean(struct, crtype='fast', thresh=5, mbox=5, bbox=11, bthresh=3, fl
 
            #update the frame for the various values
            mask=(crarr>0)
-           struct[i].data[mask]=crarr[mask]
+           if update: struct[i].data[mask]=crarr[mask]
 
            #track the number of cosmic rays
            ncr=mask.sum()
@@ -220,7 +220,7 @@ def multicrclean(struct, crtype='fast', thresh=5, mbox=5, bbox=11, bthresh=3, fl
    return struct
 
 def crclean(struct, crtype='fast', thresh=5, mbox=5, bbox=11, bthresh=3, flux_ratio=0.2, \
-              gain=1, rdnoise=5, bfactor=2, fthresh=5, gbox=0, maxiter=1, log=None, verbose=True):
+              gain=1, rdnoise=5, bfactor=2, fthresh=5, gbox=0, maxiter=1, update=True, log=None, verbose=True):
    """CRCLEAN cleans SALT-like data of cosmic rays.  The user has 
            three different choices for the type of cosmic ray cleaning being
            fast, median, and edge.  
@@ -273,7 +273,7 @@ def crclean(struct, crtype='fast', thresh=5, mbox=5, bbox=11, bthresh=3, flux_ra
                                 gain, rdnoise, bfactor, fthresh, gbox, maxiter)
            #update the frame for the various values
            mask=(crarr>0)
-           struct[i].data[mask]=crarr[mask]
+           if update: struct[i].data[mask]=crarr[mask]
 
            #track the number of cosmic rays
            ncr=mask.sum()

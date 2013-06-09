@@ -129,8 +129,15 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear', bou
             saltkey.instrumid(struct)
 
    # how many amplifiers?
+   nsciext = saltkey.get('NSCIEXT',struct[0])
+   nextend = saltkey.get('NEXTEND',struct[0])
    nccds = saltkey.get('NCCDS',struct[0])
    amplifiers = nccds * 2
+
+   if nextend>nsciext:
+      varframe=True
+   else:
+      varframe=False
 
    # CCD geometry coefficients
    if (instrume == 'RSS' or instrume == 'PFIS'):
@@ -155,7 +162,11 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear', bou
 
    tilefile = saltio.tmpfile(outpath)
    tilefile += 'tile.fits'
-   tilehdu = [None] * int(nextend/2+1)
+   if varframe: 
+      tilehdu = [None] * (3*int(nsciext/2)+1)
+   else:
+      tilehdu = [None] * int(nsciext/2+1)
+   print len(tilehdu)
    tilehdu[0] = pyfits.PrimaryHDU()
    tilehdu[0].header = struct[0].header
 
@@ -163,10 +174,10 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear', bou
 
 
    # iterate over amplifiers, stich them to produce file of CCD images
-   for i in range(int(nextend/2)):
+   for i in range(int(nsciext/2)):
        hdu = i * 2 + 1
-       amplifier = hdu%amplifiers
-       if (amplifier == 0): amplifier = amplifiers
+       #amplifier = hdu%amplifiers
+       #if (amplifier == 0): amplifier = amplifiers
 
        # read DATASEC keywords
        datasec1 = saltkey.get('DATASEC',struct[hdu])
@@ -181,6 +192,16 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear', bou
        # tile 2n amplifiers to yield n CCD images
        outdata = numpy.zeros((ydsec1[1]+abs(ysh[i+1]/ybin),xdsec1[1]+xdsec2[1]+abs(xsh[i+1]/xbin)),numpy.float32)
 
+       #set up the variance frame
+       if varframe:
+          vardata = outdata.copy()
+          vdata1 = saltio.readimage(struct, struct[hdu].header['VAREXT'])
+          vdata2 = saltio.readimage(struct, struct[hdu+1].header['VAREXT'])
+
+          bpmdata = outdata.copy()
+          bdata1 = saltio.readimage(struct, struct[hdu].header['BPMEXT'])
+          bdata2 = saltio.readimage(struct, struct[hdu+1].header['BPMEXT'])
+
        x1=xdsec1[0]-1
        if x1!=0:
           message='The data in %s have not been trimmed prior to mosaicking.' % infile
@@ -193,6 +214,13 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear', bou
        outdata[y1:y2,x1:x2]=\
            imdata1[ydsec1[0]-1:ydsec1[1],xdsec1[0]-1:xdsec1[1]]
 
+       if varframe:
+           vardata[y1:y2,x1:x2]=\
+              vdata1[ydsec1[0]-1:ydsec1[1],xdsec1[0]-1:xdsec1[1]]
+           bpmdata[y1:y2,x1:x2]=\
+              bdata1[ydsec1[0]-1:ydsec1[1],xdsec1[0]-1:xdsec1[1]]
+   
+
        x1=x2
        x2=x1+xdsec2[1]
        y1=ydsec2[0]-1
@@ -200,6 +228,13 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear', bou
        y2=y1+ydsec2[1]
        outdata[y1:y2,x1:x2]=\
            imdata2[ydsec1[0]-1:ydsec1[1],xdsec1[0]-1:xdsec1[1]]
+
+       if varframe:
+          vardata[y1:y2,x1:x2]=\
+            vdata2[ydsec1[0]-1:ydsec1[1],xdsec1[0]-1:xdsec1[1]]
+          bpmdata[y1:y2,x1:x2]=\
+            bdata2[ydsec1[0]-1:ydsec1[1],xdsec1[0]-1:xdsec1[1]]
+
 
        # size of new image
        naxis1 = str(xdsec1[1] + xdsec2[1])
@@ -209,6 +244,17 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear', bou
        tilehdu[i+1] = pyfits.ImageHDU(outdata)
        tilehdu[i+1].header = struct[hdu].header
        tilehdu[i+1].header['DATASEC'] = '[1:' + naxis1 + ',1:' + naxis2 + ']'
+
+       if varframe:
+          vext=i+1+int(nsciext/2.)
+          tilehdu[vext] = pyfits.ImageHDU(vardata)
+          tilehdu[vext].header = struct[struct[hdu].header['VAREXT']].header
+          tilehdu[vext].header['DATASEC'] = '[1:' + naxis1 + ',1:' + naxis2 + ']'
+
+          bext=i+1+2*int(nsciext/2.)
+          tilehdu[bext] = pyfits.ImageHDU(bpmdata)
+          tilehdu[bext].header = struct[struct[hdu].header['BPMEXT']].header
+          tilehdu[bext].header['DATASEC'] = '[1:' + naxis1 + ',1:' + naxis2 + ']'
 
        # image tile log message #1
        if log:
@@ -237,13 +283,21 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear', bou
 
    tranfile = [' ']
    tranhdu = [0]
+   if varframe:
+      tranfile = [''] * (3*int(nsciext/2)+1)
+      tranhdu = [0] * (3*int(nsciext/2)+1)
+   else:
+      tranfile = [''] * int(nsciext/2+1)
+      tranhdu = [0] * int(nsciext/2+1)
 
    #this is hardwired for SALT where the second CCD is considered the fiducial
-   for hdu in range(1,int(nextend/2+1)):
-       tranfile.append(' ')
-       tranhdu.append(0)
+   for hdu in range(1,int(nsciext/2+1)):
        tranfile[hdu] = saltio.tmpfile(outpath)
        tranfile[hdu] += 'tran.fits'
+       if varframe:
+          tranfile[hdu+nccds] = saltio.tmpfile(outpath) + 'tran.fits'
+          tranfile[hdu+2*nccds] = saltio.tmpfile(outpath) + 'tran.fits'
+
        ccd = hdu%nccds
        if (ccd == 0): ccd = nccds
 
@@ -282,24 +336,65 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear', bou
                                                 ymax='INDEF',ncols=ncols,nlines=nlines,verbose='no',
                                                 fluxconserve='yes',nxblock=2048,nyblock=2048,
                                                 interpolant="linear",boundary="constant",constant=0)
+               if varframe:
+                   iraf.images.immatch.geotran(tilefile+"["+str(ccd+nccds)+"]",
+                                                tranfile[hdu+nccds],
+                                                "",
+                                                "",
+                                                xshift=(xsh[ccd]+(2-ccd)*dxshift)/xbin,
+                                                yshift=ysh[ccd]/ybin,
+                                                xrotation=xrot[ccd],
+                                                yrotation=yrot[ccd],
+                                                xmag=1,ymag=1,xmin='INDEF',xmax='INDEF',ymin='INDEF',
+                                                ymax='INDEF',ncols=ncols,nlines=nlines,verbose='no',
+                                                fluxconserve='yes',nxblock=2048,nyblock=2048,
+                                                interpolant="linear",boundary="constant",constant=0)
+                   iraf.images.immatch.geotran(tilefile+"["+str(ccd+2*nccds)+"]",
+                                                tranfile[hdu+2*nccds],
+                                                "",
+                                                "",
+                                                xshift=(xsh[ccd]+(2-ccd)*dxshift)/xbin,
+                                                yshift=ysh[ccd]/ybin,
+                                                xrotation=xrot[ccd],
+                                                yrotation=yrot[ccd],
+                                                xmag=1,ymag=1,xmin='INDEF',xmax='INDEF',ymin='INDEF',
+                                                ymax='INDEF',ncols=ncols,nlines=nlines,verbose='no',
+                                                fluxconserve='yes',nxblock=2048,nyblock=2048,
+                                                interpolant="linear",boundary="constant",constant=0)
+
                #open the file and copy the data to tranhdu
                tstruct=pyfits.open(tranfile[hdu])
                tranhdu[hdu]=tstruct[0].data
                tstruct.close()
+               if varframe:
+                  tranhdu[hdu+nccds]=pyfits.open(tranfile[hdu+nccds])[0].data
+                  tranhdu[hdu+2*nccds]=pyfits.open(tranfile[hdu+2*nccds])[0].data
 
            else:
                log.message("Transform CCD #%i using dx=%s, dy=%s, rot=%s" % (ccd, xsh[ccd]/2.0, ysh[ccd]/2.0, xrot[ccd]), with_stdout=verbose, with_header=False)
                tranhdu[hdu]=geometric_transform(tilehdu[ccd].data, tran_func, prefilter=False, order=1, extra_arguments=(xsh[ccd]/2, ysh[ccd]/2, 1, 1, xrot[ccd], yrot[ccd]))
                tstruct=pyfits.PrimaryHDU(tranhdu[hdu])
                tstruct.writeto(tranfile[hdu])
+               if varframe:
+                  tranhdu[hdu+nccds]=geometric_transform(tilehdu[hdu+3].data, tran_func, prefilter=False, order=1, extra_arguments=(xsh[ccd]/2, ysh[ccd]/2, 1, 1, xrot[ccd], yrot[ccd]))
+                  tranhdu[hdu+2*nccds]=geometric_transform(tilehdu[hdu+6].data, tran_func, prefilter=False, order=1, extra_arguments=(xsh[ccd]/2, ysh[ccd]/2, 1, 1, xrot[ccd], yrot[ccd]))
                
                
        else:
            log.message("Transform CCD #%i using dx=%s, dy=%s, rot=%s" % (ccd, 0, 0, 0), with_stdout=verbose, with_header=False)
            tranhdu[hdu] = tilehdu[ccd].data
+           if varframe:
+              tranhdu[hdu+nccds] = tilehdu[ccd+nccds].data
+              tranhdu[hdu+2*nccds] = tilehdu[ccd+2*nccds].data
+
+   print tranfile
 
    # open outfile
-   outlist = 2*[None] 
+   if varframe:
+       outlist = 4*[None]
+   else:
+       outlist = 2*[None] 
+
    #outstruct[0] = pyfits.PrimaryHDU()
    outlist[0] = struct[0].copy()
    naxis1 = int( gap / xbin * (nccds - 1))
@@ -310,6 +405,9 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear', bou
        naxis2 = max(naxis2, yw)
    outdata = numpy.zeros((naxis2,naxis1),numpy.float32)
    outdata.shape = naxis2, naxis1
+   if varframe:
+      vardata = outdata * 0
+      bpmdata = outdata * 0 + 1
 
    # iterate over CCDs, stich them to produce a full image
    hdu = 0
@@ -327,9 +425,15 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear', bou
        y2 = int(ydsec)
        outdata[y1:y2,x1:x2] = tranhdu[hdu]
        totxshift+=int(abs(xsh[hdu]/xbin))+1
+       if varframe:
+          vardata[y1:y2,x1:x2] = tranhdu[hdu+nccds]
+          bpmdata[y1:y2,x1:x2] = tranhdu[hdu+2*nccds]
 
    #add to the file
    outlist[1] = pyfits.ImageHDU(outdata)
+   if varframe:
+       outlist[2] = pyfits.ImageHDU(vardata)
+       outlist[3] = pyfits.ImageHDU(bpmdata)
 
    #create the image structure
    outstruct = pyfits.HDUList(outlist)
@@ -339,6 +443,9 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear', bou
    saltkey.put('NEXTEND',2, outstruct[0])
    saltkey.new('EXTNAME','SCI','Extension name', outstruct[1])
    saltkey.new('EXTVER',1,'Extension number',outstruct[1])
+   if varframe:
+       saltkey.new('VAREXT',2,'Variance frame extension',outstruct[1])
+       saltkey.new('BPMEXT',3,'BPM Extension',outstruct[1])
 
    try:
       saltkey.copy(struct[1], outstruct[1], 'CCDSUM')
