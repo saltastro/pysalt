@@ -61,10 +61,6 @@ _path = iraf.osfn('pysalt$slottools')
 if _path not in sys.path:
     sys.path.insert(1,_path)
 
-_path = iraf.osfn('pysalt$pipetools')
-if _path not in sys.path:
-    sys.path.insert(1,_path)
-
 _path = iraf.osfn('pysalt$saltspec')
 if _path not in sys.path:
     sys.path.insert(1,_path)

@@ -184,6 +184,7 @@ def bias(struct,subover=True,trim=True, subbias=False, bstruct=None,
    infile=saltkey.getimagename(struct[0])
 
    # how many extensions?
+   nsciext = saltkey.get('NSCIEXT',struct[0])
    nextend = saltkey.get('NEXTEND',struct[0])
    nccd = saltkey.get('NCCDS',struct[0])
 
@@ -210,7 +211,8 @@ def bias(struct,subover=True,trim=True, subbias=False, bstruct=None,
 
 
    #loop through the extensions and subtract the bias
-   for i in range(1,nextend+1):
+   for i in range(1,nsciext+1):
+     if struct[i].name=='SCI':
 
        #get the bias section
        biassec = saltkey.get('BIASSEC',struct[i])
@@ -263,6 +265,17 @@ def bias(struct,subover=True,trim=True, subbias=False, bstruct=None,
            #add the statistics to the image header
            saltkey.new('OVERRMS','%f' % (osigma),'Overscan RMS value', struct[i])
 
+           #update the variance frame
+           if saltkey.found('VAREXT', struct[i]):
+               vhdu=saltkey.get('VAREXT', struct[i])
+               try:
+                   vdata=struct[vhdu].data
+                   struct[vhdu].data=vdata+osigma**2
+               except Exception, e:
+                    msg='Cannot update the variance frame in %s[%i] because %s' % (infile, vhdu, e)
+                    raise SaltError(msg)
+
+
            #plot the overscan region
            if plotover:  
               plt.plot(yarr, odata)
@@ -274,9 +287,32 @@ def bias(struct,subover=True,trim=True, subbias=False, bstruct=None,
            datasec = '[1:'+str(dx2-dx1)+',1:'+str(dy2-dy1)+']'
            saltkey.put('DATASEC',datasec,struct[i])
 
+           #update the variance frame
+           if saltkey.found('VAREXT', struct[i]):
+               vhdu=saltkey.get('VAREXT', struct[i])
+               struct[vhdu].data=struct[vhdu].data[dy1:dy2,dx1:dx2]
+               datasec = '[1:'+str(dx2-dx1)+',1:'+str(dy2-dy1)+']'
+               saltkey.put('DATASEC',datasec,struct[vhdu])
+           #update the BPM frame
+           if saltkey.found('BPMEXT', struct[i]):
+               bhdu=saltkey.get('BPMEXT', struct[i])
+               struct[bhdu].data=struct[bhdu].data[dy1:dy2,dx1:dx2]
+               datasec = '[1:'+str(dx2-dx1)+',1:'+str(dy2-dy1)+']'
+               saltkey.put('DATASEC',datasec,struct[bhdu])
+
        #subtract the master bias if necessary
        if subbias and bstruct:
            struct[i].data -= bstruct[i].data
+
+           #update the variance frame
+           if saltkey.found('VAREXT', struct[i]):
+               vhdu=saltkey.get('VAREXT', struct[i])
+               try:
+                   vdata=struct[vhdu].data
+                   struct[vhdu].data=vdata+bstruct[vhdu].data
+               except Exception, e:
+                    msg='Cannot update the variance frame in %s[%i] because %s' % (infile, vhdu, e)
+                    raise SaltError(msg)
  
        
 
