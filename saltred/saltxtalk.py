@@ -55,10 +55,10 @@ Updates
 -----------------------------------------------
 20110808 --Added the new error handling
          --Added ability to read in the values from the header keywords
+20130608 --Added variance frames
 
 Todo
 -----------------------------------------------
-1. Add variance frame 
 
 """
 from __future__ import with_statement
@@ -144,6 +144,7 @@ def xtalk(struct,xcoeff,namps=2, log=None,verbose=False):
     infile=saltkey.getimagename(struct[0])
 
     # how many extensions?
+    nsciext = saltkey.get('NSCIEXT',struct[0])
     nextend = saltkey.get('NEXTEND',struct[0])
     nccd = saltkey.get('NCCDS',struct[0])
 
@@ -158,7 +159,8 @@ def xtalk(struct,xcoeff,namps=2, log=None,verbose=False):
 
     #Loop over the image extensions and subtract one
     #set from the other--still hardwired at 2
-    for i in range(1,nextend, 2):
+    for i in range(1,nsciext, 2):
+      if struct[i].name=='SCI' and struct[i+1].name=='SCI':
         #set up the first amplifier
         dat1=struct[i].data.copy()
         ext1=saltkey.get('EXTVER', struct[i])
@@ -167,7 +169,8 @@ def xtalk(struct,xcoeff,namps=2, log=None,verbose=False):
            xc1=float(xcoeff[j])
         else:
            xc1=1.0/saltkey.get('XTALK', struct[i])
-        #set up the first amplifier
+
+        #set up the second amplifier
         dat2=struct[i+1].data.copy()
         ext2=saltkey.get('EXTVER', struct[i+1])
         if xcoeff: 
@@ -179,6 +182,18 @@ def xtalk(struct,xcoeff,namps=2, log=None,verbose=False):
         #subtract one from the other
         struct[i].data=struct[i].data-xc2*dat2[:,::-1]
         struct[i+1].data=struct[i+1].data-xc1*dat1[:,::-1]
+
+        #correct the variance frame
+        if saltkey.found('VAREXT', struct[i]):
+           vhdu1=saltkey.get('VAREXT', struct[i])
+           vhdu2=saltkey.get('VAREXT', struct[i+1])
+           try:
+               struct[vhdu1].data+=xc2*struct[vhdu2].data
+               struct[vhdu2].data+=xc1*struct[vhdu1].data
+           except Exception, e:
+               msg='Cannot update the variance frame in %s[%i] because %s' % (infile, vhdu1, e)
+               raise SaltError(msg)
+
 
         #print the message
         if log:
