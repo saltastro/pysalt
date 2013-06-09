@@ -68,7 +68,6 @@ pyexecute("pysalt$addpath.py",verbose=no)
 set saltred = "pysalt$saltred/"
 set slottools = "pysalt$slottools/"
 set bvittools = "pysalt$bvittools/"
-set pipetools = "pysalt$pipetools/"
 set saltfp = "pysalt$saltfp/"
 set saltspec = "pysalt$saltspec/"
 set proptools = "pysalt$proptools/"
