@@ -76,10 +76,6 @@ package pysalt
 
 task saltred.pkg = saltred$saltred.cl
 
-if (access('pipetools$pipetools.cl')) {
-  task pipetools.pkg = pipetools$pipetools.cl
-}
-
 task slottools.pkg = slottools$slottools.cl
 
 if (access('saltfp$saltfp.cl')) {
