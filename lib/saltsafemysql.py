@@ -285,6 +285,11 @@ def create_insert(db, ImageHeader, FileNameString, PipelineFileNameString):
     #get the block id
     try:
        BlockString=ImageHeader['BLOCKID'].strip()
+       BlockString=saltio.checkfornone(BlockString)
+       try:
+          if int(BlockString)==0: BlockString=None
+       except:
+          pass
     except KeyError:
        BlockString=''
        

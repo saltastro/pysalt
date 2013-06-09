@@ -68,7 +68,6 @@ pyexecute("pysalt$addpath.py",verbose=no)
 set saltred = "pysalt$saltred/"
 set slottools = "pysalt$slottools/"
 set bvittools = "pysalt$bvittools/"
-set pipetools = "pysalt$pipetools/"
 set saltfp = "pysalt$saltfp/"
 set saltspec = "pysalt$saltspec/"
 set proptools = "pysalt$proptools/"
@@ -76,10 +75,6 @@ set proptools = "pysalt$proptools/"
 package pysalt
 
 task saltred.pkg = saltred$saltred.cl
-
-if (access('pipetools$pipetools.cl')) {
-  task pipetools.pkg = pipetools$pipetools.cl
-}
 
 task slottools.pkg = slottools$slottools.cl
 
