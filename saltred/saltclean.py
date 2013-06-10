@@ -323,6 +323,11 @@ def clean(struct, createvar=False, badpixelstruct=None, mult=True, dblist=None, 
    #prepare the files
    struct=prepare(struct, createvar=createvar, badpixelstruct=badpixelstruct)
 
+   #reset the names in the structures
+   for i in range(1,len(struct)):
+       struct[i].name=struct[i].header['EXTNAME']
+
+
    #gain correct the files
    usedb=False
    if dblist:  usedb=True
