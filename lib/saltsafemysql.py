@@ -210,7 +210,7 @@ def create_insert(db, ImageHeader, FileNameString, PipelineFileNameString):
 
     #set up all the image header variables
     ExposureTimeString=createstring(ImageHeader, 'EXPTIME', '%5.3f') 
-    TelEpochString=createstring(ImageHeader, 'EQUINOX', '%6.2f')
+    TelEpochString=createstring(ImageHeader, 'EQUINOX', '%6.2f', '2000.0')
     TargetNameString=createstring(ImageHeader, 'OBJECT', '%s') 
     InstrueNameString=createstring(ImageHeader, 'INSTRUME', '%s')
     ObsModeString=createstring(ImageHeader, 'OBSMODE', '%s')
