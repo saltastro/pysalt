@@ -118,12 +118,18 @@ def calc_zpcoef(calfile, fpcoef):
    #read in the values for the calfile--assumes the format for the file
    #r,r_err,z,t,w,img=np.loadtxt(calfile, usecols=(0,1,4,5,6,8), unpack=True, dtype={8,str})
    data=np.loadtxt(calfile, dtype={'names': ('r','r_err', 'x', 'y', 'z', 't', 'w', 'dn', 'image'),'formats':('f4', 'f4', 'f4', 'f4', 'f4', 'f4', 'f4', 'f4','S30')})
-
-
    #set the start time and convert the time to a date time unit
    time_list=[]
    time_start=None
-   for img in data['image']:
+
+   if data.size==0:
+      raise SaltError('%s needs to have at least one entry' % calfile)
+   elif data.size==1:
+      img_list=[str(data['image'])]
+   else:
+      img_list=data['image']
+
+   for img in img_list:
       if not os.path.isfile(img): 
          raise SaltError('%s needs to be available to open' % img)
       t=get_datetime(saltio.openfits(img))
@@ -133,7 +139,10 @@ def calc_zpcoef(calfile, fpcoef):
 
    #calculate the coefficients
    wf=fpfunc(data['z'], data['r'], time_arr, coef=fpcoef)
-   coef=np.polyfit(time_arr, data['w']-wf, 1)
+   if data.size==1:
+      coef=np.array([0, data['w']-wf])
+   else:
+      coef=np.polyfit(time_arr, data['w']-wf, 1)
    
    return coef, time_start
 
