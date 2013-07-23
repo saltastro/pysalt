@@ -152,7 +152,6 @@ def findcenter(data, ring, method, niter=5, conv=0.05):
    elif method == 'CENTER':
          xc,yc,rad, rad_err=centerring(data, ring.xc, ring.yc, radmax=ring.prad, radstep=ring.sigma, nbins=8)
          c=((ring.xc-xc)**2+(ring.yc-yc)**2)**0.5
-         i+=1
          ring.xc=xc
          ring.yc=yc
          ring.prad=rad
