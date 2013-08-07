@@ -101,10 +101,9 @@ def saltflat(images,outimages,outpref, flatimage,minflat=1, allext=False, clobbe
        fmean=0
        fcount=0
        for fext in flatstruct:
-           if fext.size()>0:
+           if fext.shape:
               fmean += fext.data.sum()
               fcount += fext.data.size
-              print fext.data.shape, fext.data.size
        if fcount>0: fmean=fmean/fcount
 
        for fext in flatstruct:
@@ -119,7 +118,7 @@ def saltflat(images,outimages,outpref, flatimage,minflat=1, allext=False, clobbe
                     log.warning(message,with_stdout=verbose)
 
                 #if there are data, normalize it
-                if fext.size()>0:
+                if fext.shape:
                     fext.data=flatnormalize(fext.data, minflat)
 
            #Noramlize the science extensions
