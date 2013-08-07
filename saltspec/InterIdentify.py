@@ -323,6 +323,7 @@ class imageWidget(QtGui.QWidget):
        self.y1=int(self.y1ValueEdit.text())
        self.y2=int(self.y2ValueEdit.text())
        self.nrows=int(self.nrValueEdit.text())
+       self.rstep=int(self.nsValueEdit.text())
        if abs(self.y1-self.y2)!=self.nrows:
           print "Warning: Update y2 to increase the row sampling"
        self.y1line.set_ydata([self.y1, self.y1])

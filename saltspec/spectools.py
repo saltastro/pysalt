@@ -683,7 +683,7 @@ def writespectrum(spectra, outfile, error=False, ftype=None):
    for i in range(spectra.nwave):
        fout.write('%8.6f ' % spectra.wavelength[i])
        fout.write('%8.6e ' % spectra.flux[i])
-       if error: fout.write('%8.6e ' % spectra.var[i])
+       if error: fout.write('%8.6e ' % spectra.sigma[i])
        fout.write('\n')
    fout.close()
 

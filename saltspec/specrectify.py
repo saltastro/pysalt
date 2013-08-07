@@ -463,6 +463,9 @@ def findcoef(yc, wsrow, wscoef):
       coefficient is returned.  Otherwise, it will linearly interpoloate between
       the rows and find the best coefficient
    """
+   if len(wscoef)==1:  
+      return wscoef[0] 
+
    #If it is off the edges, then return None
    if yc< wsrow.min(): return None
    if yc> wsrow.max(): return None
