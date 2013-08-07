@@ -179,13 +179,16 @@ def multicrclean(struct, crtype='fast', thresh=5, mbox=5, bbox=11, bthresh=3, fl
        log.message('      ---------------------------------------------------', \
             with_header=False, with_stdout=verbose)
 
-   #set up the multi-thread
-   p=mp.Pool(processes=4)
    
    task_list=[]
+   nproc=0
    for hdu in struct:
        if hdu.name=='SCI':
            task_list.append((hdu.data, crtype, thresh, mbox, bbox, bthresh, flux_ratio, gain, rdnoise, bfactor , fthresh, gbox, maxiter))
+           nproc+=1
+
+   #set up the multi-thread
+   p=mp.Pool(processes=nproc)
 
 
    results=[p.apply_async(cleancosmicrays, i) for i in task_list]
