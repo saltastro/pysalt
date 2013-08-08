@@ -188,7 +188,7 @@ def multicrclean(struct, crtype='fast', thresh=5, mbox=5, bbox=11, bthresh=3, fl
            nproc+=1
 
    #set up the multi-thread
-   p=mp.Pool(processes=nproc)
+   p=mp.Pool()
 
 
    results=[p.apply_async(cleancosmicrays, i) for i in task_list]
