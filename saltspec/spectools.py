@@ -29,6 +29,7 @@ from PySpectrograph.Spectra import Spectrum, apext, detectlines
 
 import pylab as pl
 
+
 class SALTSpecError(SaltError):
     """Errors involving Spec package should cause this exception to be raised."""
     pass

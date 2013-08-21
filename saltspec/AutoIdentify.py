@@ -133,14 +133,12 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',   \
 
    if method=='FullXcor':
       func=st.findxcor 
+      if ws is None: return None
       dcoef=ws.coef*0.1
       dcoef[0]=dc
-      ws=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=True, oneline=True,\
-                  rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,      \
-                  dsigma=sigma, dniter=niter, verbose=verbose, dcoef=dcoef)
-      ImageSolution=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=False, oneline=oneline, \
+      ImageSolution=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=True, oneline=oneline, \
                   rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,     \
-                  dsigma=sigma, dniter=niter, verbose=verbose, dc=dc, ndstep=ndstep)
+                  dsigma=sigma, dniter=niter, verbose=verbose, dcoef=dcoef, ndstep=ndstep)
 
 
 
@@ -159,7 +157,8 @@ def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
 
       func--function to use for the solution
  
-      fline--whether the spectral lines are in list or array format
+      fline--True if spectral lines are in array format.  If False, spectral
+             lines are assumed to be in line format
 
       oneline--whether to measure one line or all lines
 
@@ -183,17 +182,18 @@ def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
 
        
    #first set up the artificial spectrum
-   swarr, sfarr=st.makeartificial(slines, sfluxes, farr.max(), res, dres)
+   if fline: 
+       swarr=slines
+       sfarr=sfluxes
+   else:
+       swarr, sfarr=st.makeartificial(slines, sfluxes, farr.max(), res, dres)
+   
    
    #find the solution for the central wavelegnth
    k=istart
    min_lines=0.1*len(cxp)
    if oneline:
-     if fline:
-       mws=solution(xarr, farr, slines, sfluxes, ws, func, \
-                    min_lines=min_lines, dsigma=dsigma, dniter=dniter, **kwargs)
-     else:
-       mws=solution(xarr, farr, swarr, sfarr, ws, func, \
+     mws=solution(xarr, farr, swarr, sfarr, ws, func, \
                     min_lines=min_lines,dsigma=dsigma, dniter=dniter, **kwargs)
      return mws
    else:
@@ -205,15 +205,15 @@ def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
            lws=getwsfromIS(k, ImageSolution)
            #set up the flux from the set of lines
            farr=apext.makeflat(specarr, k, k+nrows)
+
+           #continuum correct the spectrum if possible
            try:
               farr=st.flatspectrum(xarr, farr, mode='poly', order=2)
            except:
               continue
-           if fline:
-               fws=solution(xarr, farr, slines, sfluxes, lws, func, \
-                            min_lines=min_lines, dsigma=dsigma, dniter=dniter, **kwargs)
-           else:
-               fws=solution(xarr, farr, swarr, sfarr, lws, func, \
+  
+           #find the solution to the lines
+           fws=solution(xarr, farr, swarr, sfarr, lws, func, \
                             min_lines=min_lines, dsigma=dsigma, dniter=dniter, **kwargs)
            if fws is not None:
                ImageSolution[k]=fws
@@ -244,6 +244,7 @@ def solution(xarr, farr, sl, sf, ws, func, min_lines=2, dsigma=5, dniter=3, pad=
        #fit the function
        try:
            fws=func(xarr, farr, sl[smask], sf[smask], ws, **kwargs)
+           pass
        except SALTSpecError, e:
            return None
        except TypeError, e:

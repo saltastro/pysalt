@@ -262,12 +262,11 @@ def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', orde
       Write out the new image with the solution in the headers and/or as a table in the multi-extension
       fits file
    
-      img--the input fits file
-      outfile--file to write the results to
+      data--2-D array of the arc image
       slines--wavelengths for known lines
       sfluxes--fluxes for known lines
-      guesstype--type of initial guess for the solution
-      guessfile--File if guesstype is from a previously processed source
+      xarr--1-D array of x positions for data
+      ws--WavelengthSolution expersion of the initial guess
       function--function form fit 
       order--order of the fit
       rstep--rows to step when fitting the solution
@@ -302,7 +301,6 @@ def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', orde
                        rstep=rstep, method=method, istart=istart, nrows=nrows, oneline=True, \
                        res=res, dres=dres, mdiff=mdiff, dc=dc, ndstep=ndstep, sigma=thresh, niter=niter, \
                        verbose=verbose) 
-
        ImageSolution = AutoIdentify(xarr, data, slines, sfluxes, ws,  \
                          rstep=rstep, method=method, istart=istart, nrows=nrows, \
                          res=res, dres=dres, dc=dc, ndstep=ndstep, sigma=thresh, niter=niter, \
