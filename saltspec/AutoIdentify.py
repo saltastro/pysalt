@@ -71,10 +71,10 @@ debug=True
 #autoidentify_options=['Zeropoint', 'Matchlines', 'MatchZero', 'FullXCor']
 autoidentify_options=['Zeropoint', 'Matchlines', 'MatchZero']
 
-def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',   \
-                     rstep=1, istart=None, nrows=1, res=2, dres=0.1,         \
-                     sigma=5, niter=5, mdiff=20, dc=20, ndstep=20, farr=None, \
-                     oneline=False, verbose=True):
+def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',       \
+                     rstep=1, istart=None, nrows=1, res=2, dres=0.1, dsigma=5, \
+                     sigma=5, niter=5, mdiff=20, dc=20, ndstep=20, farr=None,  \
+                     oneline=False, log=None, verbose=True):
    """Automatically find the wavlength solution for the entire image.  The following 
       methods are used:
 
@@ -98,7 +98,7 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',   \
       func=st.findzeropoint
       ImageSolution=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=False, oneline=oneline, \
                   rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,      \
-                  dsigma=sigma, dniter=niter, verbose=verbose, dc=dc, ndstep=ndstep)
+                  dsigma=dsigma, dniter=niter, log=log, verbose=verbose, dc=dc, ndstep=ndstep)
 
    #use a line matching algorithm to match the lines
    #in the image with those in the line list
@@ -111,7 +111,7 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',   \
            wdiff=mdiff
       ImageSolution=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=True, oneline=oneline,\
                   rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,      \
-                  dsigma=sigma, dniter=niter, verbose=verbose, mdiff=mdiff, wdiff=wdiff, sigma=sigma, niter=niter)
+                  dsigma=dsigma, dniter=niter, log=log, verbose=verbose, mdiff=mdiff, wdiff=wdiff, sigma=sigma, niter=niter)
 
    #first fit a zeropoint, then match the lines, and then 
    #find the rest of the points by using only the zeropoint
@@ -119,16 +119,16 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',   \
       func=st.findzeropoint
       ws=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=False, oneline=True, \
                   rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,      \
-                  dsigma=sigma, dniter=niter, verbose=verbose, dc=10, ndstep=20)
+                  dsigma=dsigma, dniter=niter, log=log, verbose=verbose, dc=10, ndstep=20)
 
       func=st.findwavelengthsolution
       ws=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=True, oneline=True,\
                   rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,      \
-                  dsigma=sigma, dniter=niter, verbose=verbose, sigma=sigma, niter=niter)
+                  dsigma=dsigma, dniter=niter, log=log, verbose=verbose, sigma=sigma, niter=niter)
       func=st.findzeropoint
       ImageSolution=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=False, oneline=oneline,\
                   rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,      \
-                  dsigma=sigma, dniter=niter, verbose=verbose, dc=dc, ndstep=ndstep)
+                  dsigma=dsigma, dniter=niter, log=log, verbose=verbose, dc=dc, ndstep=ndstep)
 
 
    if method=='FullXcor':
@@ -138,7 +138,7 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',   \
       dcoef[0]=dc
       ImageSolution=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=True, oneline=oneline, \
                   rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,     \
-                  dsigma=sigma, dniter=niter, verbose=verbose, dcoef=dcoef, ndstep=ndstep)
+                  dsigma=dsigma, dniter=niter, log=log, verbose=verbose, dcoef=dcoef, ndstep=ndstep)
 
 
 
@@ -146,10 +146,10 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',   \
    
 def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
                 fline=True, oneline=False, farr=None, rstep=20,\
-                istart=None, nrows=1, dsigma=5, dniter=5, res=2.0, dres=0.1, verbose=True, **kwargs):
+                istart=None, nrows=1, dsigma=5, dniter=5, res=2.0, dres=0.1, log=None, verbose=True, **kwargs):
    """Starting in the middle of the image, it will determine the solution
       by working its way out to either edge and compiling all the results into 
-      ImageSolution
+      ImageSolution.  The image solution is only saved if the sigma is less than dres.
 
       xarr--Full range in x of pixels to solve for
    
@@ -200,6 +200,8 @@ def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
      ImageSolution[k]=ws
 
    #now loop through each step, and calculate the wavelengths for the given 
+   if log is not None:
+      log.message('%5s %3s %4s' % ('Line', 'N','RMS'), with_header=False)
    for i in range(rstep,int(0.5*len(specarr)), rstep):
        for k in [istart-i, istart+i]:
            lws=getwsfromIS(k, ImageSolution)
@@ -216,14 +218,19 @@ def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
            fws=solution(xarr, farr, swarr, sfarr, lws, func, \
                             min_lines=min_lines, dsigma=dsigma, dniter=dniter, **kwargs)
            if fws is not None:
-               ImageSolution[k]=fws
+               if fws.sigma(fws.func.x, fws.func.y) < dres:
+                  ImageSolution[k]=fws
 
                if verbose:
                    p_new=i*100.0/(0.5*len(specarr))
                    #ctext='Percentage Complete: %d %d %f\r' % (i,p_new, time.clock()) #p_new
                    #sys.stdout.write(ctext)#
                    #sys.stdout.flush()
-	           print "%5i %3i %3.2f" % (k, fws.func.mask.sum(), fws.sigma(fws.func.x, fws.func.y) )
+                   msg="%5i %3i %3.2f" % (k, fws.func.mask.sum(), fws.sigma(fws.func.x, fws.func.y) )
+                   if log is not None:
+                      log.message(msg, with_header=False)
+                   else:
+	              print msg
 
    return ImageSolution
 

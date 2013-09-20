@@ -254,7 +254,7 @@ def guess_ws(guesstype, xarr, guessfile=None, rss=None, function='polynomial', o
 # Find the solution for lines in a file
 
 def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', order=3,  
-             rstep=1, nrows=1, mdiff=5, thresh=3, niter=5, dc=3, ndstep=50, 
+             rstep=1, nrows=1, mdiff=5, thresh=3, niter=5, dc=3, ndstep=50, dsigma=5,
              method='Zeropoint', res=2, dres=0.2, filename=None, inter=True, log=None, verbose=True):
    """For a given image, find the solution for each row in the file.  Use the appropriate first guess and 
       guess type along with the appropriate function and order for the fit.
@@ -277,7 +277,8 @@ def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', orde
       dc--step size for zero point cross correlation
       dstep--number of 
       method--method for automatic wavelength determination
-      rstart--first line to extract  *TODO*
+      dsigma--detection threshhold for the lines
+      rstart--first line to extract  
       inter--run in interactive mode
       verbose--print out the results
 
@@ -295,15 +296,15 @@ def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', orde
        ImageSolution=InterIdentify(xarr, data, slines, sfluxes, ws, mdiff=mdiff, rstep=rstep, 
                            function=function, order=order, sigma=thresh, niter=niter, 
                            res=res, dres=dres, dc=dc, ndstep=ndstep, istart=istart,
-                           method=method, filename=filename, verbose=True)
+                           method=method, filename=filename, log=log, verbose=True)
    else:
        ws=AutoIdentify(xarr, data, slines, sfluxes, ws,  \
                        rstep=rstep, method=method, istart=istart, nrows=nrows, oneline=True, \
-                       res=res, dres=dres, mdiff=mdiff, dc=dc, ndstep=ndstep, sigma=thresh, niter=niter, \
+                       dsigma=dsigma, res=res, dres=dres, mdiff=mdiff, dc=dc, ndstep=ndstep, sigma=thresh, niter=niter, \
                        verbose=verbose) 
        ImageSolution = AutoIdentify(xarr, data, slines, sfluxes, ws,  \
-                         rstep=rstep, method=method, istart=istart, nrows=nrows, \
-                         res=res, dres=dres, dc=dc, ndstep=ndstep, sigma=thresh, niter=niter, \
+                         rstep=rstep, method=method, istart=istart, nrows=nrows, mdiff=mdiff, \
+                         dsigma=dsigma, res=res, dres=dres, dc=dc, ndstep=ndstep, sigma=thresh, niter=niter, \
                          verbose=verbose)
 
    return ImageSolution

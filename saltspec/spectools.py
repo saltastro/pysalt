@@ -160,7 +160,8 @@ def findwavelengthsolution(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, sigma=5, 
       returns ws
    """
    #match up the features
-   xp, wp=findfeatures(xarr, farr, sl, sf, ws, mdiff=mdiff, wdiff=wdiff, sigma=sigma, niter=niter)
+   #xp, wp=findfeatures(xarr, farr, sl, sf, ws, mdiff=mdiff, wdiff=wdiff, sigma=sigma, niter=niter)
+   xp,wp=crosslinematch(xarr, farr, sl, sf, ws, mdiff=mdiff, wdiff=wdiff, sigma=sigma, niter=niter)
 
    #find the solution to the best fit
    mask=(wp>0)
@@ -169,7 +170,6 @@ def findwavelengthsolution(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, sigma=5, 
        nws.fit()
    else:
        nws=None
-
    return nws
 
 def findfeatures(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, sigma=5, niter=5, sections=3):
@@ -613,7 +613,6 @@ def getslitsize(slitname, config_file=''):
    except:
        pass
    msg='Assuming a slit size of 1.0'
-   print msg
    return 1.0
    msg='SPECTOOLS--Slitmask name not identified in config file'
    raise SALTSpecError(msg)
@@ -688,6 +687,69 @@ def writespectrum(spectra, outfile, error=False, ftype=None):
        fout.write('\n')
    fout.close()
 
+def crosslinematch(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, res=2, dres=0.1, sigma=5, niter=5, dc=20, sections=3):
+    """Cross line match takes a line list and matches it with the observed spectra.  
+      
+       The following steps are employed in order to achive the match:
+
+    """
+
+    #setup initial wavelength array
+    warr=ws.value(xarr)
+    #detect lines in the input spectrum and identify the peaks and peak values
+    xp, xf=findpoints(xarr, farr, sigma, niter, sections=sections)
+
+    #create an artificial lines for comparison
+    lmax=farr.max()
+    swarr, sfarr=makeartificial(sl, sf, lmax, res, dres)
+
+    #now loop through the lines
+    #exclude those lines that are outside of the source
+    #then use the wdiff region to do a cross correlation around
+    # a source and then proceed to calculate what the match is
+    si=sf.argsort()
+    dcoef=ws.coef*0.0
+    dcoef[0]=dc
+    xp_list=[]
+    wp_list=[]
+    for i in si[::-1]:
+        if sl[i]<warr.max() and sl[i]>warr.min():
+           mask=abs(warr-sl[i])<wdiff
+           smask=abs(swarr-sl[i])<wdiff
+           nws=findxcor(xarr[mask], farr[mask], swarr[smask], sfarr[smask], ws, dcoef=dcoef, ndstep=20, best=False, inttype='interp', debug=False)
+           #now find the best matching point
+           #require it to be very close using the nws values
+           #require  also that the fluxes match somehow or are close
+           #ie if it is the third brightest thing in that region, then
+           #   it should be the third brightest thing
+           #also require a good fit between observed and artificial
+           nwarr=nws.value(xarr)
+           nwp=nws.value(xp) 
+           d=abs(nwp-sl[i])
+           j=d.argmin()
+           if d.min()<res:
+              if  lineorder(xp, xf, sl, sf, sl[i], xp[j], wdiff, nws):
+                 xp_list.append(xp[j])
+                 wp_list.append(sl[i])
+
+    return np.array(xp_list), np.array(wp_list)
  
 
+def lineorder(xp, xf, sl, sf, sw, xb, wdiff, nws):
+    """Determines the rank order of sw inside the set of lines and then determines if the 
+       xp line is the same rank order.   Returns True if it is
+    """
 
+    #first cut the two line list down to the same size
+    mask=abs(nws.value(xp)-sw)<wdiff
+    smask=abs(sl-sw)<wdiff
+
+    #identify the order of the spectral lines
+    i=sf[smask].argsort()
+    i_ord=i[sl[smask][i]==sw]
+
+    #identify the order of the observed lines
+    j=xf[mask].argsort()
+    j_ord=j[xp[mask][j]==xb]
+
+    return i_ord==j_ord
