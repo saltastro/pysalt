@@ -39,6 +39,7 @@ FPCAL-- FPCAL further reduces and quickly calibrates FP data
 Author                 Version      Date
 -----------------------------------------------
 S M Crawford (SAAO)    0.1          20 Jul 2011
+ERC (SAAO)             0.2          20 Sep 2013
 
 """
 import os 
