@@ -1,0 +1,12 @@
+images,s,a,'',,,'Input image or filename of list of images'
+method,s,h,'None','None|Fit|Max|Center|Moment',,'Method for determining ring center'
+section,s,h,'',,,'Section for determining the background'
+thresh,i,h,3,,,'Threshhold for rejection'
+minsize,i,h,10,,,'Minimum pixel width for ring'
+niter,i,h,5,,,'Maximum number of iterations for rejection'
+conv,r,h,0.05,,,'Convergence criteria for the ring fitting'
+displayimage,b,h,no,,,'Display ring in DS9'
+clobber,b,h,no,,,'Overwrite existing files'
+logfile,s,h,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 

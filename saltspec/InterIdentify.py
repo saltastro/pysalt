@@ -87,7 +87,8 @@ class InterIdentifyWindow(QtGui.QMainWindow):
 
    def __init__(self, xarr, specarr, slines, sfluxes, ws, hmin=150, wmin=400, mdiff=20,
                 filename=None, res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, niter=5, istart=None,
-                nrows=1, rstep=100, method='Zeropoint', ivar=None, cmap='gray', scale='zscale', contrast=1.0):
+                nrows=1, rstep=100, method='Zeropoint', ivar=None, cmap='gray', scale='zscale', contrast=1.0,
+                log=None, verbose=True):
         """Default constructor."""
 
         #set up the variables
@@ -119,6 +120,8 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         self.contrast=contrast
         self.filename=filename
         self.ImageSolution={}
+        self.log=log
+        self.verbose=verbose
 
         # Setup widget
         QtGui.QMainWindow.__init__(self)
@@ -131,7 +134,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
 
         #create the Image page
         self.imagePage=imageWidget(self.specarr, y1=self.y1, y2=self.y2, hmin=self.hmin, wmin=self.wmin, cmap=self.cmap, 
-                                   rstep=self.rstep, name=self.filename, scale=self.scale, contrast=self.contrast)
+                                   rstep=self.rstep, name=self.filename, scale=self.scale, contrast=self.contrast, log=self.log)
 
         #set up the arc page
         self.farr=apext.makeflat(self.specarr, self.y1, self.y2)
@@ -139,7 +142,8 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         #set up variables
         self.arcdisplay=ArcDisplay(xarr, self.farr, slines, sfluxes, self.ws, specarr=self.specarr, 
                                    res=self.res, dres=self.dres, dc=self.dc, ndstep=self.ndstep, xp=[], wp=[],
-                                   method=self.method,niter=self.niter, mdiff=self.mdiff, sigma=self.sigma)
+                                   method=self.method,niter=self.niter, mdiff=self.mdiff, sigma=self.sigma, 
+                                   log=self.log, verbose=self.verbose)
         self.arcPage=arcWidget(self.arcdisplay,  hmin=hmin, wmin=wmin, y1=self.y1, y2=self.y2, name=self.filename)
         #set up the residual page
         self.errPage=errWidget(self.arcdisplay, hmin=hmin, wmin=wmin)
@@ -203,16 +207,23 @@ class InterIdentifyWindow(QtGui.QMainWindow):
    def saveWS(self):
        self.ws=self.arcdisplay.ws
        k=0.5*(self.y1+self.y2)
-       print 'Saving WS value for row %i' % k 
+       xp=np.array(self.arcdisplay.xp)
+       wp=np.array(self.arcdisplay.wp)
+       w=self.arcdisplay.ws.value(xp)
+       value=(wp-w).std()
+
+       if self.log is not None:
+          msg='Saving WS value for row %i with rms=%f for %i lines' % (k, value,len(self.arcdisplay.wp))
+          self.log.message(msg)
        #create a new wavelength solution
        nws=WavelengthSolution.WavelengthSolution(self.ws.x_arr,self.ws.w_arr, order=self.ws.order, function=self.ws.function)
        try:
            nws.fit() 
        except Exception, e:
-           print "Unable to save wavelength solution because %s" % e
+           if self.log is not None: self.log.warning( "Unable to save wavelength solution because %s" % e)
            return 
        self.ImageSolution[k]=nws
-       for k in self.ImageSolution: print k,self.ImageSolution[k].coef
+       #for k in self.ImageSolution: print k,self.ImageSolution[k].coef
 
    def newWS(self, y):
        """Determine the WS closest to the values given by y1 and y2"""
@@ -233,7 +244,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
 
 
 class imageWidget(QtGui.QWidget):
-    def __init__(self, imarr, y1=None, y2=None, nrows=1, rstep=100, hmin=150, wmin=400, name=None, cmap='Gray', scale='zscale', contrast=0.1, parent=None):
+    def __init__(self, imarr, y1=None, y2=None, nrows=1, rstep=100, hmin=150, wmin=400, name=None, cmap='Gray', scale='zscale', contrast=0.1, log=None, parent=None):
         super(imageWidget, self).__init__(parent)
 
         self.y1=y1
@@ -242,6 +253,7 @@ class imageWidget(QtGui.QWidget):
         self.x2=len(imarr[0])
         self.nrows=nrows
         self.rstep=rstep
+        self.log=log
 
         # Add FITS display widget with mouse interaction and overplotting
         self.imdisplay = ImageDisplay()
@@ -325,7 +337,7 @@ class imageWidget(QtGui.QWidget):
        self.nrows=int(self.nrValueEdit.text())
        self.rstep=int(self.nsValueEdit.text())
        if abs(self.y1-self.y2)!=self.nrows:
-          print "Warning: Update y2 to increase the row sampling"
+          self.log.warning( "Warning: Update y2 to increase the row sampling")
        self.y1line.set_ydata([self.y1, self.y1])
        self.y2line.set_ydata([self.y2, self.y2])
        self.imdisplay.draw()
@@ -341,7 +353,7 @@ class imageWidget(QtGui.QWidget):
        self.updatesection()
 
     def runauto(self):
-       print "Running Auto"
+       if self.log is not None: self.log.message("Running Auto")
        self.emit(QtCore.SIGNAL("runauto(int, int, int)"), self.y1, self.nrows, self.rstep)
 
 class arcWidget(QtGui.QWidget):
@@ -578,7 +590,9 @@ class errWidget(QtGui.QWidget):
            value=(wp-w).std()
            self.stdValueLabel.setText("%4.2g" % value)
        except Exception, e:
-           print e
+           if self.arcdisplay.log is not None: self.arcdisplay.log.message(e)
+           pass
+ 
 
    def rejectpoints(self):
        self.arcdisplay.ws.set_thresh(float(self.sigmaValueEdit.text()))
@@ -592,7 +606,8 @@ class ArcDisplay(QtGui.QWidget):
    """
 
    def __init__(self, xarr, farr, slines, sfluxes, ws, xp=[], wp=[], mdiff=20, specarr=None, 
-                res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, niter=5, method='MatchZero', verbose=True):
+                res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, niter=5, method='MatchZero', 
+                log=None, verbose=True):
        """Default constructor."""
        QtGui.QWidget.__init__(self)
 
@@ -630,6 +645,7 @@ class ArcDisplay(QtGui.QWidget):
        self.dc=dc
        self.ndstep=ndstep
        self.method=method
+       self.log=log
        self.verbose=True
 
        self.xp=xp
@@ -688,13 +704,13 @@ d - delete feature      u - undelete feature
        elif event.key=='c':
            #return the centroid
            if event.xdata:
-               print event.xdata
+               self.log.message(event.xdata, with_header=False)
                cx=st.mcentroid(self.xarr, self.farr, xc=event.xdata, xdiff=self.mdiff)
                self.emit(QtCore.SIGNAL("updatex(float)"), cx)
        elif event.key=='x':
            #return the x position
            if event.xdata:
-               print event.xdata
+               self.log.message(event.xdata, with_header=False)
                self.emit(QtCore.SIGNAL("updatex(float)"), event.xdata)
        elif event.key=='R':
            #reset the fit 
@@ -722,6 +738,10 @@ d - delete feature      u - undelete feature
        elif event.key=='i':
            #reset identified features
            pass
+       elif event.key=='t':
+           #reset identified features
+           self.isFeature=True
+           self.testfeatures()
        elif event.key=='l':
            #plot the features from existing list
            if self.isFeature:  
@@ -814,14 +834,29 @@ d - delete feature      u - undelete feature
        except:
            self.wdiff=self.mdiff
 
+   def testfeatures(self):
+       """Run the test matching algorithm"""
+       self.set_wdiff()
+       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes,
+                              self.ws, mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
+       for x, w in zip(xp, wp):
+          if w not in self.wp and w>-1: 
+             self.xp.append(x)
+             self.wp.append(w)
+       self.plotFeatures()
+       self.redraw_canvas()
+         
+
    def findfeatures(self):
        """Given a set of features, find other features that might 
           correspond to those features
        """
        self.set_wdiff()
 
-       xp, wp=st.findfeatures(self.xarr, self.farr, self.slines, self.sfluxes,
-                              self.ws, mdiff=self.mdiff, wdiff=self.wdiff, sigma=self.sigma, niter=self.niter, sections=3)
+       #xp, wp=st.findfeatures(self.xarr, self.farr, self.slines, self.sfluxes,
+       #                       self.ws, mdiff=self.mdiff, wdiff=self.wdiff, sigma=self.sigma, niter=self.niter, sections=3)
+       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes,
+                              self.ws, mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
        for x, w in zip(xp, wp):
           if w not in self.wp and w>-1: 
              self.xp.append(x)
@@ -861,12 +896,15 @@ d - delete feature      u - undelete feature
        try:
            self.ws=st.findfit(np.array(self.xp), np.array(self.wp), ws=self.ws)
        except SALTSpecError, e:
-           print e
+           self.log.warning(e)
            return 
+       del_list=[]
        if len(self.ws.func.x)!=len(self.xp):
           for x in self.xp:
               if x not in self.ws.func.x:
-                 self.deletepoints(x, save=True)           
+                 del_list.append(x)
+          for x in del_list:
+              self.deletepoints(x, save=True)           
        self.rms=self.ws.sigma(self.ws.x_arr, self.ws.w_arr)
        self.redraw_canvas()
 
@@ -889,7 +927,7 @@ d - delete feature      u - undelete feature
           slines=self.slines
           sfluxes=self.sfluxes
        
-       iws=ai.AutoIdentify(self.xarr, self.specarr, slines, sfluxes, self.ws, farr=self.farr,method=self.method,  rstep=rstep, istart=istart,  nrows=nrows, res=self.res, dres=self.dres, sigma=self.sigma, niter=self.niter, dc=self.dc, ndstep=self.ndstep, oneline=oneline, verbose=self.verbose)
+       iws=ai.AutoIdentify(self.xarr, self.specarr, slines, sfluxes, self.ws, farr=self.farr,method=self.method,  rstep=rstep, istart=istart,  nrows=nrows, res=self.res, dres=self.dres, mdiff=self.mdiff, sigma=self.sigma, niter=self.niter, dc=self.dc, ndstep=self.ndstep, oneline=oneline, log=self.log, verbose=self.verbose)
        if oneline:
           self.ws=iws
        else:
@@ -1014,7 +1052,8 @@ d - delete feature      u - undelete feature
 
 def InterIdentify(xarr, specarr, slines, sfluxes, ws, mdiff=20, rstep=1, filename=None,
                   function='poly', order=3, sigma=3, niter=5, res=2, dres=0.1, dc=20, ndstep=20,
-                  istart=None, method='Zeropoint', scale='zscale', cmap='gray', contrast=1.0, verbose=True):
+                  istart=None, method='Zeropoint', scale='zscale', cmap='gray', contrast=1.0,  
+                  log=None, verbose=True):
 
   
         
@@ -1022,7 +1061,7 @@ def InterIdentify(xarr, specarr, slines, sfluxes, ws, mdiff=20, rstep=1, filenam
    App = QtGui.QApplication(sys.argv)
    aw = InterIdentifyWindow(xarr, specarr, slines, sfluxes, ws, rstep=rstep, mdiff=mdiff, sigma=sigma, niter=niter,
                             res=res, dres=dres,dc=dc, ndstep=ndstep, istart=istart, method=method,
-                            cmap=cmap, scale=scale, contrast=contrast, filename=filename)
+                            cmap=cmap, scale=scale, contrast=contrast, filename=filename, log=log)
    aw.show()
    # Start application event loop
    exit=App.exec_()
