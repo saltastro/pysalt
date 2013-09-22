@@ -154,7 +154,8 @@ def skysubtract(hdu, method='normal', section=[], funct='polynomial', order=2):
 
            #correct the variance frame
            if var_ext:
-               hdu[var_ext].data=hdu[var_ext].data+ap.lvar/nrows
+               if ap.ivar is not None:
+                  hdu[var_ext].data=hdu[var_ext].data+ap.ivar/nrows
 
    return hdu
 
