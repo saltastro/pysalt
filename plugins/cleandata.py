@@ -86,6 +86,7 @@ def cleandata(filename, iminfo=None, prodir='.', interp='linear', cleanup=True, 
      gaindb = '/iraf/extern/pysalt/data/rss/RSSamps.dat'
      xtalkfile = '/iraf/extern/pysalt/data/rss/RSSxtalk.dat'
      geomfile = '/iraf/extern/pysalt/data/rss/RSSgeom.dat'
+     usedb=True
    elif infile[0]=='S':
      gaindb = '/iraf/extern/pysalt/data/scam/SALTICAMamps.dat'
      xtalkfile = '/iraf/extern/pysalt/data/scam/SALTICAMxtalk.dat'
@@ -101,7 +102,7 @@ def cleandata(filename, iminfo=None, prodir='.', interp='linear', cleanup=True, 
                     clobber=clobber,logfile=logfile,verbose=verbose,status=status)
    pinfile=outpath+'p'+infile
    saltred.saltslot(images=pinfile,outimages='',outpref=outpath+'bx',gaindb=gaindb,
-                 xtalkfile=xtalkfile,clobber=clobber,logfile=logfile,verbose=verbose,
+                 xtalkfile=xtalkfile,usedb=True, clobber=clobber,logfile=logfile,verbose=verbose,
                  status=status)
    biasfile=outpath+'bxp'+infile
    saltred.saltmosaic(images=biasfile,
