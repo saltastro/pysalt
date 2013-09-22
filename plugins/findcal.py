@@ -85,6 +85,28 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
 
     #loop through all the results and return only the Set of identical results
     caldict=create_caldict(results)
+
+    #list of rss calibration types
+    #+-----------------------+----------------------------------+
+    #| RssCalibrationType_Id | CalibrationType                  |
+    #+-----------------------+----------------------------------+
+    #|                     2 | Arc                              |
+    #|                     1 | Bias                             |
+    #|                    14 | Imaging flat - Lamp              |
+    #|                    15 | Imaging flat - Twilight          |
+    #|                     3 | Spectroscopic flat - Lamp        |
+    #|                     4 | Spectroscopic flat - Twilight    |
+    #|                    12 | Standard - Circular polarimetric |
+    #|                    13 | Standard - Lick                  |
+    #|                     9 | Standard - Linear polarimetric   |
+    #|                     5 | Standard - Photometric           |
+    #|                     8 | Standard - RV                    |
+    #|                    11 | Standard - Smooth spectrum       |
+    #|                     7 | Standard - Spectrophotometric    |
+    #|                     6 | Standard - Spectroscopic         |
+    #|                    10 | Standard - Unpolarised           |
+    #+-----------------------+----------------------------------+
+
                
     #insert the results into the database
     for k in caldict:
@@ -119,6 +141,7 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
 
     #loop through all the results and return only the Set of identical results
     caldict=create_caldict(results)
+    print caldict
     #insert the scam results into the database
     for k in caldict:
        #first check to see if it has already been entered
@@ -136,31 +159,30 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
                request=saltmysql.select(sdb, 'RssCalibrationType_Id', 'RssCalibration', 'Block_Id=%i' % blockid)
                for cid in request:
                    cid=cid[0]
-                   if cid==7: period=7
-                   #Arcs and lamp flats are taken with the block and not separately
-                   #spectroscopic standards are handled separately so that we can check the period for 
-                   #them. 
-                   if cid not in [1,2,3,7]:
-                       cmd_insert='NightInfo_Id=%i, FileData_Id=%i, RssCalibrationType_Id=%i' % (night_id, k, cid)
-                       saltmysql.insert(sdb, cmd_insert, 'RssNightlyCalibration')
-                   #for biases, check to see if there is already an entry with the same settings
+                   #check to see if the request is already in the database or if a similar request has
+                   #been taken recently
                    if cid==1:
                        if not checkforbias(sdb, k):
                           cmd_insert='NightInfo_Id=%i, FileData_Id=%i, RssCalibrationType_Id=%i' % (night_id, k, cid)
-                          #saltmysql.insert(sdb, cmd_insert, 'RssNightlyCalibration')
- 
+                          saltmysql.insert(sdb, cmd_insert, 'RssNightlyCalibration')
+                   elif cid in [3,4]:
+                       if not checkforflats(sdb, k, cid, rssheaderlist, instr='rss'):
+                          
+                          cmd_insert='NightInfo_Id=%i, FileData_Id=%i, RssCalibrationType_Id=%i' % (night_id, k, cid)
+                          saltmysql.insert(sdb, cmd_insert, 'RssNightlyCalibration')
+                       
+                   elif cid==7:
+                       period=7
+                       #print period, k, caldict[k]
+                       if not checkforspst(sdb, k, caldict[k], rssheaderlist, period=period):
+                          cmd_insert='NightInfo_Id=%i, FileData_Id=%i, RssCalibrationType_Id=7' % (night_id, k)
+                          saltmysql.insert(sdb, cmd_insert, 'RssNightlyCalibration')
+                   else:
+                       cmd_insert='NightInfo_Id=%i, FileData_Id=%i, RssCalibrationType_Id=%i' % (night_id, k, cid)
+                       saltmysql.insert(sdb, cmd_insert, 'RssNightlyCalibration')
                      
-           if caldict[k][2]=='SPECTROSCOPY':
 
-               #Add a check to make sure that something similar to this one isn't already in there
-               #insert spec photometric standard
-               if not checkforspst(sdb, k, caldict[k], rssheaderlist, period=period):
-                   cmd_insert='NightInfo_Id=%i, FileData_Id=%i, RssCalibrationType_Id=7' % (night_id, k)
-                   saltmysql.insert(sdb, cmd_insert, 'RssNightlyCalibration')
-
-                #write proceedure to check for different requested calibration types
-
-       print k," ".join([str(k) for k in caldict[k]])
+                   print k, cid," ".join([str(w) for w in caldict[k]])
 
     return
 
@@ -182,14 +204,58 @@ def checkforbias(sdb, k, instr='rss'):
     record=saltmysql.select(sdb, 'FileData_Id', caltable, logic)
 
     # if no results return false
-    try: 
-       record=record[0]
-    except:
-       return False
+    if len(record)<1: return False
     
     select='CCDSUM,GAINSET, ROSPEED'
     table='FileData join %s using (FileData_Id)' % fitstable
     logic='FileData_Id=%i' % k
+    kdata=saltmysql.select(sdb, select, table, logic)[0]
+    for i in record:
+        idata=saltmysql.select(sdb, select, table, 'FileData_Id=%i' % i)[0]
+        if compare_configs(kdata, idata): return True
+        
+    return False
+
+def checkforflats(sdb, fid, caltype, plist, instr='rss'):
+    """Check to see if a bias of the same type already exists in the calibration table
+
+       fid: int
+           FileData_Id
+
+       caltype: int 
+          calibration type being checked for
+
+       keylist: list
+          list of RSS header keywords
+
+       plist: string
+          string of RSS headers needed
+
+       instr: string 
+          either 'rss' or 'scam'
+ 
+    """ 
+    if instr=='rss':
+       caltable='RssNightlyCalibration' 
+       logic='RssCalibrationType_Id=%i' % caltype
+       fitstable='FitsHeaderRss'
+    elif instr=='scam':
+       caltable='SalticamNightlyCalibration' 
+       logic='SalticamCalibrationType_Id=%i' %caltype
+       fitstable='FitsHeaderSalticam'
+ 
+ 
+    #get all the flat requests
+    logic='CalibrationTaken is Null and Ignored=0 and %s' %  logic
+    record=saltmysql.select(sdb, 'FileData_Id', caltable, logic)
+    # if no results return false
+    if len(record)<1: return False
+    
+    select=plist 
+    table='FileData join FitsHeaderImage using (FileData_Id) join %s using (FileData_Id)' % fitstable
+    logic='FileData_Id=%i' % fid
+
+    #select 
     kdata=saltmysql.select(sdb, select, table, logic)[0]
     for i in record:
         idata=saltmysql.select(sdb, select, table, 'FileData_Id=%i' % i)[0]
@@ -211,6 +277,9 @@ def checkforspst(sdb, fid, keylist, plist, period=7):
        keylist: list
           list of RSS header keywords
 
+       plist: string
+          string of RSS headers needed
+
        period: int
           number of days in the past to check if data were taken
  
@@ -219,6 +288,8 @@ def checkforspst(sdb, fid, keylist, plist, period=7):
        The [:-1] selection in the comparison of the lists is to exclude maskid
 
     """
+    caltable='RssNightlyCalibration'
+
     try:
        utstart=saltmysql.select(sdb, 'UTStart', 'FileData', 'FileData_Id=%i' % fid)[0][0]
     except Exception, e:
@@ -262,16 +333,12 @@ def checkforspst(sdb, fid, keylist, plist, period=7):
 '''
     for i in record:
         cmd_logic='FileData_Id=%i' % i
-        results=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)[0]
+        r=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)[0]
         if compare_configs(keylist[-1], r[2:-1]): 
            return True
         
     return False
 
-
-    return False
-
-        
 
 def create_caldict(results):
     """Sort through the results from the query and create the calibration dictionary
