@@ -64,6 +64,7 @@ from pyraf.iraf import pysalt
 
 import saltsafekey as saltkey
 import saltsafeio as saltio
+import saltsafemysql as saltmysql
 import saltstat
 
 #import plugins
@@ -76,12 +77,12 @@ from sdbloadobslog import sdbloadobslog
 from fpcal import fpcal
 from findcal import findcal
 from fastmode import runfast
+from sdbloadfits import sdbloadfits
 
 from saltgui import ImageDisplay, MplCanvas
 from saltsafelog import logging
 from salterror import SaltError, SaltIOError
 
-from saltsdbloadfits import saltsdbloadfits
 
 from OrderedDict import OrderedDict
 from ImageWidget import ImageWidget
@@ -554,9 +555,12 @@ class FirstWindow(QtGui.QMainWindow):
       #load the data into the SDB
       if self.sdbhost:
            try:
-               saltsdbloadfits(filename, self.sdbhost, self.sdbname, self.sdbuser, self.password, logfile, verbose )
+               log=None #open(logfile, 'a')
+               sdb=saltmysql.connectdb(self.sdbhost, self.sdbname, self.sdbuser, self.password)
+               sdbloadfits(filename, sdb, log, False)
+               print 'SDBLOADFITS: SUCCESS'
            except Exception, e:
-               print e
+               print 'SDBLOADFITSERROR:', e
 
       #display the image
       if display_image:
@@ -618,9 +622,9 @@ class FirstWindow(QtGui.QMainWindow):
 
       #If the images are spectral images, run specreduce on them
       if obsmode=='SPECTROSCOPY': # and not(target in ['FLAT', 'BIAS']):
-          try:
-              y1,y2=quickspec(outfile, lampid, objsection=self.objsection, findobj=True, clobber=True, logfile=logfile, verbose=verbose)
+          y1,y2=quickspec(outfile, lampid, objsection=self.objsection, findobj=True, clobber=True, logfile=logfile, verbose=verbose)
 
+          try:
               specfile=outpath+'smbxp'+infile.split('.fits')[0]+'.txt'
               self.emit(QtCore.SIGNAL("updatespec(str)"), infile)
           except Exception,e:
@@ -674,5 +678,5 @@ def getimagedetails(hdu):
 # -----------------------------------------------------------
 # main code
 
-parfile = iraf.osfn("pipetools$saltfirst.par")
-t = iraf.IrafTaskFactory(taskname="saltfirst",value=parfile,function=saltfirst, pkgname='pipetools')
+#parfile = iraf.osfn("saltfirst$saltfirst.par")
+#t = iraf.IrafTaskFactory(taskname="saltfirst",value=parfile,function=saltfirst, pkgname='pipetools')
