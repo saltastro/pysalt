@@ -1,3 +1,11 @@
+Version 0.45 (27 September 2013):
+-Fixed bug in saltflat to work with different python version
+-Improved specidentify with better line identification and work flow
+-Range of updates to spectools to fix bugs and improve performance
+-Better multi-processing in saltcrclean
+-added variance handling to all saltred tasks
+-moved primary repository to github
+
 Version 0.42 (20 August 2012);
 -A range of minor bug fixes to add needed packages to the distribution
 -Update of RSS geometry

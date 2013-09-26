@@ -1,0 +1,9 @@
+# Root task entry for the pysalt  package help tree. Defines `pysalt' as
+# both a task and a package in the pysalt help database.
+
+pysalt         men = pysalt$pysalt.men,
+               hlp = pysalt$pysalt.men,
+               sys = pysalt$pysalt.hlp,
+               pkg = pysalt$pysalt.hd,
+               src = pysalt$pysalt.cl
+

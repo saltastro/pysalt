@@ -1,10 +1,10 @@
 # Help directory for the pysalt package
 
 $saltred = "./saltred/"
-$pipetools = "./pipetools/"
-$slottools = "./slottools/"
 $saltspec = "./saltspec/"
-$bvittools = "./bvittools/"
+$saltfp = "./saltfp/"
+$slottools = "./slottools/"
+$proptools = "./proptools/"
 
 saltred     men = saltred$saltred.men,
             hlp = saltred$saltred.men,
@@ -19,11 +19,6 @@ saltspec    men = saltspec$saltspec.men,
             src = saltspec$saltspec.cl
 
 
-pipetools   men = pipetools$pipetools.men,
-            hlp = pipetools$pipetools.men,
-            sys = pipetools$pipetools.hlp,
-            pkg = pipetools$pipetools.hd,
-            src = pipetools$pipetools.cl
 
 saltfp      men = saltfp$saltfp.men,
             hlp = saltfp$saltfp.men,
@@ -37,11 +32,6 @@ slottools   men = slottools$slottools.men,
             pkg = slottools$slottools.hd,
             src = slottools$slottools.cl
 
-bvittools   men = bvittools$bvittools.men,
-            hlp = bvittools$bvittools.men,
-            sys = bvittools$bvittools.hlp,
-            pkg = bvittools$bvittools.hd,
-            src = bvittools$bvittools.cl
 
 proptools   men = proptools$proptools.men,
             hlp = proptools$proptools.men,
