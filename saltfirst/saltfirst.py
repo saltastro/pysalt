@@ -99,7 +99,7 @@ debug=True
 # core routine
 
 
-def saltfirst(obsdate, imdir, prodir, server='smtp.saao.ac.za', readme='readme.fast.template', sdbhost='sdb.salt', sdbname='sdb', sdbuser='', password='',imreduce=True, clobber=False,logfile='salt.log',verbose=True):
+def saltfirst(obsdate, imdir, prodir, server='smtp.saao.ac.za', readme='readme.fast.template', sdbhost='sdb.salt', sdbname='sdb', sdbuser='', password='',imreduce=True, sexfile='/home/ccd/tools/qred.sex', update=True, clobber=False,logfile='salt.log',verbose=True):
 
    #Move into the working directory
    if os.path.isdir(prodir):
@@ -122,7 +122,7 @@ def saltfirst(obsdate, imdir, prodir, server='smtp.saao.ac.za', readme='readme.f
        App = QtGui.QApplication([])
 
        #Add information to gui
-       aw=FirstWindow(obsdate, imdir, prodir, server=server, readme=readme, sdbhost=sdbhost, sdbname=sdbname, sdbuser=sdbuser, password=password, imreduce=imreduce, clobber=clobber, log=log, verbose=verbose)
+       aw=FirstWindow(obsdate, imdir, prodir, server=server, readme=readme, sdbhost=sdbhost, sdbname=sdbname, sdbuser=sdbuser, password=password, imreduce=imreduce, sexfile=sexfile, update=update, clobber=clobber, log=log, verbose=verbose)
        aw.setMinimumHeight(800)
        aw.setMinimumWidth(500)
        aw.show()
@@ -139,6 +139,7 @@ class FirstWindow(QtGui.QMainWindow):
    def __init__(self, obsdate, imdir, prodir, server='smtp.saao.ac.za', readme='readme.fast.template',  \
                 sdbhost='sdb.salt', sdbname='sdb', sdbuser='', \
                 password='', hmin=350,  wmin=400, cmap='gray', \
+                sexfile='/home/ccd/tools/qred.sex', update=True,
                 scale='zscale', contrast=0.1, imreduce=True, clobber=False, log=None, verbose=True):
 
         #set up the variables
@@ -156,6 +157,8 @@ class FirstWindow(QtGui.QMainWindow):
         self.password=password
         self.server=server
         self.readme=readme
+        self.sexfile=sexfile
+        self.update=update
         self.headfiles=[]
 
         # Setup widget
@@ -518,7 +521,8 @@ class FirstWindow(QtGui.QMainWindow):
        return name
 
    def cleandata(self, filename, iminfo=None, prodir='.', interp='linear', cleanup=True,
-              clobber=False, logfile='saltclean.log', reduce_image=True,
+              clobber=False, 
+              logfile='saltclean.log', reduce_image=True,
               display_image=False, verbose=True):
       """Start the process to reduce the data and produce a single mosaicked image"""
       #print filename
@@ -553,7 +557,7 @@ class FirstWindow(QtGui.QMainWindow):
            return iminfo
 
       #load the data into the SDB
-      if self.sdbhost:
+      if self.sdbhost and self.update:
            try:
                log=None #open(logfile, 'a')
                sdb=saltmysql.connectdb(self.sdbhost, self.sdbname, self.sdbuser, self.password)
@@ -584,11 +588,10 @@ class FirstWindow(QtGui.QMainWindow):
           ccdbin=int(iminfo[i].split()[0])
           pix_scale=0.14*ccdbin
           r_ap=1.5/pix_scale
-          sexfile='/home/ccd/tools/qred.sex'
 
           #measure the photometry
           print "RUNNING PHOTOMETRY"
-          quickphot(outfile, r_ap, pix_scale, sexfile, clobber, logfile, verbose)
+          quickphot(outfile, r_ap, pix_scale, self.sexfile, clobber, logfile, verbose)
 
           #load the regions
           #if display_image: regions(outfile)
@@ -645,7 +648,8 @@ class FirstWindow(QtGui.QMainWindow):
               print message
 
       #check for fast mode operation
-      runfast(name, propcode,self.obsdate,self.server, self.readme, self.sdbhost,self.sdbname, self.sdbuser, self.password)
+      if self.update:
+          runfast(name, propcode,self.obsdate,self.server, self.readme, self.sdbhost,self.sdbname, self.sdbuser, self.password)
       return iminfo
 
 def createdirectories(f):
