@@ -72,7 +72,7 @@ debug=True
 # core routine
 
 
-def saltfpringfind(images, method=None, section=None, thresh=5, minszie=10, niter=5, conv=0.05,
+def saltfpringfind(images, method=None, section=None, thresh=5, minsize=10, niter=5, conv=0.05,
                 displayimage=True, clobber=False, logfile='salt.log',verbose=True):
 
    with logging(logfile,debug) as log:
@@ -112,7 +112,7 @@ def saltfpringfind(images, method=None, section=None, thresh=5, minszie=10, nite
           mdata=data*(data-bmean>thresh*bstd)
 
           #prepare the first guess for the image
-          ring_list=findrings(data, thresh=5, niter=5, minsize=10)
+          ring_list=findrings(data, thresh=thresh, niter=niter, minsize=minsize)
 
           #if specified, find the center of the ring
           if method is not None:
