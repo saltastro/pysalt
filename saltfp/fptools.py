@@ -63,8 +63,8 @@ def findrings(data, thresh=5, niter=5, minsize=10, axc=None, ayc=None):
     #get rid of all the lower points
     #find the peaks in the data
 
-    ypeak_list=findpeaks(ydata, 0.4, 10)
-    xpeak_list=findpeaks(xdata, 0.4, 10)
+    ypeak_list=findpeaks(ydata, 0.4, minsize)
+    xpeak_list=findpeaks(xdata, 0.4, minsize)
 
     if abs(len(ypeak_list)-len(xpeak_list))>1:
        msg="Non-symmetrically rings in the image"
@@ -278,7 +278,8 @@ def findpeaks(data, fpeak=0.8,minsize=10):
     peaks=[]
     for i in range(obj_num):
         pid=np.where(obj_arr==i+1)[0]
-        peaks.append((pid.min(), pid.max()))
+        if len(pid)>=minsize:
+           peaks.append((pid.min(), pid.max()))
 
     return peaks
    
