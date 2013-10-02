@@ -1,3 +1,8 @@
+Version 0.451 (2 Oct 2013)
+-Fixed minsize in saltfpringfind
+-fixed logging bugs for events in InterIdentify
+
+
 Version 0.45 (27 September 2013):
 -Fixed bug in saltflat to work with different python version
 -Improved specidentify with better line identification and work flow
