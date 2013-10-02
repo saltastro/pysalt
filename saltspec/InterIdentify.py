@@ -590,7 +590,7 @@ class errWidget(QtGui.QWidget):
            value=(wp-w).std()
            self.stdValueLabel.setText("%4.2g" % value)
        except Exception, e:
-           if self.arcdisplay.log is not None: self.arcdisplay.log.message(e)
+           if self.arcdisplay.log is not None: self.arcdisplay.log.message(str(e))
            pass
  
 
@@ -704,13 +704,13 @@ d - delete feature      u - undelete feature
        elif event.key=='c':
            #return the centroid
            if event.xdata:
-               self.log.message(event.xdata, with_header=False)
+               self.log.message(str(event.xdata), with_header=False)
                cx=st.mcentroid(self.xarr, self.farr, xc=event.xdata, xdiff=self.mdiff)
                self.emit(QtCore.SIGNAL("updatex(float)"), cx)
        elif event.key=='x':
            #return the x position
            if event.xdata:
-               self.log.message(event.xdata, with_header=False)
+               self.log.message(str(event.xdata), with_header=False)
                self.emit(QtCore.SIGNAL("updatex(float)"), event.xdata)
        elif event.key=='R':
            #reset the fit 
