@@ -747,9 +747,10 @@ def lineorder(xp, xf, sl, sf, sw, xb, wdiff, nws):
     #identify the order of the spectral lines
     i=sf[smask].argsort()
     i_ord=i[sl[smask][i]==sw]
+    if len(i_ord)>1: return False
 
     #identify the order of the observed lines
     j=xf[mask].argsort()
     j_ord=j[xp[mask][j]==xb]
-
+    if len(j_ord)>1: return False
     return i_ord==j_ord
