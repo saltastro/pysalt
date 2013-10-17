@@ -74,12 +74,12 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
     night_id=results[0][0]
 
     #select all the scam data from this obsdate
-    cmd_select='FileName, FileData_Id, CCDTYPE, DETMODE, CCDSUM, GAINSET, ROSPEED, FILTER'
-    cmd_table=''' FileData 
-  left join FitsHeaderImage using (FileData_Id) 
+    cmd_select='d.FileName, d.FileData_Id, f.CCDTYPE, d.DETMODE, CCDSUM, GAINSET, ROSPEED, FILTER'
+    cmd_table=''' FileData  as d
+  left join FitsHeaderImage as f using (FileData_Id) 
   left join FitsHeaderSalticam using (FileData_Id)
 '''
-    cmd_logic="FileName like 'S" + obsdate+"%' and CCDTYPE='OBJECT'"
+    cmd_logic="d.FileName like 'S" + obsdate+"%' and f.CCDTYPE='OBJECT'"
 
     results=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)
 
@@ -127,15 +127,15 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
 
 
     #select all the RSS data from this obsdate
-    rssheaderlist='CCDTYPE, DETMODE, OBSMODE, CCDSUM, GAINSET, ROSPEED, FILTER, GRATING, GR_STA, AR_STA, MASKID'
-    cmd_select='FileName,FileData_Id, %s' % rssheaderlist
+    rssheaderlist='f.CCDTYPE, d.DETMODE, d.OBSMODE, CCDSUM, GAINSET, ROSPEED, FILTER, GRATING, GR_STA, AR_STA, MASKID'
+    cmd_select='d.FileName,d.FileData_Id, %s' % rssheaderlist
     # CCDTYPE, DETMODE, OBSMODE, CCDSUM, GAINSET, ROSPEED, FILTER, GRATING, GR_STA, AR_STA, MASKID'
-    cmd_table=''' FileData 
-  left join FitsHeaderImage using (FileData_Id) 
+    cmd_table=''' FileData as d
+  left join FitsHeaderImage as f using (FileData_Id) 
   left join FitsHeaderRss using (FileData_Id)
   join ProposalCode using (ProposalCode_Id)
 '''
-    cmd_logic="FileName like 'P" + obsdate+"%' and CCDTYPE='OBJECT' and Proposal_Code not like 'CAL_SPST'"
+    cmd_logic="d.FileName like 'P" + obsdate+"%' and CCDTYPE='OBJECT' and Proposal_Code not like 'CAL_SPST'"
 
     results=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)
 
@@ -252,7 +252,7 @@ def checkforflats(sdb, fid, caltype, plist, instr='rss'):
     if len(record)<1: return False
     
     select=plist 
-    table='FileData join FitsHeaderImage using (FileData_Id) join %s using (FileData_Id)' % fitstable
+    table='FileData as d join FitsHeaderImage as f using (FileData_Id) join %s using (FileData_Id)' % fitstable
     logic='FileData_Id=%i' % fid
 
     #select 
@@ -301,8 +301,8 @@ def checkforspst(sdb, fid, keylist, plist, period=7):
 
     #select all the RSS data from this obsdate
     cmd_select='FileName,FileData_Id, %s' % plist
-    cmd_table=''' FileData 
-  left join FitsHeaderImage using (FileData_Id) 
+    cmd_table=''' FileData  as d
+  left join FitsHeaderImage as f using (FileData_Id) 
   left join FitsHeaderRss using (FileData_Id)
   join ProposalCode using (ProposalCode_Id)
 '''
@@ -326,8 +326,8 @@ def checkforspst(sdb, fid, keylist, plist, period=7):
 
     #selection the data from the list and compare results
     cmd_select='FileName,FileData_Id, %s' % plist
-    cmd_table=''' FileData 
-  left join FitsHeaderImage using (FileData_Id) 
+    cmd_table=''' FileData as d
+  left join FitsHeaderImage as f using (FileData_Id) 
   left join FitsHeaderRss using (FileData_Id)
   join ProposalCode using (ProposalCode_Id)
 '''
