@@ -38,7 +38,6 @@ class SlitMask(QObject):
 
         #needed for writing xml
         self.impl = getDOMImplementation()
-        self.doc = self.impl.createDocument(None, "slitmask", None)
 
 #        self.connect(self, SIGNAL('xmlloaded'), self.printcreator)
         
@@ -152,10 +151,18 @@ class SlitMask(QObject):
         self.proposal_code = par['proposalcode']
         self.proposer = par['pi']
         self.creator = par['creator']
+        self.mask_name = par['masknum']
         self.validated = par['validated']
         self.add_center_ra(float(par['centerra']))
         self.add_center_dec(float(par['centerdec']))
         self.add_position_angle(float(par['rotangle']))
+        print par['centerra'], par['centerdec']
+        print self.center_ra, self.center_dec
+        try:
+           self.target_name = par['target']
+        except:
+           pass
+
 #        c = str(self.creator)
 #        self.emit(SIGNAL('xmlloaded'), self.creator)
       
@@ -219,6 +226,7 @@ class SlitMask(QObject):
 
         print 'writing xml...'
          #create the xml documents and the main Element called slitmask
+        self.doc = self.impl.createDocument(None, "slitmask", None)
         slitmask= self.doc.documentElement
         header = self.doc.createElement("header")
         slitmask.appendChild(header)
@@ -226,6 +234,7 @@ class SlitMask(QObject):
         header.appendChild(self.addxmlparameter("VERSION","1.1"))
         header.appendChild(self.addxmlparameter("PROPOSALCODE","%s"%self.proposal_code))
         header.appendChild(self.addxmlparameter("MASKNUM","%s"%self.mask_name))
+        header.appendChild(self.addxmlparameter("TARGET","%s"%self.target_name))
         header.appendChild(self.addxmlparameter("PI","%s"%self.proposer))
         header.appendChild(self.addxmlparameter("CREATOR","%s"%self.creator))
         header.appendChild(self.addxmlparameter("ROTANGLE","%s"%self.position_angle))
