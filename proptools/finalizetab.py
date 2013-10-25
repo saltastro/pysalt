@@ -164,6 +164,8 @@ class FinalizeTab:
         ldir = os.getcwd()
         rsmtoutfilename = QtGui.QFileDialog.getSaveFileName(caption="Save RSMT File", directory=ldir)
         rsmtoutfilename = str(rsmtoutfilename).strip('.rsmt') + '.rsmt'
+
+        #write the xml
         self.writexml2file('Slitmask.xml')
         # get the finder chart image to package with the rsmt zipfile.
         try:

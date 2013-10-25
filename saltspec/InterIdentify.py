@@ -193,7 +193,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
        self.farr=apext.makeflat(self.specarr, self.y1, self.y2)
        #set up variables
        self.ws=self.newWS(0.5*(self.y1+self.y2))
-       self.arcdisplay=ArcDisplay(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, specarr=self.specarr, res=self.res, dres=self.dres, niter=self.niter, sigma=self.sigma, xp=[], wp=[])
+       self.arcdisplay=ArcDisplay(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, specarr=self.specarr, res=self.res, dres=self.dres, niter=self.niter, sigma=self.sigma, xp=[], wp=[], log=self.log, verbose=self.verbose)
        self.arcPage=arcWidget(self.arcdisplay,  hmin=self.hmin, wmin=self.wmin, y1=self.y1, y2=self.y2)
        self.connect(self.arcPage, QtCore.SIGNAL('savews()'), self.saveWS)
        #set up the residual page
@@ -704,13 +704,13 @@ d - delete feature      u - undelete feature
        elif event.key=='c':
            #return the centroid
            if event.xdata:
-               self.log.message(event.xdata, with_header=False)
+               self.log.message(str(event.xdata), with_header=False)
                cx=st.mcentroid(self.xarr, self.farr, xc=event.xdata, xdiff=self.mdiff)
                self.emit(QtCore.SIGNAL("updatex(float)"), cx)
        elif event.key=='x':
            #return the x position
            if event.xdata:
-               self.log.message(event.xdata, with_header=False)
+               self.log.message(str(event.xdata), with_header=False)
                self.emit(QtCore.SIGNAL("updatex(float)"), event.xdata)
        elif event.key=='R':
            #reset the fit 
