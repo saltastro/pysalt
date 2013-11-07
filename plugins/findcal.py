@@ -122,8 +122,8 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
                for cid in request:
                    cid=cid[0]
                    cmd_insert='NightInfo_Id=%i, FileData_Id=%i, SatlicamCalibrationType_Id=%i' % (night_id, k, cid)
-                   saltmysql.insert(sdb, cmd_insert, 'SalitcamNightlyCalibration')
-           print k, " ".join([str(k) for k in caldict[k]])
+                   #saltmysql.insert(sdb, cmd_insert, 'SalitcamNightlyCalibration')
+               print k, " ".join([str(k) for k in caldict[k]])
 
 
     #select all the RSS data from this obsdate
@@ -141,8 +141,8 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
 
     #loop through all the results and return only the Set of identical results
     caldict=create_caldict(results)
-    print caldict
-    #insert the scam results into the database
+
+    #insert the rss results into the database
     for k in caldict:
        #first check to see if it has already been entered
        record=saltmysql.select(sdb, 'FileData_Id', 'RssNightlyCalibration', 'FileData_Id=%i' % k) 
@@ -161,17 +161,17 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
                    cid=cid[0]
                    #check to see if the request is already in the database or if a similar request has
                    #been taken recently
-                   if cid==1:
+                   if cid==1:  #bias
                        if not checkforbias(sdb, k):
                           cmd_insert='NightInfo_Id=%i, FileData_Id=%i, RssCalibrationType_Id=%i' % (night_id, k, cid)
                           saltmysql.insert(sdb, cmd_insert, 'RssNightlyCalibration')
-                   elif cid in [3,4]:
-                       if not checkforflats(sdb, k, cid, rssheaderlist, instr='rss'):
+                   elif cid in [3,4]: #flats
+                       if not checkforflats(sdb, k, cid, rssheaderlist, instr='rss', keylist=caldict[k], period=90):
                           
                           cmd_insert='NightInfo_Id=%i, FileData_Id=%i, RssCalibrationType_Id=%i' % (night_id, k, cid)
                           saltmysql.insert(sdb, cmd_insert, 'RssNightlyCalibration')
                        
-                   elif cid==7:
+                   elif cid==7: #specstand
                        period=7
                        #print period, k, caldict[k]
                        if not checkforspst(sdb, k, caldict[k], rssheaderlist, period=period):
@@ -216,7 +216,7 @@ def checkforbias(sdb, k, instr='rss'):
         
     return False
 
-def checkforflats(sdb, fid, caltype, plist, instr='rss'):
+def checkforflats(sdb, fid, caltype, plist, instr='rss', keylist=None, period=90):
     """Check to see if a bias of the same type already exists in the calibration table
 
        fid: int
@@ -243,6 +243,32 @@ def checkforflats(sdb, fid, caltype, plist, instr='rss'):
        caltable='SalticamNightlyCalibration' 
        logic='SalticamCalibrationType_Id=%i' %caltype
        fitstable='FitsHeaderSalticam'
+
+    if keylist is not None:
+       #set the period for to check for the data
+       try:
+          utstart=saltmysql.select(sdb, 'UTStart', 'FileData', 'FileData_Id=%i' % fid)[0][0]
+       except Exception, e:
+          print e
+          return False
+
+       utstart=utstart-datetime.timedelta(days=period)
+
+       #select all the RSS data from this obsdate
+       cmd_select='FileName,FileData_Id, %s' % plist
+       cmd_table=''' FileData  as d
+  left join FitsHeaderImage as f using (FileData_Id) 
+  left join FitsHeaderRss using (FileData_Id)
+  join ProposalCode using (ProposalCode_Id)
+'''
+       cmd_logic="Proposal_Code like 'CAL_FLAT' and UTSTART>'%s'" % (utstart)
+       results=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)
+
+       #compare results
+       for r in results: 
+           if compare_configs(keylist[-1], r[2:-1]): 
+              return True
+
  
  
     #get all the flat requests
@@ -317,12 +343,8 @@ def checkforspst(sdb, fid, keylist, plist, period=7):
     #now check the nightly calibrations table
     logic='CalibrationTaken is Null and Ignored=0 and RssCalibrationType_Id=7' 
     record=saltmysql.select(sdb, 'FileData_Id', caltable, logic)
-
     # if no results return false
-    try: 
-       record=record[0]
-    except:
-       return False
+    if len(record)<1: return False
 
     #selection the data from the list and compare results
     cmd_select='FileName,FileData_Id, %s' % plist
@@ -334,7 +356,7 @@ def checkforspst(sdb, fid, keylist, plist, period=7):
     for i in record:
         cmd_logic='FileData_Id=%i' % i
         r=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)[0]
-        if compare_configs(keylist[-1], r[2:-1]): 
+        if compare_configs(keylist[:-1], r[2:-1]): 
            return True
         
     return False
@@ -349,8 +371,7 @@ def create_caldict(results):
     for r in results:
         clist=r[2:]
         for k in caldict:
-           if compare_configs(clist, caldict[k]):
-                 clist=[]
+           if compare_configs(clist, caldict[k]): clist=[]
         if clist: caldict[r[1]]=clist
     return caldict
 
