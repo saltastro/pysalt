@@ -369,5 +369,6 @@ def writeIS(ImageSolution, outfile, dateobs=None, utctime=None, instrume=None,  
 
 # main code 
 
-parfile = iraf.osfn("saltspec$specidentify.par") 
-t = iraf.IrafTaskFactory(taskname="specidentify",value=parfile,function=specidentify, pkgname='saltspec')
+if not iraf.deftask('specidentify'):
+   parfile = iraf.osfn("saltspec$specidentify.par") 
+   t = iraf.IrafTaskFactory(taskname="specidentify",value=parfile,function=specidentify, pkgname='saltspec')

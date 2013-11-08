@@ -155,5 +155,6 @@ def calfunc(obs_spectra, std_spectra, ext_spectra, airmass, exptime, error=False
 
 
 # main code 
-parfile = iraf.osfn("saltspec$speccal.par") 
-t = iraf.IrafTaskFactory(taskname="speccal",value=parfile,function=speccal, pkgname='saltspec')
+if not iraf.deftask('speccal'):
+   parfile = iraf.osfn("saltspec$speccal.par") 
+   t = iraf.IrafTaskFactory(taskname="speccal",value=parfile,function=speccal, pkgname='saltspec')
