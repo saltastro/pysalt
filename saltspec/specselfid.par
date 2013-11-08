@@ -1,0 +1,10 @@
+images,s,a,'',,,'Input image'
+outimages,s,a,'',,,'Output images or list of output images'
+outpref,s,a,'x',,,'Prefix for output images'
+refimage,s,a,'',,,'Reference image for rectification'
+ystart,s,h,'middlerow',,,'Row to extract as fiducial'
+rstep,i,h,1,,,'Number of rows between sampling'
+clobber,b,h,no,,,'Overwrite exisitng files?'
+logfile,s,h,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 
