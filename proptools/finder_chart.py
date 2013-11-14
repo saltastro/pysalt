@@ -12,6 +12,7 @@ import ephem
 import numpy as np
 import aplpy
 
+
 # grab MOS xml definition from WM given account and barcode
 def get_slitmask_xml(username, password, barcode):
     """
@@ -130,7 +131,6 @@ def init_plot(hdu, imserver, title, ra, dec):
     plot.show_grayscale()
     plot.set_theme('publication')
     sys.stdout = out
-
     plot.add_label(0.5, 1.03,
                   title,
                   relative=True, style='italic', weight='bold', size='large')
@@ -179,8 +179,8 @@ def init_plot(hdu, imserver, title, ra, dec):
     return plot
 
 def finderchart(xmlfile, image=None, outfile=None):
-    print """Given an image and an xml file, create the finder chart"""
-   
+    """Given an image and an xml file, create the finder chart"""
+    
     #read in the xml
     ra, dec, pa, propcode, pi_email, barcode, title, slits, refs=read_mos_xml(xmlfile)
 
@@ -192,7 +192,6 @@ def finderchart(xmlfile, image=None, outfile=None):
         imserver='poss1_red'
         hdu = get_dss(imserver, ra, dec)
  
-
     #create the plot
     plot = init_plot(hdu, imserver, title, ra, dec)
 

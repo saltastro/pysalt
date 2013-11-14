@@ -27,7 +27,6 @@ class ValidatorError(Exception):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
         self.ui.textEditFin_ErrorMessages.setPalette(palette)
-        
         self.ui.textEditFin_ErrorMessages.setText(errmesg)
     pass
 
@@ -169,8 +168,10 @@ class FinalizeTab:
         self.writexml2file('Slitmask.xml')
         # get the finder chart image to package with the rsmt zipfile.
         try:
+             print 'writing with image'
              self.writeFC(image=self.inimage, outfile='Slitmask.png')
         except:
+             print 'writing without image'
              self.writeFC(outfile='Slitmask.png')
         rsmtfile = zipfile.ZipFile(rsmtoutfilename, mode='w')
         try:
@@ -199,6 +200,7 @@ class FinalizeTab:
         # make sure that the output filename contains the .xml extension
         outfile = outfile.strip('.xml') + '.xml'
         self.xmlfile=outfile
+        if os.path.isfile(outfile): os.remove(outfile)
         xml_txt = self.slitmask.writexml()
         rsmt_file = open(outfile,'w')
         rsmt_file.write(xml_txt)
@@ -224,6 +226,10 @@ class FinalizeTab:
             ldir = os.getcwd()
             outfile = str(QtGui.QFileDialog.getSaveFileName(caption="Save Finding Chart file", directory=ldir))
             self.fcfile = outfile
+        else:
+            self.fcfile=outfile
+
+        if os.path.isfile(outfile): os.remove(outfile)
 
         #if an xml file exists, then write it out
         if self.xmlfile:
@@ -235,8 +241,8 @@ class FinalizeTab:
             xmlfile = tmpfile
 
         #create the finding chart
+        print 'running finderchart', xmlfile, image, self.fcfile
         finderchart(xmlfile, image=image, outfile=self.fcfile)
         
 #        remove any temporary files
-        if tmpfile:
-            os.remove(tmpfile)
+        #if tmpfile: os.remove(tmpfile)
