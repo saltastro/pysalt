@@ -71,6 +71,7 @@ set bvittools = "pysalt$bvittools/"
 set saltfp = "pysalt$saltfp/"
 set saltspec = "pysalt$saltspec/"
 set proptools = "pysalt$proptools/"
+set salthrs = "pysalt$salthrs/"
 
 package pysalt
 
@@ -91,6 +92,9 @@ if (access('proptools$proptools.cl')) {
 }
 
 
+if (access('salthrs$salthrs.cl')) {
+   task salthrs.pkg = salthrs$salthrs.cl
+}
 if (access('bvittools$bvittools.cl')) {
    task bvittools.pkg = bvittools$bvittools.cl
 }

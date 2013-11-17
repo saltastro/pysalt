@@ -1,0 +1,5 @@
+# Help directory for the saltred package
+
+$doc = "salthrs$doc/"
+
+hrsprepare  		hlp=doc$hrsprepare.hlp,  src=salthrs$hrsprepare.py
