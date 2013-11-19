@@ -269,6 +269,6 @@ def definesection(namp, detector, ccdshape):
     return x1,x2,y1,y2
 
 if not iraf.deftask('hrsprepare'):
-    parfile = iraf.osfn("saltred$hrsprepare.par")
+    parfile = iraf.osfn("salthrs$hrsprepare.par")
     t = iraf.IrafTaskFactory(taskname="hrsprepare",value=parfile,function=hrsprepare, pkgname='salthrs')
 

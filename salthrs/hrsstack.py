@@ -144,6 +144,6 @@ def stack(hdu):
 
 
 if not iraf.deftask('hrsstack'):
-    parfile = iraf.osfn("saltred$hrsstack.par")
+    parfile = iraf.osfn("salthrs$hrsstack.par")
     t = iraf.IrafTaskFactory(taskname="hrsstackre",value=parfile,function=hrsstack, pkgname='salthrs')
 
