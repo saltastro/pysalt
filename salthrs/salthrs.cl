@@ -35,6 +35,8 @@
 
 #define the PyRAF tasks automatically
 pyexecute("salthrs$hrsprepare.py",verbose=no)
+pyexecute("salthrs$hrsstack.py",verbose=no)
+pyexecute("salthrs$hrsclean.py",verbose=no)
 
 
 package salthrs

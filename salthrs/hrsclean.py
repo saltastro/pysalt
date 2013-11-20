@@ -294,5 +294,5 @@ def createmasterbiasname(infiles, biaskeys, x1=5, x2=13):
 
 if not iraf.deftask('hrsclean'):
     parfile = iraf.osfn("salthrs$hrsclean.par")
-    t = iraf.IrafTaskFactory(taskname="hrscleanre",value=parfile,function=hrsclean, pkgname='salthrs')
+    t = iraf.IrafTaskFactory(taskname="hrsclean",value=parfile,function=hrsclean, pkgname='salthrs')
 
