@@ -96,11 +96,11 @@ def hrsclean(images, outpath, obslogfile=None, subover=True, trim=True, masbias=
                    log.message(message, with_stdout=verbose, with_header=False)
 
                #process the image
-               #struct=clean(struct, createvar=False, badpixelstruct=None, mult=True,
-               #             subover=subover, trim=trim, subbias=False, imstack=False,
-               #             bstruct=None, median=median, function=function, order=order,
-               #             rej_lo=rej_lo, rej_hi=rej_hi, niter=niter, log=log,
-               #             verbose=verbose)
+               struct=clean(struct, createvar=False, badpixelstruct=None, mult=True,
+                            subover=subover, trim=trim, subbias=False, imstack=False,
+                            bstruct=None, median=median, function=function, order=order,
+                            rej_lo=rej_lo, rej_hi=rej_hi, niter=niter, log=log,
+                            verbose=verbose)
 
                #write the file out
                # housekeeping keywords
@@ -111,7 +111,7 @@ def hrsclean(images, outpath, obslogfile=None, subover=True, trim=True, masbias=
                saltkey.new('HBIAS',time.asctime(time.localtime()),'Images have been de-biased',struct[0])
 
                # write FITS file
-              # saltio.writefits(struct,bimg, clobber=clobber)
+               saltio.writefits(struct,bimg, clobber=clobber)
                saltio.closefits(struct)
  
                #add files to the master bias list
@@ -123,9 +123,9 @@ def hrsclean(images, outpath, obslogfile=None, subover=True, trim=True, masbias=
            blist=masterbias_dict[i][1:]
            mbiasname=outpath+createmasterbiasname(blist, bkeys, x1=5, x2=13)
            bfiles=','.join(blist)
-           #saltcombine(bfiles, mbiasname, method='median', reject='sigclip', mask=False,
-           #            weight=False, blank=0, scale=None, statsec=None, lthresh=3,    \
-           #            hthresh=3, clobber=False, logfile=logfile,verbose=verbose)
+           saltcombine(bfiles, mbiasname, method='median', reject='sigclip', mask=False,
+                       weight=False, blank=0, scale=None, statsec=None, lthresh=3,    \
+                       hthresh=3, clobber=False, logfile=logfile,verbose=verbose)
 
        #apply full reductions to the science data
        for img in infiles:
