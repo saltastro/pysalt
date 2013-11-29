@@ -42,8 +42,8 @@ debug=True
 
 # -----------------------------------------------------------
 # core routine
-hrsbiasheader_list=['INSTRUME', 'DETNAM', 'DETMODE', 'CCDSUM', 'GAINSET', 'ROSPEED'] 
-hrsflatheader_list=['INSTRUME', 'DETNAM', 'DETMODE', 'CCDSUM', 'GAINSET', 'ROSPEED']
+hrsbiasheader_list=['INSTRUME', 'DETNAM', 'DETMODE', 'CCDSUM', 'GAINSET', 'ROSPEED', 'CCDAMPS'] 
+hrsflatheader_list=['INSTRUME', 'DETNAM', 'DETMODE', 'CCDSUM', 'GAINSET', 'ROSPEED', 'CCDAMPS']
 
 def hrsclean(images, outpath, obslogfile=None, subover=True, trim=True, masbias=None, 
              subbias=True, median=False, function='polynomial', order=5, rej_lo=3, rej_hi=3,
@@ -210,7 +210,7 @@ def clean(struct, createvar=False, badpixelstruct=None, mult=True,            \
     ampccd=len(struct)-1
 
     #prepare the files
-    struct=prepare(struct, createvar=createvar, badpixelstruct=badpixelstruct)
+    struct=prepare(struct, createvar=createvar, badpixelstruct=badpixelstruct, namps=ampccd)
 
     #gain correct the files
     usedb=False
@@ -223,9 +223,9 @@ def clean(struct, createvar=False, badpixelstruct=None, mult=True,            \
                plotover=False, log=log, verbose=verbose)
 
     #stack the data if requested
-    if imstack:
+    if imstack and ampccd>1:
        struct=stack(struct)
-       struct=salt2iraf(struct)
+       #struct=salt2iraf(struct)
 
     return struct
 
@@ -236,9 +236,9 @@ def salt2iraf(hdu, ext=1):
    odu = pyfits.PrimaryHDU(data=hdu[ext].data, header=hdu[0].header)
 
    #combine the headers from the primary and first exention
-   for c in hdu[ext].header.ascardlist(): odu.header.update(c.key, c.value, c.comment)
+   for c in hdu[ext].header.ascardlist(): odu[0].header.update(c.key, c.value, c.comment)
 
-   return hdu
+   return odu
 
  
 def createmasterbiasname(infiles, biaskeys, x1=5, x2=13):

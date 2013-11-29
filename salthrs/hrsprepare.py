@@ -118,6 +118,32 @@ def prepare(hdu):
     nhdu[0].header.set('DETMODE', value='Normal', comment='Detector mode')
     nhdu[0].header.set('NCCDS', value=1, comment='Detector mode')
     nhdu[0].header.set('GAINSET', value='SLOW', comment='Detector mode')
+    value='OBJECT'
+    if hdu[0].header['OBJECT']=='Bias': value='ZERO'
+    if hdu[0].header['OBJECT']=='Arc': value='ARC'
+    if hdu[0].header['OBJECT']=='Flat': value='FLAT'
+    nhdu[0].header.set('CCDTYPE', value=value, comment='CCD Type')
+ 
+    if nccd==1:
+        nhdu.append(pyfits.ImageHDU(hdu[0].data))
+        j=1
+        nhdu[j].header.set('GAIN', value=float(gain[0]), comment='Nominal CCD gain (e/ADU)')
+        nhdu[j].header.set('RDNOISE', value=0, comment='Nominal readout noise in e')
+        nhdu[j].header.set('SATURATE', value=1, comment='Pixel saturation level in ADU')
+        nhdu[j].header.set('XTALK',  value=0.0,  comment='Cross talk coefficient')
+
+        detsize=getdetsize(ccdshape, xbin, ybin) 
+        ampshape=nhdu[j].data.shape
+        ampsec=getdetsize(ccdshape, 1, 1)
+        nhdu[j].header.set('DETSIZE',  value=detsize,  comment='Detector size')
+        nhdu[j].header.set('BIASSEC',  value=getbiassec(j, ampshape, xbin, ybin),  comment='Bias section')
+        nhdu[j].header.set('DATASEC',  value=getdatasec(j, ampshape, xbin, ybin),  comment='Data section')
+        nhdu[j].header.set('AMPSEC',  value=ampsec,  comment='Amplifier section')
+        nhdu[j].header.set('CCDSEC',  value=detsize,  comment='CCD section')
+        nhdu[j].header.set('DETSEC',  value=detsize,  comment='Detector section')
+      
+        return nhdu
+
 
     for i in range(nccd):
         j=i+1
