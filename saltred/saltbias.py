@@ -270,7 +270,14 @@ def bias(struct,subover=True,trim=True, subbias=False, bstruct=None,
                vhdu=saltkey.get('VAREXT', struct[i])
                try:
                    vdata=struct[vhdu].data
+                   #The bias level should not be included in the noise from the signal
+                   for j in range(len(struct[i].data[0])):
+		       vdata[y1:y2,j] -= ofit
+                   #add a bit to make sure that the minimum error is the rednoise
+                   rdnoise= saltkey.get('RDNOISE',struct[i])
+                   vdata[vdata<rdnoise**2]=rdnoise**2
                    struct[vhdu].data=vdata+osigma**2
+
                except Exception, e:
                     msg='Cannot update the variance frame in %s[%i] because %s' % (infile, vhdu, e)
                     raise SaltError(msg)
