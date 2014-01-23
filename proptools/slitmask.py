@@ -156,8 +156,6 @@ class SlitMask(QObject):
         self.add_center_ra(float(par['centerra']))
         self.add_center_dec(float(par['centerdec']))
         self.add_position_angle(float(par['rotangle']))
-        print par['centerra'], par['centerdec']
-        print self.center_ra, self.center_dec
         try:
            self.target_name = par['target']
         except:

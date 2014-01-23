@@ -658,6 +658,7 @@ def convert_slits_from_mask(slitmask, order=1, xbin=2, ybin=2, pix_scale=0.1267,
 
    
    #convert the slitlets in the slit mask to slits for extraction
+   print xbin, ybin
    for i in range(slitmask.slitlets.nobjects): 
        sid=slitmask.slitlets.data[i]['name']
        sra=slitmask.slitlets.data[i]['targ_ra']
