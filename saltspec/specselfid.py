@@ -50,10 +50,10 @@ def specselfid(images,outimages, outpref, refimage=None, ystart='middlerow', rst
        outfiles=saltio.listparse('Outimages', outimages, outpref,infiles,'')
 
        #set up defaults
-       refimage=saltio.checkfornone(refimage)
-       #open up the reference image
-       if refimage is not None:
+       if saltio.checkfornone(refimage) is not None:
           rhdu=saltio.openfits(refimage)
+       else:
+          refimage=None
 
 
        #read in rectify each image
