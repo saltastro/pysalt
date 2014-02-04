@@ -93,9 +93,9 @@ def prepare(hdu):
     #set the detector
     detname=saltkey.get('DETNAM', hdu[0])
 
-    if detname=='08443-03-01':
+    if detname=='08443-03-01' or detname=='HRDET':
        detector='hrdet'
-    elif detname=='04434-23-02':
+    elif detname=='04434-23-02' or detname=='HBDET':
        detector='hbdet'
     else:
        raise SaltError('%s is not an HRS detector' % detnam)
