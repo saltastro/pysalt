@@ -117,12 +117,14 @@ def createobslogfits(headerDict):
    # define generic columns of output table
    col=[]
    for k, f in zip(headerList, formatList):
+       print k,f, headerDict[k]
        col.append(pyfits.Column(name=k, format=f, array=headerDict[k]))
    for k, f in zip(scamheaderList, scamformatList):
+       print k,f, headerDict[k]
        col.append(pyfits.Column(name=k, format=f, array=headerDict[k]))
    for k, f in zip(rssheaderList, rssformatList):
+       print k,f, headerDict[k]
        col.append(pyfits.Column(name=k, format=f, array=headerDict[k]))
-
    # construct FITS table from columns
    table = saltio.fitscolumns(col)
 
@@ -157,7 +159,7 @@ def obslog(infiles, log=None):
    for k in rssheaderList: headerDict[k]=[]
 
    # interate over and open image files
-
+   infiles.sort()
    for infile in infiles:
 
        #open the file

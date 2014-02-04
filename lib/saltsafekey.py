@@ -246,6 +246,12 @@ def instrumid(struct,file=''):
             keybias = 'SBIAS'
             keyxtalk = 'SXTALK'
             keyslot = 'SSLOT'
+        elif (string.join(instrume.split(),"") == 'HRS'):
+            keyprep = 'HPREPARE'
+            keygain = 'HGAIN'
+            keybias = 'HBIAS'
+            keyxtalk = 'HXTALK'
+            keyslot = 'HSLOT'
         else:
             raise SaltIOError('INSTRUME keyword not recognized in file '+file)
     except:
