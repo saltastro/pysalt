@@ -1,33 +1,7 @@
 ############################### LICENSE ##################################
 # Copyright (c) 2009, South African Astronomical Observatory (SAAO)        #
-# All rights reserved.                                                     #
+# All rights reserved. See License file for more details                   #
 #                                                                          #
-# Redistribution and use in source and binary forms, with or without       #
-# modification, are permitted provided that the following conditions       #
-# are met:                                                                 #
-#                                                                          #
-#     * Redistributions of source code must retain the above copyright     #
-#       notice, this list of conditions and the following disclaimer.      #
-#     * Redistributions in binary form must reproduce the above copyright  #
-#       notice, this list of conditions and the following disclaimer       #
-#       in the documentation and/or other materials provided with the      #
-#       distribution.                                                      #
-#     * Neither the name of the South African Astronomical Observatory     #
-#       (SAAO) nor the names of its contributors may be used to endorse    #
-#       or promote products derived from this software without specific    #
-#       prior written permission.                                          #
-#                                                                          #
-# THIS SOFTWARE IS PROVIDED BY THE SAAO ''AS IS'' AND ANY EXPRESS OR       #
-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED           #
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE   #
-# DISCLAIMED. IN NO EVENT SHALL THE SAAO BE LIABLE FOR ANY                 #
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL       #
-# DAMAGES (INCte: 2007/05/26
-# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)    #
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,      #
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN #
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE          #
-# POSSIBILITY OF SUCH DAMAGE.                                              #
 ############################################################################
 
 
@@ -35,7 +9,7 @@
 
 """
 QUICKCLEAN -- QUICKCLEAN is a plugin for saltfirst that provides quick 
-reductions for normal imaging (ie not slotmode).   The tasks 
+reductions for normal imaging (ie not slotmode).  
 
 Author                 Version      Date
 -----------------------------------------------
@@ -46,10 +20,17 @@ import os
 
 #pysalt imports
 from pyraf import iraf
-from pyraf.iraf import pysalt
+from iraf import pysalt
+
 from pyraf.iraf import saltred
 
-from saltcrclean import saltcrclean
+from saltprepare import prepare
+from saltgain import gain
+from saltxtalk  import xtalk
+from saltbias import bias
+from saltflat import flat
+from saltcrclean import multicrclean
+
 
 import saltsafeio as saltio
 import saltsafekey as saltkey
@@ -80,37 +61,40 @@ def quickclean(filename, interp='linear', cleanup=True, clobber=False, logfile='
      geomfile = iraf.osfn('pysalt$data/scam/SALTICAMgeom.dat')
  
    #verify the file
-   hdu=saltio.openfits(rawpath+'/'+infile)
-   hdu.verify('exception')
+   struct=saltio.openfits(rawpath+'/'+infile)
+   struct.verify('exception')
    
    #check to see if detmode is there
-   if not saltkey.found('DETMODE', hdu[0]): 
+   if not saltkey.found('DETMODE', struct[0]): 
       return 
  
    #reduce the file
-   saltred.saltprepare(images=filename,outimages='',outpref=outpath+'p',  \
-                    createvar=False, badpixelimage=None, clobber=clobber,logfile=logfile,verbose=verbose)
-   pinfile=outpath+'p'+infile
-   saltred.saltgain(pinfile, outimages=pinfile, outpref='', gaindb=gaindb,usedb=False, 
-                    mult=True,clobber=True, logfile=logfile, verbose=verbose)
-   saltred.saltxtalk(pinfile,outimages='',outpref='x',xtalkfile=xtalkfile,clobber=clobber,
-                     logfile=logfile,verbose=verbose)
-   #saltred.saltslot(images=pinfile,outimages='',outpref=outpath+'bx',gaindb=gaindb,
-   #              xtalkfile=xtalkfile,clobber=clobber,logfile=logfile,verbose=verbose,
-   #              status=0)
-   xinfile=outpath+'xp'+infile
-   saltred.saltbias(images=xinfile,outimages='',outpref='b',subover=True,trim=True,subbias=False, 
-                    masterbias='', median=False,function='polynomial',order=5,rej_lo=3,rej_hi=3,niter=10,
-                    plotover=False,turbo=False,logfile=logfile, clobber=clobber, verbose=verbose)
-   biasfile=outpath+'bxp'+infile
+   struct=prepare(struct, createvar=False, badpixelstruct=None)
+ 
+      #reset the names in the structures
+   for i in range(1,len(struct)):
+       struct[i].name=struct[i].header['EXTNAME']
 
-   if hdu[0].header['CCDTYPE']=='OBJECT' and hdu[0].header['EXPTIME']>90:
-       saltcrclean(images=biasfile, outimages=biasfile, outpref='', crtype='median',thresh=5,mbox=5,         \
-                bthresh=3, flux_ratio=0.2, bbox=25, gain=1, rdnoise=5, fthresh=5,\
-                bfactor=2, gbox=0, maxiter=5, multithread=True, clobber=True,          \
-                logfile='salt.log', verbose=True)
 
-   saltred.saltmosaic(images=biasfile,
+   #gain correct the files
+   usedb=True
+   dblist= saltio.readgaindb(gaindb)
+   log=open(logfile, 'a')
+   ampccd = struct[0].header['NAMPS'] / struct[0].header['NCCDS']
+   struct=gain(struct, mult=True,usedb=usedb, dblist=dblist, ampccd=ampccd, log=None, verbose=verbose)
+
+   struct=bias(struct, subover=True,trim=True,subbias=False, 
+                    median=False,function='polynomial',order=5,rej_lo=3,rej_hi=3,niter=10,
+                    plotover=False,log=None, verbose=verbose)
+
+   if struct[0].header['CCDTYPE']=='OBJECT' and struct[0].header['EXPTIME']>90:
+      struct = multicrclean(struct, crtype='median', thresh=5, mbox=5, bbox=25, bthresh=5, flux_ratio=0.2, \
+                          gain=1, rdnoise=5, bfactor=2, fthresh=5, gbox=0, maxiter=5, log=None, verbose=verbose)
+
+   pinfile=outpath+'bxp'+infile
+   saltio.writefits(struct, pinfile, clobber)
+
+   saltred.saltmosaic(images=pinfile,
                    outimages='',outpref=outpath+'m',geomfile=geomfile,
                    interp=interp,cleanup=cleanup,clobber=clobber,logfile=logfile,
                    verbose=verbose)
@@ -119,7 +103,5 @@ def quickclean(filename, interp='linear', cleanup=True, clobber=False, logfile='
    #remove intermediate steps
    if cleanup:
       if os.path.isfile(pinfile): os.remove(pinfile)
-      if os.path.isfile(xinfile): os.remove(xinfile)
-      if os.path.isfile(biasfile): os.remove(biasfile)
 
    return
