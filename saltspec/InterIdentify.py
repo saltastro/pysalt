@@ -841,6 +841,8 @@ d - delete feature      u - undelete feature
           if w not in self.wp and w>-1: 
              self.xp.append(x)
              self.wp.append(w)
+       for i in range(len(self.xp)): print self.xp[i], self.wp[i]
+       print
        self.plotFeatures()
        self.redraw_canvas()
          

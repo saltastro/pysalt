@@ -278,7 +278,7 @@ def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', orde
                        sigma=thresh, smooth=smooth, niter=niter, verbose=verbose) 
        ImageSolution = AutoIdentify(xarr, data, slines, sfluxes, ws,  \
                          rstep=rstep, method=method, istart=istart, nrows=nrows, mdiff=mdiff, \
-                         dsigma=dsigma, res=res, dres=dres, dc=dc, ndstep=ndstep, sigma=thresh, \
+                         dsigma=dsigma, res=res, dres=2*dres, dc=dc, ndstep=ndstep, sigma=thresh, \
                          smooth=smooth, niter=niter, verbose=verbose)
 
    return ImageSolution

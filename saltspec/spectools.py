@@ -170,7 +170,9 @@ def findwavelengthsolution(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, sigma=5, 
        nws=WavelengthSolution.WavelengthSolution(xp[mask],wp[mask], order=ws.order, function=ws.function)
        nws.fit()
    else:
-       nws=None
+       nws=None 
+   #for i in range(len(xp)): print xp[i], wp[i], wp[i]-nws.value(xp[i])
+   #print nws.sigma(xp,wp)
    return nws
 
 def findfeatures(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, sigma=5, niter=5, sections=3):
@@ -694,7 +696,6 @@ def crosslinematch(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, res=2, dres=0.1, 
        The following steps are employed in order to achive the match:
 
     """
-
     #setup initial wavelength array
     warr=ws.value(xarr)
     #detect lines in the input spectrum and identify the peaks and peak values
@@ -729,10 +730,9 @@ def crosslinematch(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, res=2, dres=0.1, 
            d=abs(nwp-sl[i])
            j=d.argmin()
            if d.min()<res:
-              if  lineorder(xp, xf, sl, sf, sl[i], xp[j], wdiff, nws):
+              if  lineorder(xp, xf, sl, sf, sl[i], xp[j], wdiff, nws) and abs(ws.value(xp[j])-sl[i])<mdiff:
                  xp_list.append(xp[j])
                  wp_list.append(sl[i])
-
     return np.array(xp_list), np.array(wp_list)
  
 

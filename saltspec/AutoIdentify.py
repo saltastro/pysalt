@@ -83,6 +83,7 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',       \
            wdiff=mdiff*ws.coef[1]
       except:
            wdiff=mdiff
+      wdiff=20
       ImageSolution=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=True, oneline=oneline,\
                   rstep=rstep, istart=istart, nrows=nrows, res=res, smooth=smooth, dres=dres, farr=farr,      \
                   dsigma=dsigma, dniter=niter, log=log, verbose=verbose, mdiff=mdiff, wdiff=wdiff, sigma=sigma, niter=niter)
@@ -174,6 +175,14 @@ def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
    if oneline:
      mws=solution(xarr, farr, swarr, sfarr, ws, func, \
                     min_lines=min_lines,dsigma=dsigma, dniter=dniter, **kwargs)
+     for i in range(dniter-1):
+         mws=solution(xarr, farr, swarr, sfarr, mws, func, \
+                    min_lines=min_lines,dsigma=dsigma, dniter=dniter, **kwargs)
+
+
+     if verbose: 
+        msg="%5i %3i %3.2f" % (k, mws.func.mask.sum(), mws.sigma(mws.func.x, mws.func.y) )
+        print msg
      return mws
    else:
      ImageSolution[k]=ws
@@ -223,7 +232,6 @@ def solution(xarr, farr, sl, sf, ws, func, min_lines=2, dsigma=5, dniter=3, pad=
    #check to see if there are any points
    xp=detectlines.detectlines(xarr, farr, dsigma, dniter)
 
-   #print len(xp)
    if len(xp) > min_lines and ws:
        #make the artificial list
        wmin=ws.value(xarr.min())
