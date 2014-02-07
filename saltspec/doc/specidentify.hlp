@@ -74,8 +74,10 @@ in the image can be in order to be matched.
 Real.  Threshold for detecting features in the image.  
 .le
 .ls (niter)
-Int.  Number of times to iterate on detecting features and calculating the wavlength
-solution.
+Int.  Number of times to iterate on detecting features and calculating the wavlength solution.
+.le
+.ls (smooth)
+Int.  Smooth the spectrum with a Gaussian kernel before plotting
 .le
 .ls (inter)
 Bool.  If 'yes', saltspec will run in interactive mode.

@@ -18,6 +18,7 @@ import copy
 import pyfits
 import numpy as np
 from scipy import interpolate as scint
+from  scipy.ndimage.filters import gaussian_filter1d
 from pyraf import iraf 
 import saltsafeio as saltio
 from salterror import SaltError
@@ -754,3 +755,10 @@ def lineorder(xp, xf, sl, sf, sw, xb, wdiff, nws):
     j_ord=j[xp[mask][j]==xb]
     if len(j_ord)>1: return False
     return i_ord==j_ord
+
+def smooth_spectra(xarr, farr, sigma=3, nkern=20):
+    """Given a xarr and flux, smooth the spectrum"""
+    xkern=np.arange(nkern)
+    kern=np.exp(-(xkern-0.5*nkern)**2/(sigma)**2)
+
+    return gaussian_filter1d(farr, sigma)

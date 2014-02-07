@@ -1,34 +1,8 @@
 #!/usr/bin/env python
 ################################# LICENSE ##################################
 # Copyright (c) 2009, South African Astronomical Observatory (SAAO)        #
-# All rights reserved.                                                     #
+# All rights reserved. See LICENSE file for more details     	 	   #
 #                                                                          #
-# Redistribution and use in source and binary forms, with or without       #
-# modification, are permitted provided that the following conditions       #
-# are met:                                                                 #
-#                                                                          #
-#     * Redistributions of source code must retain the above copyright     #
-#       notice, this list of conditions and the following disclaimer.      #
-#     * Redistributions in binary form must reproduce the above copyright  #
-#       notice, this list of conditions and the following disclaimer       #
-#       in the documentation and/or other materials provided with the      #
-#       distribution.                                                      #
-#     * Neither the name of the South African Astronomical Observatory     #
-#       (SAAO) nor the names of its contributors may be used to endorse    #
-#       or promote products derived from this software without specific    #
-#       prior written permission.                                          #
-#                                                                          #
-# THIS SOFTWARE IS PROVIDED BY THE SAAO ''AS IS'' AND ANY EXPRESS OR       #
-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED           #
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE   #
-# DISCLAIMED. IN NO EVENT SHALL THE SAAO BE LIABLE FOR ANY                 #
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL       #
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS  #
-# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)    #
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,      #
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN #
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE          #
-# POSSIBILITY OF SUCH DAMAGE.                                              #
 ############################################################################
 """
 SPECIDENTIFY  is a program to read in SALT RSS spectroscopic arc lamps and 
@@ -90,7 +64,7 @@ debug=True
 
 def specidentify(images,linelist, outfile, guesstype='rss', guessfile='',      \
                  automethod='Matchlines', function='poly', order=3, rstep=100, \
-                 rstart='middlerow', mdiff=5, thresh=3, niter=5, inter=True,   \
+                 rstart='middlerow', mdiff=5, thresh=3, niter=5, smooth=0, inter=True,   \
                  startext=0,  clobber=False,logfile='salt.log',verbose=True):
 
    with logging(logfile,debug) as log:
@@ -220,7 +194,7 @@ def specidentify(images,linelist, outfile, guesstype='rss', guessfile='',      \
                    #identify the spectral lines
                    ImageSolution=identify(data, slines, sfluxes, xarr, ystart, ws=ws, function=function, 
                             order=order, rstep=rstep,  mdiff=mdiff, thresh=thresh, niter=niter,
-                            method=automethod, res=res, dres=dres, inter=inter, filename=img,
+                            method=automethod, res=res, dres=dres, smooth=smooth, inter=inter, filename=img,
                             log=log, verbose=verbose)
 
                    if outfile and len(ImageSolution):
@@ -255,7 +229,7 @@ def guess_ws(guesstype, xarr, guessfile=None, rss=None, function='polynomial', o
 
 def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', order=3,  
              rstep=1, nrows=1, mdiff=5, thresh=3, niter=5, dc=3, ndstep=50, dsigma=5,
-             method='Zeropoint', res=2, dres=0.2, filename=None, inter=True, log=None, verbose=True):
+             method='Zeropoint', res=2, dres=0.2, filename=None, smooth=0, inter=True, log=None, verbose=True):
    """For a given image, find the solution for each row in the file.  Use the appropriate first guess and 
       guess type along with the appropriate function and order for the fit.
 
@@ -296,16 +270,16 @@ def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', orde
        ImageSolution=InterIdentify(xarr, data, slines, sfluxes, ws, mdiff=mdiff, rstep=rstep, 
                            function=function, order=order, sigma=thresh, niter=niter, 
                            res=res, dres=dres, dc=dc, ndstep=ndstep, istart=istart,
-                           method=method, filename=filename, log=log, verbose=True)
+                           method=method, smooth=smooth, filename=filename, log=log, verbose=True)
    else:
        ws=AutoIdentify(xarr, data, slines, sfluxes, ws,  \
                        rstep=rstep, method=method, istart=istart, nrows=nrows, oneline=True, \
-                       dsigma=dsigma, res=res, dres=dres, mdiff=mdiff, dc=dc, ndstep=ndstep, sigma=thresh, niter=niter, \
-                       verbose=verbose) 
+                       dsigma=dsigma, res=res, dres=dres, mdiff=mdiff, dc=dc, ndstep=ndstep, \
+                       sigma=thresh, smooth=smooth, niter=niter, verbose=verbose) 
        ImageSolution = AutoIdentify(xarr, data, slines, sfluxes, ws,  \
                          rstep=rstep, method=method, istart=istart, nrows=nrows, mdiff=mdiff, \
-                         dsigma=dsigma, res=res, dres=dres, dc=dc, ndstep=ndstep, sigma=thresh, niter=niter, \
-                         verbose=verbose)
+                         dsigma=dsigma, res=res, dres=dres, dc=dc, ndstep=ndstep, sigma=thresh, \
+                         smooth=smooth, niter=niter, verbose=verbose)
 
    return ImageSolution
 
