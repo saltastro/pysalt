@@ -140,7 +140,7 @@ def extract (hdu, ext=1, method='normal', section=[], minsize=3.0, thresh=3.0, c
           dw=saltkey.get('CD1_1', hdu[i])
        except Exception, e:
           msg='Error on Ext %i: %s' % (i, e)
-          raise SaltSpecError(msg)
+          raise SALTSpecError(msg)
        warr=w0+dw*xarr
 
        #convert from air to vacuum
