@@ -212,7 +212,7 @@ class FirstWindow(QtGui.QMainWindow):
 
    def create_obslog(self):
        """Check to see if there are any files in the database, and if so, create the observing log"""
-       if os.path.isfile(self.pickle_file):
+       if os.path.isfile(self.pickle_file) and 0:
           self.obsdict = pickle.load( open( self.pickle_file, "rb" ) )
        else:
           self.obsdict = OrderedDict()
@@ -232,7 +232,7 @@ class FirstWindow(QtGui.QMainWindow):
        outfile=outpath+'smbxp'+name
        logfile='saltclean.log'
        verbose=True
-       quickap(outfile, objsection=objsection, logfile=logfile, verbose=verbose)
+       quickap(outfile, objsection=objsection, clobber=True, logfile=logfile, verbose=verbose)
        #quickspec(outfile, lampid, findobj=False, objsection=objsection, clobber=True, logfile=logfile, verbose=verbose)
        self.updatespecview(name)
 
@@ -268,6 +268,7 @@ class FirstWindow(QtGui.QMainWindow):
        print "UPDATING SPECVIEW with %s" % name
        specfile='./smbxp'+name.split('.fits')[0]+'.txt'
        warr, farr, snarr=np.loadtxt(specfile, usecols=(0,1,2), unpack=True)
+       print farr.mean()
        self.specTab.loaddata(warr, farr, snarr, name)
        self.specTab.redraw_canvas()
 
@@ -279,7 +280,7 @@ class FirstWindow(QtGui.QMainWindow):
        imlist=self.obsdict[name]
        detmode=imlist[headerList.index('DETMODE')].strip().upper()
        obsmode=imlist[headerList.index('OBSMODE')].strip().upper()
-       print detmode
+
        #update the information panel
        try:
            self.infoTab.update(name, self.obsdict[name])
@@ -311,7 +312,6 @@ class FirstWindow(QtGui.QMainWindow):
 
 
        #update the spectra plot
-       print obsmode
        if obsmode=='SPECTROSCOPY':
           self.updatespecview(name)
 
@@ -353,7 +353,6 @@ class FirstWindow(QtGui.QMainWindow):
 
    def newfileEvent(self, event):
        """Handles the event when a new file is created"""
-       print event
        #look for new files
        edir='%s' % event
 
@@ -367,9 +366,7 @@ class FirstWindow(QtGui.QMainWindow):
        #check the directory for new files
        files=glob.glob(edir+'*')
        files.sort()
-       print files
        newfile=self.findnewfile(files)
-       print newfile
        if not newfile: return
        #skip over an files that are .bin files
        if newfile.count('.bin'):
@@ -528,7 +525,7 @@ class FirstWindow(QtGui.QMainWindow):
 
       #remove frame transfer data
       detmode=iminfo[headerList.index('DETMODE')].strip().upper()
-      if detmode=='FT' or detmode=='FRAME TRANSFER': return iminfo
+      #if detmode=='FT' or detmode=='FRAME TRANSFER': return iminfo
 
 
       #reduce the data
@@ -612,6 +609,7 @@ class FirstWindow(QtGui.QMainWindow):
 
           try:
               specfile=outpath+'smbxp'+infile.split('.fits')[0]+'.txt'
+              self.specTab.updaterange(y1,y2)
               self.emit(QtCore.SIGNAL("updatespec(str)"), infile)
           except Exception,e:
               message="SALTFIRST--ERROR:  Could not wavelength calibrate %s because %s" % (infile, e)

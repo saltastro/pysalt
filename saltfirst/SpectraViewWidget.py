@@ -2,6 +2,7 @@
 SpectraViewWidget is a Qt4 Widget for displaying a spectra either in terms of signal or signal to noise
 it expects to be given the wavelenght, flux, and sn arrays for the data
 """
+import numpy as np
 from PyQt4 import QtGui, QtCore
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg
 from saltgui import MplCanvas
@@ -9,11 +10,12 @@ from InterIdentify import ArcDisplay
 
 
 class SpectraViewWidget(QtGui.QWidget):
-   def __init__(self, warr, farr, snarr, name='', y1=900, y2=1100, hmin=150, wmin=400, parent=None):
+   def __init__(self, warr, farr, snarr, name='', y1=900, y2=1100, hmin=150, wmin=400, smooth=5, parent=None):
        super(SpectraViewWidget, self).__init__(parent)
 
        self.y1=y1
        self.y2=y2
+       self.smooth = smooth
        self.name=name
 
        #set up the arc display 
@@ -41,6 +43,7 @@ class SpectraViewWidget(QtGui.QWidget):
        self.NameValueLabel.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken )
 
        #add extraction window
+
        self.y1Label = QtGui.QLabel("y1:")
        self.y1Label.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Raised )
        self.y1ValueLabel = QtGui.QLineEdit(str(self.y1))
@@ -53,7 +56,12 @@ class SpectraViewWidget(QtGui.QWidget):
        #add default button
        self.defaultBox = QtGui.QCheckBox('Use values as default')
        self.defaultBox.stateChanged.connect(self.updatedefaults)
-
+ 
+       #add smoothing
+       self.smoothLabel = QtGui.QLabel("Smooth")
+       self.smoothLabel.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Raised )
+       self.smoothValueLabel = QtGui.QLineEdit(str(self.smooth))
+       self.smoothValueLabel.textChanged.connect(self.updatesmooth)
 
        #set up the info panel layout
        infoLayout=QtGui.QGridLayout(self.infopanel)
@@ -65,6 +73,8 @@ class SpectraViewWidget(QtGui.QWidget):
        infoLayout.addWidget(self.y2ValueLabel, 1, 3, 1, 1)
        infoLayout.addWidget(self.apButton, 1, 4, 1, 1)
        infoLayout.addWidget(self.defaultBox, 2, 0, 1, 2)
+       infoLayout.addWidget(self.smoothLabel, 2, 2, 1, 1)
+       infoLayout.addWidget(self.smoothValueLabel, 2, 3, 1, 1)
 
        # Set up the layout
        mainLayout = QtGui.QVBoxLayout()
@@ -76,6 +86,14 @@ class SpectraViewWidget(QtGui.QWidget):
    def updatedefaults(self):
        print self.defaultBox.checkState()
        return
+
+   def updatesmooth(self):
+       try:
+          self.smooth = int(self.smoothValueLabel.text())
+       except ValueError:
+          return
+       print self.smooth
+       self.redraw_canvas()
  
    def updatename(self, name):
        self.name=name
@@ -103,7 +121,11 @@ class SpectraViewWidget(QtGui.QWidget):
        return
 
    def plotSpectra(self):
-       self.splot=self.axes.plot(self.warr, self.farr, linewidth=0.5,linestyle='-',
+       if self.smooth > 0 and self.farr is not None:
+           farr = np.convolve(self.farr, np.ones(self.smooth), mode='same')/self.smooth
+       else:
+           farr = self.farr
+       self.splot=self.axes.plot(self.warr, farr, linewidth=0.5,linestyle='-',
                                 marker='None',color='b')
 
    def redraw_canvas(self,keepzoom=False):
