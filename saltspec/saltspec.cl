@@ -43,6 +43,7 @@ pyexecute("saltspec$speccal.py",verbose=no)
 pyexecute("saltspec$specsens.py",verbose=no)
 pyexecute("saltspec$specslit.py",verbose=no)
 pyexecute("saltspec$specselfid.py",verbose=no)
+pyexecute("saltspec$specslitnormalize.py",verbose=no)
 
 
 package saltspec

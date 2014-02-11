@@ -114,7 +114,7 @@ def specidentify(images,linelist, outfile, guesstype='rss', guessfile='',      \
  
                    if masktype=='LONGSLIT':
                       slit=st.getslitsize(slitname)
-                      xpos=-0.3066
+                      xpos=-0.2666
                       ypos=0.0117
                       objid=None
                    elif masktype=='MOS':
