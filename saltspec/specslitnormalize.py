@@ -64,7 +64,9 @@ def specslitnormalize(images, outimages, outpref, response=None, response_output
        outfiles=saltio.listparse('Outfile', outimages, outpref,infiles,'')
 
        #read in the response function
-       if response is not None:
+       response=saltio.checkfornone(response)
+       if response:
+           log.message('Loading response from %s' % response)
            response=readresponse(response)
 
        # Identify the lines in each file
@@ -100,6 +102,8 @@ def specslitnormalize(images, outimages, outpref, response=None, response_output
                    if saltkey.found('VAREXT', hdu[i]):
                       vhdu=saltkey.get('VAREXT', hdu[i])
                       hdu[vhdu].data = hdu[vhdu].data / response
+
+               saltio.writefits(hdu, ofile, clobber=clobber)
 
 def readresponse(response_file):
     """Read in the response file""" 
