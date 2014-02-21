@@ -18,6 +18,7 @@ import copy
 import pyfits
 import numpy as np
 from scipy import interpolate as scint
+from  scipy.ndimage.filters import gaussian_filter1d
 from pyraf import iraf 
 import saltsafeio as saltio
 from salterror import SaltError
@@ -169,7 +170,9 @@ def findwavelengthsolution(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, sigma=5, 
        nws=WavelengthSolution.WavelengthSolution(xp[mask],wp[mask], order=ws.order, function=ws.function)
        nws.fit()
    else:
-       nws=None
+       nws=None 
+   #for i in range(len(xp)): print xp[i], wp[i], wp[i]-nws.value(xp[i])
+   #print nws.sigma(xp,wp)
    return nws
 
 def findfeatures(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, sigma=5, niter=5, sections=3):
@@ -693,7 +696,6 @@ def crosslinematch(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, res=2, dres=0.1, 
        The following steps are employed in order to achive the match:
 
     """
-
     #setup initial wavelength array
     warr=ws.value(xarr)
     #detect lines in the input spectrum and identify the peaks and peak values
@@ -728,10 +730,9 @@ def crosslinematch(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, res=2, dres=0.1, 
            d=abs(nwp-sl[i])
            j=d.argmin()
            if d.min()<res:
-              if  lineorder(xp, xf, sl, sf, sl[i], xp[j], wdiff, nws):
+              if  lineorder(xp, xf, sl, sf, sl[i], xp[j], wdiff, nws) and abs(ws.value(xp[j])-sl[i])<mdiff:
                  xp_list.append(xp[j])
                  wp_list.append(sl[i])
-
     return np.array(xp_list), np.array(wp_list)
  
 
@@ -747,9 +748,17 @@ def lineorder(xp, xf, sl, sf, sw, xb, wdiff, nws):
     #identify the order of the spectral lines
     i=sf[smask].argsort()
     i_ord=i[sl[smask][i]==sw]
+    if len(i_ord)>1: return False
 
     #identify the order of the observed lines
     j=xf[mask].argsort()
     j_ord=j[xp[mask][j]==xb]
-
+    if len(j_ord)>1: return False
     return i_ord==j_ord
+
+def smooth_spectra(xarr, farr, sigma=3, nkern=20):
+    """Given a xarr and flux, smooth the spectrum"""
+    xkern=np.arange(nkern)
+    kern=np.exp(-(xkern-0.5*nkern)**2/(sigma)**2)
+
+    return gaussian_filter1d(farr, sigma)

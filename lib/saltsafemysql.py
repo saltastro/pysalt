@@ -102,7 +102,6 @@ def update(db, insertion, table, logic):
     if len(logic)>0:
         exec_command   +=" WHERE  "+logic
 
-    print exec_command
 
     try:
         cursor = db.cursor()
@@ -364,7 +363,7 @@ def updateFileData(db, ImageHeader, FileData_Id, FileNameString, PipelineFileNam
     return 
 
 
-def updateFitsHeaders(db, imageStruct, FileData_Id):
+def updateFitsHeaders(db, imageStruct, FileData_Id, log=None):
     """Update the fits header tables
 
     """
@@ -422,7 +421,8 @@ def updateFitsHeaders(db, imageStruct, FileData_Id):
        updatefitstable(db, 'FitsHeaderRss', ImageHeader, logic)
     else:
        message='Did not update the Instrument tables'
-       safelog.warning(message)
+       if log is not None:  
+          log.warning(message)
 
 
     return 

@@ -1,3 +1,6 @@
+Version 0.47 (1 December 2013):
+-Add HRS basic reductions
+
 Version 0.45 (27 September 2013):
 -Fixed bug in saltflat to work with different python version
 -Improved specidentify with better line identification and work flow

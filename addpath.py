@@ -89,3 +89,7 @@ _path = iraf.osfn('pysalt$saltfirst')
 if _path not in sys.path and os.path.isdir(_path):
    sys.path.insert(1,_path)
 
+#add the proptools class
+_path = iraf.osfn('pysalt$salthrs')
+if _path not in sys.path:
+    sys.path.insert(1,_path)

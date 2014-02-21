@@ -85,7 +85,7 @@ class CatalogTab:
             #enter the file information into the slit_arr
             self.slitlets.readascii(self.infile, form=form)
             self.slitmask.set_MaskPosition()
-
+        print self.slitmask.center_ra, self.slitmask.center_dec
         #check for objects outside the FoV
         self.slitmask.outFoV()
         ### TESTING THE COLLISION CHECKER

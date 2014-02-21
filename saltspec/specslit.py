@@ -148,8 +148,8 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
                 slitmask=mt.read_slitmask_from_xml(sfile)
                 xpos=-0.3066
                 ypos=0.0117
-                cx=int(xlen/xbin)
-                cy=int(ylen/ybin)+ypos/0.015/ybin+yoffset
+                cx=int(xlen/2.0)
+                cy=int(ylen/2.0)+ypos/0.015/ybin+yoffset
                 order, slit_positions=mt.convert_slits_from_mask(slitmask, order=1, xbin=xbin, ybin=ybin, pix_scale=0.1267, cx=cx, cy=cy)
                 sections=1
             elif exttype=='fits':

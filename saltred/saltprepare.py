@@ -151,7 +151,7 @@ def saltprepare(images,outimages,outpref,createvar=False, badpixelimage=None, cl
 # -----------------------------------------------------------
 # prepare FITS file for processing
 
-def prepare(struct,createvar=False, badpixelstruct=None):
+def prepare(struct,createvar=False, badpixelstruct=None, namps=2):
 
    #set up the file name
    infile=saltkey.getimagename(struct[0])
@@ -172,7 +172,7 @@ def prepare(struct,createvar=False, badpixelstruct=None):
    #check the number of amplifiers
    #TODO:  This is current hardwired at a value of 2
    nccds = saltkey.get('NCCDS',struct[0])
-   if (nextend%(nccds*2) != 0):
+   if (nextend%(nccds*namps) != 0):
         message = 'ERROR -- SALTPREPARE: Number of file extensions and '
         message += 'number of amplifiers are not consistent in ' + infile
         raise SaltError(message)

@@ -355,11 +355,11 @@ def extract_slits(slits, spline_x, im, order=2, padding=0):
 
         # fit a spline to the edges
         if len(spline_x)>1:
-           spline_left_edge = fit_spline(spline_x,edge_left,new_x, int(order))
-           spline_right_edge = fit_spline(spline_x,edge_right,new_x,int(order))
+           spline_left_edge = fit_spline(spline_x,edge_left,new_x, int(order))-padding
+           spline_right_edge = fit_spline(spline_x,edge_right,new_x,int(order))+padding
         else:
-           spline_left_edge=new_x*0.0+edge_left[0]
-           spline_right_edge=new_x*0.0+edge_right[0]
+           spline_left_edge=new_x*0.0+edge_left[0]-padding
+           spline_right_edge=new_x*0.0+edge_right[0]+padding
 
         # create the mask section for the spectra
         for k in range(0,x_dim-1):
@@ -369,8 +369,8 @@ def extract_slits(slits, spline_x, im, order=2, padding=0):
         c = mask*im
         
         # determine the size of the rectangle to cut out
-        miny = numpy.min(spline_left_edge)-padding
-        maxy = numpy.max(spline_right_edge)+padding
+        miny = numpy.min(spline_left_edge)
+        maxy = numpy.max(spline_right_edge)
         
         # extract the rectangular section from the MOS image
         ext = extract_spectrum(c,miny,maxy)
@@ -658,6 +658,7 @@ def convert_slits_from_mask(slitmask, order=1, xbin=2, ybin=2, pix_scale=0.1267,
 
    
    #convert the slitlets in the slit mask to slits for extraction
+   print xbin, ybin
    for i in range(slitmask.slitlets.nobjects): 
        sid=slitmask.slitlets.data[i]['name']
        sra=slitmask.slitlets.data[i]['targ_ra']

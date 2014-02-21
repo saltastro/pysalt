@@ -162,7 +162,10 @@ def imcombine(infiles, method='average', reject=None, mask=True,  weight=True, \
                          lthresh=lthresh, hthresh=hthresh) 
               #this step is needed to remove data arrays that are read into memory
               #--not sure what object they are linked to, but this works
-              #for j in range(nimages): del hdu_list[j][i].data
+              try:
+                 for j in range(nimages): del hdu_list[j][i].data
+              except:
+                 pass
            else:  
               outhdu=hducombine(hdu_list, outhdu, ext=i, method=method, datasec=None, 
                          reject=reject, mask=mask,weight=weight, scale=scale, statsec=statsec, 

@@ -48,7 +48,7 @@ class SlitMaskGui(QtGui.QMainWindow, InfoTab, CatalogTab, OptimizeTab, SlitTab, 
             self.ui.radioButtonInfo_Catalogue.setChecked(True)
             self.setmode2cat()
             self.entercatalog(infile)
-            
+            print self.slitmask.center_ra, self.slitmask.center_dec
             if self.slitmask.center_ra is None and self.slitmask.center_dec is None:
                 self.slitmask.set_MaskPosition()
                 self.displayfootprint()
@@ -218,16 +218,14 @@ class SlitMaskGui(QtGui.QMainWindow, InfoTab, CatalogTab, OptimizeTab, SlitTab, 
             
      # load info from the main window
     def loadtargetname(self):
-        self.slitmask.validated = False
-        self.slitmask.target_name=self.ui.lineEditMain_TargetName.text()
-        if len(self.ui.lineEditMain_TargetName.text()) == 0:
-            self.slitmask.target_name = None
+        self.slitmask.target_name=str(self.ui.lineEditMain_TargetName.text()).strip()
+        if self.slitmask.validated:  
+           if len(self.slitmask.target_name)==0: self.slitmask.validated=False
 
     def loadmaskname(self):
-        self.slitmask.validated = False
-        self.slitmask.mask_name=self.ui.lineEditMain_MaskName.text()
-        if len(self.ui.lineEditMain_MaskName.text()) == 0:
-            self.slitmask.mask_name = None
+        self.slitmask.mask_name=str(self.ui.lineEditMain_MaskName.text()).strip()
+        if self.slitmask.validated:  
+           if len(self.slitmask.mask_name)==0: self.slitmask.validated=False
    
     def loadValue(self):
         self.updatetabs()
