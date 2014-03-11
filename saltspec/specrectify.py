@@ -64,7 +64,7 @@ import pylab as pl
 
 def specrectify(images,outimages, outpref, solfile=None, caltype='line',            \
                 function='polynomial', order=3, inttype='linear', w1=None,     \
-                w2=None, dw=None, nw=None, blank=0, clobber=True,              \
+                w2=None, dw=None, nw=None, blank=0, conserve=False, clobber=True,              \
                 logfile='salt.log',verbose=True):
 
    with logging(logfile,debug) as log:
@@ -96,7 +96,7 @@ def specrectify(images,outimages, outpref, solfile=None, caltype='line',        
            hdu=saltsafeio.openfits(img)
            hdu=rectify(hdu, soldict, caltype=caltype, function=function, 
                    order=order, inttype=inttype, w1=w1, w2=w2, dw=dw, nw=nw, 
-                   pixscale=0.0, blank=blank, clobber=clobber, log=log, verbose=verbose)
+                   pixscale=0.0, blank=blank, conserve=conserve, clobber=clobber, log=log, verbose=verbose)
            #write out the oimg
            saltsafeio.writefits(hdu, oimg, clobber=clobber)
 
@@ -105,8 +105,8 @@ def specrectify(images,outimages, outpref, solfile=None, caltype='line',        
 # rectify data 
 
 def rectify(hdu, soldict, caltype='line', function='poly', order=3, inttype='interp', 
-            w1=None, w2=None, dw=None, nw=None,
-            blank=0, pixscale=0.0, time_interp=False, clobber=True, log=None, verbose=True):
+            w1=None, w2=None, dw=None, nw=None, blank=0, pixscale=0.0, time_interp=False, 
+            conserve=False, clobber=True, log=None, verbose=True):
    """Read in an image and a set of wavlength solutions.  Calculate the best
       wavelength solution for a given dataset and then apply that data set to the 
       image 
@@ -114,7 +114,7 @@ def rectify(hdu, soldict, caltype='line', function='poly', order=3, inttype='int
     return
    """
  
-   #set the 
+   #set the basic values
    set_w1=(w1 is  None)
    set_w2=(w2 is  None)
    set_dw=(dw is  None)
@@ -211,6 +211,7 @@ def rectify(hdu, soldict, caltype='line', function='poly', order=3, inttype='int
                except Exception, e:
                   hdu[i].data[j,:]=hdu[i].data[j,:]*0.0+blank
                   msg='In row %i, solution cannot be found due to %s' % (i, e)  
+ 
 
                #correct the variance frame
                if varext:
@@ -227,6 +228,10 @@ def rectify(hdu, soldict, caltype='line', function='poly', order=3, inttype='int
                        msg='In row %i, solution cannot be found due to %s' % (i, e)  
            else:
                hdu[i].data[j,:]=hdu[i].data[j,:]*0.0+blank
+
+       if conserve:
+          hdu[i].data = hdu[i].data / dw
+          if varext: hdu[varext].data = hdu[varext].data / dw
 
 
        #Add WCS information

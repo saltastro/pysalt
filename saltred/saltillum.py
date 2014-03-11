@@ -135,6 +135,6 @@ def illum_cor(struct,mbox):
 
 # -----------------------------------------------------------
 # main code
-
-parfile = iraf.osfn("saltred$saltillum.par")
-t = iraf.IrafTaskFactory(taskname="saltillum",value=parfile,function=saltillum, pkgname='saltred')
+if not iraf.deftask('saltillum'):
+   parfile = iraf.osfn("saltred$saltillum.par")
+   t = iraf.IrafTaskFactory(taskname="saltillum",value=parfile,function=saltillum, pkgname='saltred')

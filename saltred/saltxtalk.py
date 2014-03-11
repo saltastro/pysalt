@@ -209,6 +209,6 @@ def xtalk(struct,xcoeff,namps=2, log=None,verbose=False):
 
 # -----------------------------------------------------------
 # main code
-
-parfile = iraf.osfn("saltred$saltxtalk.par")
-t = iraf.IrafTaskFactory(taskname="saltxtalk",value=parfile,function=saltxtalk, pkgname='saltred')
+if not iraf.deftask('saltxtalk'):
+   parfile = iraf.osfn("saltred$saltxtalk.par")
+   t = iraf.IrafTaskFactory(taskname="saltxtalk",value=parfile,function=saltxtalk, pkgname='saltred')
