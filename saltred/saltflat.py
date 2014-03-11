@@ -212,6 +212,6 @@ def flat(struct,fstruct):
 
 # -----------------------------------------------------------
 # main code
-
-parfile = iraf.osfn("saltred$saltflat.par")
-t = iraf.IrafTaskFactory(taskname="saltflat",value=parfile,function=saltflat, pkgname='saltred')
+if not iraf.deftask('saltflat'):
+   parfile = iraf.osfn("saltred$saltflat.par")
+   t = iraf.IrafTaskFactory(taskname="saltflat",value=parfile,function=saltflat, pkgname='saltred')

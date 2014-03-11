@@ -320,6 +320,6 @@ def slot(struct,infile,dbspeed,dbrate,dbgain,dbnoise,dbbias,dbamp,xcoeff,gaindb,
 
 # -----------------------------------------------------------
 # main code
-
-parfile = iraf.osfn("saltred$saltslot.par")
-t = iraf.IrafTaskFactory(taskname="saltslot",value=parfile,function=saltslot, pkgname='saltred')
+if not iraf.deftask('saltslot'):
+   parfile = iraf.osfn("saltred$saltslot.par")
+   t = iraf.IrafTaskFactory(taskname="saltslot",value=parfile,function=saltslot, pkgname='saltred')

@@ -562,6 +562,6 @@ def crgrow(crarr, grad=3):
 
 # -----------------------------------------------------------
 # main code
-
-parfile = iraf.osfn("saltred$saltcrclean.par")
-t = iraf.IrafTaskFactory(taskname="saltcrclean",value=parfile,function=saltcrclean, pkgname='saltred')
+if not iraf.deftask('saltcrclean'):
+   parfile = iraf.osfn("saltred$saltcrclean.par")
+   t = iraf.IrafTaskFactory(taskname="saltcrclean",value=parfile,function=saltcrclean, pkgname='saltred')

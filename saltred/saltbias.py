@@ -332,5 +332,6 @@ def bias(struct,subover=True,trim=True, subbias=False, bstruct=None,
 # -----------------------------------------------------------
 # main code
 
-parfile = iraf.osfn("saltred$saltbias.par")
-t = iraf.IrafTaskFactory(taskname="saltbias",value=parfile,function=saltbias, pkgname='saltred')
+if not iraf.deftask('saltbias'):
+  parfile = iraf.osfn("saltred$saltbias.par")
+  t = iraf.IrafTaskFactory(taskname="saltbias",value=parfile,function=saltbias, pkgname='saltred')
