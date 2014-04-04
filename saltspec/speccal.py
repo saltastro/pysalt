@@ -104,9 +104,10 @@ def speccal(specfile, outfile, calfile, extfile, airmass=None, exptime=None,
        log.message('Calculating the calibration curve for %s' % specfile)
        error=False
        try:
-          if obs_spectra.var is not None: error=True
+           if obs_spectra.sigma is not None: error=True
        except:
-          error=False
+           error=False
+
        flux_spectra=calfunc(obs_spectra, cal_spectra, ext_spectra, airmass, exptime, error)
 
        #write the spectra out
@@ -129,10 +130,10 @@ def calfunc(obs_spectra, std_spectra, ext_spectra, airmass, exptime, error=False
    function
    """
    
-   #re-interpt the std_spectra over the same wavelength
+   #re-interp the std_spectra over the same wavelength
    std_spectra.interp(obs_spectra.wavelength)
 
-   #re-interp the ext_spetra over the sam ewavelength
+   #re-interp the ext_spectra over the same wavelength
    ext_spectra.interp(obs_spectra.wavelength)
 
    #create the calibration spectra

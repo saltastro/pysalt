@@ -137,7 +137,7 @@ def specidentify(images,linelist, outfile, guesstype='rss', guessfile='',      \
                       xpixscale=0.1267*xbin
                       ypixscale=0.1267*ybin
                       cx=int(3162/xbin)
-	              cy=int(2050/ybin)
+                      cy=int(2050/ybin)
 
 
                       x,y=mt.convert_fromsky(ras,des, rac,dec, xpixscale=xpixscale, ypixscale=ypixscale,
