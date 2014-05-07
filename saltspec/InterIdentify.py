@@ -817,8 +817,9 @@ d - delete feature      u - undelete feature
    def testfeatures(self):
        """Run the test matching algorithm"""
        self.set_wdiff()
-       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes,
-                              self.ws, mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
+       res = max(self.res*0.25, 2)
+       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, 
+                               res=res,mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
        for x, w in zip(xp, wp):
           if w not in self.wp and w>-1: 
              self.xp.append(x)
@@ -834,9 +835,9 @@ d - delete feature      u - undelete feature
        self.set_wdiff()
 
        #xp, wp=st.findfeatures(self.xarr, self.farr, self.slines, self.sfluxes,
-       #                       self.ws, mdiff=self.mdiff, wdiff=self.wdiff, sigma=self.sigma, niter=self.niter, sections=3)
-       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes,
-                              self.ws, mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
+       #                       self.ws, mdiff=self.mdiff, wdiff=self.wdiff, sigma=self.sigma, niter=self.niter, sections=3)  
+       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, 
+                               res=self.res, mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
        for x, w in zip(xp, wp):
           if w not in self.wp and w>-1: 
              self.xp.append(x)
