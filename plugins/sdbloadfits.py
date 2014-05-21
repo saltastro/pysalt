@@ -134,11 +134,20 @@ def findrawfilename(infits):
     try:
         i=infits.index("S")
     except:
-        message = infits+' is not a SCAM File \n'
+        message = infits+' is not a SALT File \n'
     try:
         i=infits.index("P")
     except:
-        message = infits+' is not a RSS File \n'
+        message = infits+' is not a SALT File \n'
+
+    try:
+        i=infits.index("H")
+    except:
+        message = infits+' is not a SALT File \n'
+    try:
+        i=infits.index("R")
+    except:
+        message = infits+' is not a SALT File \n'
 
     if i>=0:
         inname=infits[i:]

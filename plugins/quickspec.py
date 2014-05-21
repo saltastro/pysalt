@@ -136,21 +136,17 @@ def quickap(profile, lampid=None, findobj=False, objsection=None, skysection=Non
    sy1=int(sy1)
    sy2=int(sy2)
 
-   sk_spec=extract(struct, method='normal', section=[(sy1,sy2)], minsize=minsize, thresh=thresh, convert=True)[0]
-   sk_spec=quickcross(ap_spec, sk_spec, dx=0.02, nstep=500)
-
-   if skysection is None:
-      skysection='%i:%i' % (y1-0.1*ylen,y1-0.2*ylen)
-
-   #sky spectrum
-   sy1, sy2 = skysection.split(':')
-   sy1=int(sy1)
-   sy2=int(sy2)
-   sk_specb=extract(struct, method='normal', section=[(sy1,sy2)], minsize=minsize, thresh=thresh, convert=True)[0]
-   sk_specb=quickcross(ap_spec, sk_specb, dx=0.02, nstep=500)
-
-   sk_spec.ldata += sk_specb.ldata
-   sk_spec.ldata *= 0.5
+   sk_spec=extract(struct, method='normal', section=[(sy1,sy2)], minsize=minsize, thresh=thresh, convert=True)[0] 
+   sk_spec.ldata - sk_spec.ldata
+   
+   w1=ap_spec.wave.min()
+   w2=ap_spec.wave.max()
+   nsect=10
+   dw=(w2-w1)/nsect
+   for w in np.arange(w1,w2,dw):
+      mask=(ap_spec.wave>w)*(ap_spec.wave<w+dw)
+      sk_spec=quickcross(ap_spec, sk_spec, mask=mask, dx=0.02, nstep=500)
+      ap_spec.ldata[mask]=ap_spec.ldata[mask]-float(y2-y1)/(sy2-sy1)*sk_spec.ldata[mask]
 
    #set up masks for sky subtraction
    amask = (ap_spec.ldata==0)
@@ -158,14 +154,12 @@ def quickap(profile, lampid=None, findobj=False, objsection=None, skysection=Non
 
 
    #find offset between two spectra
-
    d1 = ap_spec.ldata
    d2 = sk_spec.ldata*float(y2-y1)/(sy2-sy1) 
    y=d1[d2>0]/d2[d2>0]
    y=np.median(y)
 
    #subtract the skyspectrum
-   ap_spec.ldata=ap_spec.ldata-float(y2-y1)/(sy2-sy1)*sk_spec.ldata*y
 
    clean_spectra(ap_spec, dres=2*dres, grow=dres)
    #pl.plot(ap_spec.wave, ap_spec.ldata, ls='', marker='o', ms=2)
@@ -208,16 +202,17 @@ def clean_spectra(ap_spec, dres=2, grow=0):
 
     return ap_spec
 
-def quickcross(spec1, spec2, dx=1, nstep=20):
+def quickcross(spec1, spec2, mask=None, dx=1, nstep=20):
     "Calculate teh offset and return matched spectrum"
+    if mask is None: mask=(spec1.wave>0)
     cc_arr=np.zeros(nstep)
     start_x = - 0.5*nstep*dx
     for i in range(nstep):
         x=start_x+i*dx
-        data= np.interp(spec1.wave, spec2.wave+x, spec2.ldata)
-        cc_arr[i]=st.ncor(data, spec1.ldata)
+        data= np.interp(spec1.wave[mask], spec2.wave[mask]+x, spec2.ldata[mask])
+        cc_arr[i]=st.ncor(data, spec1.ldata[mask])
     x=start_x+cc_arr.argmax()*dx
-    spec2.wave = spec2.wave+x #np.interp(spec1.wave, spec2.wave+x, spec2.ldata)
+    spec2.wave[mask] = spec2.wave[mask]+x #np.interp(spec1.wave, spec2.wave+x, spec2.ldata)
     return spec2
 
 def calc_resolution(hdu):

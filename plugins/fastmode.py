@@ -71,18 +71,18 @@ Block join Pointing using (Block_Id)
    '''
    where_term="Proposal_Code like '%s' and current=1 and DataAccessMethod='Fast'" \
               % (propcode)
-   print 'Select %s from %s where %s' % (select_term, from_term, where_term)
+   #print 'Select %s from %s where %s' % (select_term, from_term, where_term)
    try:
        record=saltmysql.select(sdb, select_term, from_term, where_term)
    except Exception, e:
        print e
        return None
-   print "Checking for fast data"
-   print record
+   #print "Checking for fast data"
+   #print record
  
    if record:
       surname, email, username, propid= record[0]
-      print surname, email, username, propid
+      #print surname, email, username, propid
    else:
       return
 
