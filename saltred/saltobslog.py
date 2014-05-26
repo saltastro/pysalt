@@ -228,6 +228,6 @@ def getkey(struct,keyword,default,warn=True, log=None):
 
 # -----------------------------------------------------------
 # main code
-
-parfile = iraf.osfn("saltred$saltobslog.par")
-t = iraf.IrafTaskFactory(taskname="saltobslog",value=parfile,function=saltobslog, pkgname='saltred')
+if not iraf.deftask('saltobslog'):
+   parfile = iraf.osfn("saltred$saltobslog.par")
+   t = iraf.IrafTaskFactory(taskname="saltobslog",value=parfile,function=saltobslog, pkgname='saltred')

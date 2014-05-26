@@ -123,5 +123,6 @@ def arith(struct, op, opstruct, is_image, divzero):
 # -----------------------------------------------------------
 # main code
 
-parfile = iraf.osfn("saltred$saltarith.par")
-t = iraf.IrafTaskFactory(taskname="saltarith",value=parfile,function=saltarith, pkgname='saltred')
+if not iraf.deftask('saltarith'):
+   parfile = iraf.osfn("saltred$saltarith.par")
+   t = iraf.IrafTaskFactory(taskname="saltarith",value=parfile,function=saltarith, pkgname='saltred')

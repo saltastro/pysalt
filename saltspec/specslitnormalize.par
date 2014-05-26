@@ -1,0 +1,13 @@
+images,s,a,'',,,'Input images'
+outimages,s,a,'',,,Output images or list of output images'
+outpref,s,a,'n',,,'Prefix for output images'
+response,s,h,'',,,'File with a slit response function'
+response_output,s,h,'',,,'Output response function'
+order,i,h,3,,,'Order of Polynomial'
+conv,r,h,1e-2,,,'Convergence for the fit'
+niter,i,h,5,,,'Maximum number of iterations for rejection'
+startext,i,h,0,,,'Starting Extension number'
+clobber,b,h,no,,,'Overwrite exisitng files?'
+logfile,s,h,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 

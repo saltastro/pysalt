@@ -2,32 +2,6 @@
 # Copyright (c) 2009, South African Astronomical Observatory (SAAO)        #
 # All rights reserved.                                                     #
 #                                                                          #
-# Redistribution and use in source and binary forms, with or without       #
-# modification, are permitted provided that the following conditions       #
-# are met:                                                                 #
-#                                                                          #
-#     * Redistributions of source code must retain the above copyright     #
-#       notice, this list of conditions and the following disclaimer.      #
-#     * Redistributions in binary form must reproduce the above copyright  #
-#       notice, this list of conditions and the following disclaimer       #
-#       in the documentation and/or other materials provided with the      #
-#       distribution.                                                      #
-#     * Neither the name of the South African Astronomical Observatory     #
-#       (SAAO) nor the names of its contributors may be used to endorse    #
-#       or promote products derived from this software without specific    #
-#       prior written permission.                                          #
-#                                                                          #
-# THIS SOFTWARE IS PROVIDED BY THE SAAO ''AS IS'' AND ANY EXPRESS OR       #
-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED           #
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE   #
-# DISCLAIMED. IN NO EVENT SHALL THE SAAO BE LIABLE FOR ANY                 #
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL       #
-# DAMAGES (INCte: 2007/05/26
-# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)    #
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,      #
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN #
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE          #
-# POSSIBILITY OF SUCH DAMAGE.                                              #
 ############################################################################
 
 
@@ -50,7 +24,9 @@ from __future__ import with_statement
 
 
 
-import os, shutil, time, ftplib, glob, pyfits
+import os, shutil, time, ftplib, glob
+from astropy.io import fits as pyfits
+import pickle
 import numpy as np
 import scipy as sp
 
@@ -112,11 +88,6 @@ def saltfirst(obsdate, imdir, prodir, server='smtp.saao.ac.za', readme='readme.f
 
 
    with logging(logfile,debug) as log:
-       #start gui
-       print "GUI ", os.getcwd()
-       print type(log)
-
-       #Start and run GUI"""
 
        #create GUI
        App = QtGui.QApplication([])
@@ -150,6 +121,8 @@ class FirstWindow(QtGui.QMainWindow):
         self.clobber=clobber
         self.scamwatch=True
         self.rsswatch=True
+        self.hrswatch=True
+        self.hrbwatch=True
         self.objsection=None
         self.sdbhost=sdbhost
         self.sdbname=sdbname
@@ -160,6 +133,7 @@ class FirstWindow(QtGui.QMainWindow):
         self.sexfile=sexfile
         self.update=update
         self.headfiles=[]
+        self.pickle_file='%s_obslog.p' % self.obsdate
 
         # Setup widget
         QtGui.QMainWindow.__init__(self)
@@ -169,6 +143,9 @@ class FirstWindow(QtGui.QMainWindow):
 
         # Set window title
         self.setWindowTitle("SALTFIRST")
+
+        #set up observation log from database
+        self.create_obslog()
 
         #look for any initial data
         self.checkfordata(self.obsdate, self.imdir)
@@ -194,7 +171,6 @@ class FirstWindow(QtGui.QMainWindow):
         #self.imageTab=ImageWidget(self.hdu, hmin=hmin, wmin=wmin, cmap=cmap, scale=scale, contrast=contrast)
         self.specTab=SpectraViewWidget(None, None, None, hmin=hmin, wmin=wmin)
         self.obsTab=ObsLogWidget(self.obsdict, obsdate=self.obsdate)
-
         #create the tabs
         self.tabWidget=QtGui.QTabWidget()
         self.tabWidget.addTab(self.infoTab, 'Info')
@@ -202,16 +178,14 @@ class FirstWindow(QtGui.QMainWindow):
         #self.tabWidget.addTab(self.imageTab, 'Image')
         self.tabWidget.addTab(self.specTab, 'Spectra')
         self.tabWidget.addTab(self.obsTab, 'Log')
-
         #create button to reset the filewatcher
         self.checkButton = QtGui.QPushButton("Check for Data")
         self.checkButton.clicked.connect(self.clickfordata)
-
+     
         #layout the widgets
         mainLayout = QtGui.QVBoxLayout(self.main)
         mainLayout.addWidget(self.tabWidget)
         mainLayout.addWidget(self.checkButton)
-
         #set up thrading
         self.threadlist=[]
         self.thread=QtCore.QThread()
@@ -225,7 +199,6 @@ class FirstWindow(QtGui.QMainWindow):
         ctime=5*60*1000
         self.ctimer.start(ctime)
         self.connect(self.ctimer, QtCore.SIGNAL("timeout()"), self.updatetime)
-
         #add signal catches
         self.connect(self, QtCore.SIGNAL('updatespec(str)'), self.updatespecview)
         self.connect(self.thread, QtCore.SIGNAL('finishedthread(QString)'), self.updatetabs)
@@ -233,12 +206,18 @@ class FirstWindow(QtGui.QMainWindow):
         self.connect(self.obsTab, QtCore.SIGNAL('updateobslogdb(str)'), self.updateobslogdb)
         self.connect(self.obsTab, QtCore.SIGNAL('updatecals(str)'), self.updatecals)
         self.connect(self.specTab, QtCore.SIGNAL('updateextract(int,int)'), self.updateextract)
-
         # Set the main widget as the central widget
         self.setCentralWidget(self.main)
 
         # Destroy widget on close
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+
+   def create_obslog(self):
+       """Check to see if there are any files in the database, and if so, create the observing log"""
+       if os.path.isfile(self.pickle_file) and 0:
+          self.obsdict = pickle.load( open( self.pickle_file, "rb" ) )
+       else:
+          self.obsdict = OrderedDict()
 
    def updateextract(self, y1, y2):
        print y1, y2
@@ -255,8 +234,9 @@ class FirstWindow(QtGui.QMainWindow):
        outfile=outpath+'smbxp'+name
        logfile='saltclean.log'
        verbose=True
-       quickap(outfile, objsection=objsection, logfile=logfile, verbose=verbose)
+       y1, y2=quickap(outfile, objsection=objsection, clobber=True, logfile=logfile, verbose=verbose)
        #quickspec(outfile, lampid, findobj=False, objsection=objsection, clobber=True, logfile=logfile, verbose=verbose)
+       self.specTab.updaterange(y1,y2)
        self.updatespecview(name)
 
 
@@ -276,6 +256,7 @@ class FirstWindow(QtGui.QMainWindow):
        #print logstr
        #print self.obsdate
        sdbloadobslog(logstr, self.obsdate, self.sdbhost, self.sdbname, self.sdbuser, self.password)
+       pickle.dump(self.obsdict, open(self.pickle_file, 'wb'))
        
 
    def updatecals(self):
@@ -301,7 +282,7 @@ class FirstWindow(QtGui.QMainWindow):
        imlist=self.obsdict[name]
        detmode=imlist[headerList.index('DETMODE')].strip().upper()
        obsmode=imlist[headerList.index('OBSMODE')].strip().upper()
-       print detmode
+
        #update the information panel
        try:
            self.infoTab.update(name, self.obsdict[name])
@@ -333,7 +314,6 @@ class FirstWindow(QtGui.QMainWindow):
 
 
        #update the spectra plot
-       print obsmode
        if obsmode=='SPECTROSCOPY':
           self.updatespecview(name)
 
@@ -367,6 +347,18 @@ class FirstWindow(QtGui.QMainWindow):
             watchpath.append(self.rssdir)
         else:
             watchpath.append('%srss/data/%s/' % (self.imdir, self.obsdate[0:4]))
+
+        if self.hrswatch:
+            watchpath.append(self.hrsdir)
+        else:
+            watchpath.append('%shrdet/data/%s/' % (self.imdir, self.obsdate[0:4]))
+
+        if self.hrbwatch:
+            watchpath.append(self.hrbdir)
+        else:
+            watchpath.append('%shbdet/data/%s/' % (self.imdir, self.obsdate[0:4]))
+
+        print watchpath
         self.watcher.addPaths(watchpath)
         self.connect(self.watcher, QtCore.SIGNAL('directoryChanged (const QString&)'), self.newfileEvent)
         #watcher.directoryChanged.connect(self.newfileEvent)
@@ -375,37 +367,41 @@ class FirstWindow(QtGui.QMainWindow):
 
    def newfileEvent(self, event):
        """Handles the event when a new file is created"""
-       print event
        #look for new files
        edir='%s' % event
-
        if not self.scamwatch and edir.count('scam'):
            self.watcher.addPath(self.scamdir)
            edir=self.scamdir
        if not self.rsswatch and edir.count('rss'):
            self.watcher.addPath(self.rssdir)
            edir=self.rssdir
+       if not self.hrswatch and edir.count('hrdet'):
+           self.watcher.addPath(self.hrsdir)
+           edir=self.hrsdir
+       if not self.hrbwatch and edir.count('hbdet'):
+           self.watcher.addPath(self.hrsdir)
+           edir=self.hrsdir
 
        #check the directory for new files
        files=glob.glob(edir+'*')
        files.sort()
-       print files
        newfile=self.findnewfile(files)
-       print newfile
        if not newfile: return
        #skip over an files that are .bin files
        if newfile.count('.bin'):
            msg="Sorry I can't handle slotmode files like %s, yet" % files[-1]
            print msg
            return
+       print newfile
        
-       if not newfile.count('.fits'): return
+       if not newfile.count('.fit'): return
        #see if the new file can be opened and added to obsdict
        name=self.addtoobsdict(newfile)
+       print 'Added to obs:', name
 
        #if it fails, return
        if name is None: return
-
+       print edir
        #check to see if it is a new file and if so, add it to the files
        #if not return
        if edir==self.scamdir:
@@ -414,7 +410,13 @@ class FirstWindow(QtGui.QMainWindow):
        if edir==self.rssdir:
           if len(self.rssfiles)==len(files): return
           self.rssfiles.append(newfile)
-       self.allfiles=self.scamfiles+self.rssfiles
+       if edir==self.hrsdir:
+          if len(self.hrsfiles)==len(files): return
+          self.hrsfiles.append(newfile)
+       if edir==self.hrbdir:
+          if len(self.hrbfiles)==len(files): return
+          self.hrbfiles.append(newfile)
+       self.allfiles=self.scamfiles+self.rssfiles+self.hrsfiles+self.hrbfiles
 
        #update tables
        self.updatetables(name)
@@ -424,7 +426,7 @@ class FirstWindow(QtGui.QMainWindow):
           self.headfiles.append(newfile)
 
        #start to reduct the data
-       if self.imreduce and newfile[-5:]=='.fits' and newfile.count(self.obsdate):
+       if self.imreduce and newfile.count('.fit') and newfile.count(self.obsdate):
            self.newname=name
            self.newfile=newfile
            self.thread.run=self.runcleandata
@@ -446,9 +448,6 @@ class FirstWindow(QtGui.QMainWindow):
        #update the Observing log table
        self.obsTab.addobsdict(name, self.obsdict[name])
 
-
-
-
    def findnewfile(self, files):
        """Find the newest file in a directory and return it"""
        newfile=None
@@ -462,7 +461,6 @@ class FirstWindow(QtGui.QMainWindow):
        """If we are starting up, look for any existing data and load that data"""
 
        #set up some of the data
-       self.obsdict=OrderedDict()
        self.obsdate=obsdate
        self.imdir=imdir
        if imdir[-1]!='/': imdir += '/'
@@ -488,19 +486,48 @@ class FirstWindow(QtGui.QMainWindow):
            self.rsswatch=False
            self.rssfiles=[]
 
-       self.allfiles=self.scamfiles+self.rssfiles
+       #set up the HRS files
+       self.hrsdir ='%shrdet/data/%s/%s/raw/' % (imdir, obsdate[0:4], obsdate[4:])
+       if os.path.isdir(self.hrsdir):
+           self.hrsfiles=glob.glob(self.hrsdir+'R*')
+           self.hrsfiles.sort()
+       else:
+           #createdirectories(self.rssdir)
+           self.hrswatch=False
+           self.hrsfiles=[]
 
+       #set up the HRS files
+       self.hrbdir ='%shbdet/data/%s/%s/raw/' % (imdir, obsdate[0:4], obsdate[4:])
+       if os.path.isdir(self.hrbdir):
+           self.hrbfiles=glob.glob(self.hrbdir+'H*')
+           self.hrbfiles.sort()
+       else:
+           #createdirectories(self.rssdir)
+           self.hrbwatch=False
+           self.hrbfiles=[]
+
+
+       self.allfiles=self.scamfiles+self.rssfiles+self.hrsfiles+self.hrbfiles
        #create the obsdict
        for i in range(len(self.allfiles)):
            if self.allfiles[i][-5:]==".fits" and self.allfiles[i].count(self.obsdate):
+             name=os.path.basename(self.allfiles[i])
+             if name not in self.obsdict.keys(): # or not os.path.isfile('mbxp'+name): 
                name=self.addtoobsdict(self.allfiles[i])
                if self.imreduce:
                    self.obsdict[name]=self.cleandata(self.allfiles[i], iminfo=self.obsdict[name],
                              clobber=self.clobber)
-           if self.allfiles[i].count(".head"):
+           elif self.allfiles[i].count(".head"):
                name=self.addtoobsdict(self.allfiles[i])
                self.headfiles.append(self.allfiles[i])
-           if self.allfiles[i].count(".bin"):
+           elif self.allfiles[i][-4:]==".fit": #for hrs
+             name=os.path.basename(self.allfiles[i])
+             if name not in self.obsdict.keys(): # or not os.path.isfile('mbxp'+name): 
+                name=self.addtoobsdict(self.allfiles[i])
+                if self.imreduce:
+                   self.obsdict[name]=self.cleandata(self.allfiles[i], iminfo=self.obsdict[name],
+                             reduce_image=False, clobber=self.clobber)
+           elif self.allfiles[i].count(".bin"):
                msg="Sorry I can't handle slotmode files like %s, yet" % self.allfiles[i]
                print msg
 
@@ -539,14 +566,24 @@ class FirstWindow(QtGui.QMainWindow):
           print "I can't handle this yet"
 
       #ignore bcam files
-      if filename.startswith('B'):
+      if infile.startswith('B'):
           return iminfo
 
 
       #check to see if it exists and return if clobber is no
       if os.path.isfile(outfile) and not clobber: return iminfo
 
+      #handle HRS data 
+      print filename
+      if infile.startswith('H') or infile.startswith('R'):
+          shutil.copy(filename, outfile)
+
       if filename.count('.txt'): return iminfo
+
+      #remove frame transfer data
+      #detmode=iminfo[headerList.index('DETMODE')].strip().upper()
+      #if detmode=='FT' or detmode=='FRAME TRANSFER': return iminfo
+
 
       #reduce the data
       if reduce_image:
@@ -626,9 +663,10 @@ class FirstWindow(QtGui.QMainWindow):
       #If the images are spectral images, run specreduce on them
       if obsmode=='SPECTROSCOPY': # and not(target in ['FLAT', 'BIAS']):
           y1,y2=quickspec(outfile, lampid, objsection=self.objsection, findobj=True, clobber=True, logfile=logfile, verbose=verbose)
-
+          print y1,y2
           try:
               specfile=outpath+'smbxp'+infile.split('.fits')[0]+'.txt'
+              self.specTab.updaterange(y1,y2)
               self.emit(QtCore.SIGNAL("updatespec(str)"), infile)
           except Exception,e:
               message="SALTFIRST--ERROR:  Could not wavelength calibrate %s because %s" % (infile, e)

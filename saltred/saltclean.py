@@ -473,5 +473,6 @@ def createmasterflatname(infiles, flatkeys):
 # -----------------------------------------------------------
 # main code
 
-parfile = iraf.osfn("saltred$saltclean.par")
-t = iraf.IrafTaskFactory(taskname="saltclean",value=parfile,function=saltclean, pkgname='saltred')
+if not iraf.deftask('saltclean'):
+   parfile = iraf.osfn("saltred$saltclean.par")
+   t = iraf.IrafTaskFactory(taskname="saltclean",value=parfile,function=saltclean, pkgname='saltred')

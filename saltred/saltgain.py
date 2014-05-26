@@ -285,6 +285,6 @@ def get_values(dblist, gainset, rospeed, amp):
 
 # -----------------------------------------------------------
 # main code
-
-parfile = iraf.osfn("saltred$saltgain.par")
-t = iraf.IrafTaskFactory(taskname="saltgain",value=parfile,function=saltgain, pkgname='saltred')
+if not iraf.deftask('saltgain'):
+   parfile = iraf.osfn("saltred$saltgain.par")
+   t = iraf.IrafTaskFactory(taskname="saltgain",value=parfile,function=saltgain, pkgname='saltred')

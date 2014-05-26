@@ -484,6 +484,6 @@ def tran_func(a, xshift, yshift, xmag, ymag, xrot, yrot):
 
 # -----------------------------------------------------------
 # main code
-
-parfile = iraf.osfn("saltred$saltmosaic.par")
-t = iraf.IrafTaskFactory(taskname="saltmosaic",value=parfile,function=saltmosaic, pkgname='saltred')
+if not iraf.deftask('saltmosaic'):
+   parfile = iraf.osfn("saltred$saltmosaic.par")
+   t = iraf.IrafTaskFactory(taskname="saltmosaic",value=parfile,function=saltmosaic, pkgname='saltred')

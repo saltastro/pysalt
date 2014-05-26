@@ -1,33 +1,7 @@
 ################################# LICENSE ##################################
 # Copyright (c) 2009, South African Astronomical Observatory (SAAO)        #
-# All rights reserved.                                                     #
+# All rights reserved.  See LICENSE for more details                       #
 #                                                                          #
-# Redistribution and use in source and binary forms, with or without       #
-# modification, are permitted provided that the following conditions       #
-# are met:                                                                 #
-#                                                                          #
-#     * Redistributions of source code must retain the above copyright     #
-#       notice, this list of conditions and the following disclaimer.      #
-#     * Redistributions in binary form must reproduce the above copyright  #
-#       notice, this list of conditions and the following disclaimer       #
-#       in the documentation and/or other materials provided with the      #
-#       distribution.                                                      #
-#     * Neither the name of the South African Astronomical Observatory     #
-#       (SAAO) nor the names of its contributors may be used to endorse    #
-#       or promote products derived from this software without specific    #
-#       prior written permission.                                          #
-#                                                                          #
-# THIS SOFTWARE IS PROVIDED BY THE SAAO ''AS IS'' AND ANY EXPRESS OR       #
-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED           #
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE   #
-# DISCLAIMED. IN NO EVENT SHALL THE SAAO BE LIABLE FOR ANY                 #
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL       #
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS  #
-# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)    #
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,      #
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN #
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE          #
-# POSSIBILITY OF SUCH DAMAGE.                                              #
 ############################################################################
 
 """INTERIDENTIFY provides an interactive method for identifying 
@@ -86,7 +60,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
    """Main application window."""
 
    def __init__(self, xarr, specarr, slines, sfluxes, ws, hmin=150, wmin=400, mdiff=20,
-                filename=None, res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, niter=5, istart=None,
+                filename=None, res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, smooth=0, niter=5, istart=None,
                 nrows=1, rstep=100, method='Zeropoint', ivar=None, cmap='gray', scale='zscale', contrast=1.0,
                 log=None, verbose=True):
         """Default constructor."""
@@ -118,6 +92,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         self.cmap=cmap
         self.scale=scale
         self.contrast=contrast
+        self.smooth=smooth
         self.filename=filename
         self.ImageSolution={}
         self.log=log
@@ -142,8 +117,8 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         #set up variables
         self.arcdisplay=ArcDisplay(xarr, self.farr, slines, sfluxes, self.ws, specarr=self.specarr, 
                                    res=self.res, dres=self.dres, dc=self.dc, ndstep=self.ndstep, xp=[], wp=[],
-                                   method=self.method,niter=self.niter, mdiff=self.mdiff, sigma=self.sigma, 
-                                   log=self.log, verbose=self.verbose)
+                                   method=self.method,smooth=self.smooth, niter=self.niter, mdiff=self.mdiff,
+                                   sigma=self.sigma, log=self.log, verbose=self.verbose)
         self.arcPage=arcWidget(self.arcdisplay,  hmin=hmin, wmin=wmin, y1=self.y1, y2=self.y2, name=self.filename)
         #set up the residual page
         self.errPage=errWidget(self.arcdisplay, hmin=hmin, wmin=wmin)
@@ -193,7 +168,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
        self.farr=apext.makeflat(self.specarr, self.y1, self.y2)
        #set up variables
        self.ws=self.newWS(0.5*(self.y1+self.y2))
-       self.arcdisplay=ArcDisplay(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, specarr=self.specarr, res=self.res, dres=self.dres, niter=self.niter, sigma=self.sigma, xp=[], wp=[], log=self.log, verbose=self.verbose)
+       self.arcdisplay=ArcDisplay(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, specarr=self.specarr, res=self.res, dres=self.dres, smooth=self.smooth, niter=self.niter, sigma=self.sigma, xp=[], wp=[], log=self.log, verbose=self.verbose)
        self.arcPage=arcWidget(self.arcdisplay,  hmin=self.hmin, wmin=self.wmin, y1=self.y1, y2=self.y2)
        self.connect(self.arcPage, QtCore.SIGNAL('savews()'), self.saveWS)
        #set up the residual page
@@ -606,7 +581,7 @@ class ArcDisplay(QtGui.QWidget):
    """
 
    def __init__(self, xarr, farr, slines, sfluxes, ws, xp=[], wp=[], mdiff=20, specarr=None, 
-                res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, niter=5, method='MatchZero', 
+                res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, smooth=0, niter=5, method='MatchZero', 
                 log=None, verbose=True):
        """Default constructor."""
        QtGui.QWidget.__init__(self)
@@ -640,6 +615,7 @@ class ArcDisplay(QtGui.QWidget):
        self.mdiff=mdiff
        self.sigma=sigma
        self.niter=int(niter)
+       self.smooth=int(smooth)
        self.res=res  
        self.dres=dres
        self.dc=dc
@@ -647,6 +623,10 @@ class ArcDisplay(QtGui.QWidget):
        self.method=method
        self.log=log
        self.verbose=True
+
+       #if asked, smooth the data
+       if self.smooth>0:
+          self.farr=st.smooth_spectra(self.xarr, self.farr, sigma=self.smooth)
 
        self.xp=xp
        self.wp=wp
@@ -837,8 +817,9 @@ d - delete feature      u - undelete feature
    def testfeatures(self):
        """Run the test matching algorithm"""
        self.set_wdiff()
-       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes,
-                              self.ws, mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
+       res = max(self.res*0.25, 2)
+       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, 
+                               res=res,mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
        for x, w in zip(xp, wp):
           if w not in self.wp and w>-1: 
              self.xp.append(x)
@@ -854,13 +835,15 @@ d - delete feature      u - undelete feature
        self.set_wdiff()
 
        #xp, wp=st.findfeatures(self.xarr, self.farr, self.slines, self.sfluxes,
-       #                       self.ws, mdiff=self.mdiff, wdiff=self.wdiff, sigma=self.sigma, niter=self.niter, sections=3)
-       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes,
-                              self.ws, mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
+       #                       self.ws, mdiff=self.mdiff, wdiff=self.wdiff, sigma=self.sigma, niter=self.niter, sections=3)  
+       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, 
+                               res=self.res, mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
        for x, w in zip(xp, wp):
           if w not in self.wp and w>-1: 
              self.xp.append(x)
              self.wp.append(w)
+       #for i in range(len(self.xp)): print self.xp[i], self.wp[i]
+       #print
        self.plotFeatures()
        self.redraw_canvas()
          
@@ -913,21 +896,26 @@ d - delete feature      u - undelete feature
        #update the line list such that it is only the line list of selected lines
        if self.wp:
           slines=np.array(self.wp)
-          sfluxes=np.zeros(len(slines))
-          for i in range(len(slines)):
-              try:
-                 sfluxes[i]=self.sfluxes[self.slines==slines[i]][0]
-              except:
-                 if sfluxes.mean()==0:  
-                      sfluxes[i]=1
-                 else:
-                      sfluxes[i]=sfluxes.mean()
+          sfluxes=self.farr[self.xp]
+          #sfluxes=np.zeros(len(slines))
+          #for i in range(len(slines)):
+          #    try:
+          #       sfluxes[i]=self.sfluxes[self.slines==slines[i]][0]
+          #    except:
+          #       if sfluxes.mean()==0:  
+          #            sfluxes[i]=1
+          #       else:
+          #            sfluxes[i]=sfluxes.mean()
                  
        else:
           slines=self.slines
           sfluxes=self.sfluxes
        
-       iws=ai.AutoIdentify(self.xarr, self.specarr, slines, sfluxes, self.ws, farr=self.farr,method=self.method,  rstep=rstep, istart=istart,  nrows=nrows, res=self.res, dres=self.dres, mdiff=self.mdiff, sigma=self.sigma, niter=self.niter, dc=self.dc, ndstep=self.ndstep, oneline=oneline, log=self.log, verbose=self.verbose)
+       iws=ai.AutoIdentify(self.xarr, self.specarr, slines, sfluxes, self.ws, farr=self.farr,
+                           method=self.method,  rstep=rstep, istart=istart,  nrows=nrows, 
+                           res=self.res, dres=self.dres, mdiff=self.mdiff, sigma=self.sigma, 
+                           smooth=self.smooth, niter=self.niter, dc=self.dc, ndstep=self.ndstep, 
+                           oneline=oneline, log=self.log, verbose=self.verbose)
        if oneline:
           self.ws=iws
        else:
@@ -1051,7 +1039,7 @@ d - delete feature      u - undelete feature
    
 
 def InterIdentify(xarr, specarr, slines, sfluxes, ws, mdiff=20, rstep=1, filename=None,
-                  function='poly', order=3, sigma=3, niter=5, res=2, dres=0.1, dc=20, ndstep=20,
+                  function='poly', order=3, sigma=3, smooth=0, niter=5, res=2, dres=0.1, dc=20, ndstep=20,
                   istart=None, method='Zeropoint', scale='zscale', cmap='gray', contrast=1.0,  
                   log=None, verbose=True):
 
@@ -1060,7 +1048,7 @@ def InterIdentify(xarr, specarr, slines, sfluxes, ws, mdiff=20, rstep=1, filenam
    # Create GUI
    App = QtGui.QApplication(sys.argv)
    aw = InterIdentifyWindow(xarr, specarr, slines, sfluxes, ws, rstep=rstep, mdiff=mdiff, sigma=sigma, niter=niter,
-                            res=res, dres=dres,dc=dc, ndstep=ndstep, istart=istart, method=method,
+                            res=res, dres=dres,dc=dc, ndstep=ndstep, istart=istart, method=method, smooth=smooth, 
                             cmap=cmap, scale=scale, contrast=contrast, filename=filename, log=log)
    aw.show()
    # Start application event loop

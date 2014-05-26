@@ -159,6 +159,6 @@ def saltheadtime(images,timetype,writetoheader,clobber,logfile,verbose,debug):
 
 # -----------------------------------------------------------
 # end main code 
-
-parfile = iraf.osfn("saltred$saltheadtime.par") 
-t =iraf.IrafTaskFactory(taskname="saltheadtime",value=parfile,function=saltheadtime,pkgname='saltred')
+if not iraf.deftask('saltheadtime'):
+   parfile = iraf.osfn("saltred$saltheadtime.par") 
+   t =iraf.IrafTaskFactory(taskname="saltheadtime",value=parfile,function=saltheadtime,pkgname='saltred')

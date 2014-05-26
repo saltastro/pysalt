@@ -1,34 +1,8 @@
 #!/usr/bin/env python
 ################################# LICENSE ##################################
 # Copyright (c) 2009, South African Astronomical Observatory (SAAO)        #
-# All rights reserved.                                                     #
+# All rights reserved.   See LICENSE for more details			   #
 #                                                                          #
-# Redistribution and use in source and binary forms, with or without       #
-# modification, are permitted provided that the following conditions       #
-# are met:                                                                 #
-#                                                                          #
-#     * Redistributions of source code must retain the above copyright     #
-#       notice, this list of conditions and the following disclaimer.      #
-#     * Redistributions in binary form must reproduce the above copyright  #
-#       notice, this list of conditions and the following disclaimer       #
-#       in the documentation and/or other materials provided with the      #
-#       distribution.                                                      #
-#     * Neither the name of the South African Astronomical Observatory     #
-#       (SAAO) nor the names of its contributors may be used to endorse    #
-#       or promote products derived from this software without specific    #
-#       prior written permission.                                          #
-#                                                                          #
-# THIS SOFTWARE IS PROVIDED BY THE SAAO ''AS IS'' AND ANY EXPRESS OR       #
-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED           #
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE   #
-# DISCLAIMED. IN NO EVENT SHALL THE SAAO BE LIABLE FOR ANY                 #
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL       #
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS  #
-# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)    #
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,      #
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN #
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE          #
-# POSSIBILITY OF SUCH DAMAGE.                                              #
 ############################################################################
 """
 AutoIDENTIFY  is a program to automatically identify spectral lines in 
@@ -73,7 +47,7 @@ autoidentify_options=['Zeropoint', 'Matchlines', 'MatchZero']
 
 def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',       \
                      rstep=1, istart=None, nrows=1, res=2, dres=0.1, dsigma=5, \
-                     sigma=5, niter=5, mdiff=20, dc=20, ndstep=20, farr=None,  \
+                     sigma=5, smooth=0, niter=5, mdiff=20, dc=20, ndstep=20, farr=None,  \
                      oneline=False, log=None, verbose=True):
    """Automatically find the wavlength solution for the entire image.  The following 
       methods are used:
@@ -97,7 +71,7 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',       \
    if method=='Zeropoint':
       func=st.findzeropoint
       ImageSolution=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=False, oneline=oneline, \
-                  rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,      \
+                  rstep=rstep, istart=istart, nrows=nrows, res=res, smooth=smooth, dres=dres, farr=farr,      \
                   dsigma=dsigma, dniter=niter, log=log, verbose=verbose, dc=dc, ndstep=ndstep)
 
    #use a line matching algorithm to match the lines
@@ -109,8 +83,9 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',       \
            wdiff=mdiff*ws.coef[1]
       except:
            wdiff=mdiff
+      wdiff=20
       ImageSolution=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=True, oneline=oneline,\
-                  rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,      \
+                  rstep=rstep, istart=istart, nrows=nrows, res=res, smooth=smooth, dres=dres, farr=farr,      \
                   dsigma=dsigma, dniter=niter, log=log, verbose=verbose, mdiff=mdiff, wdiff=wdiff, sigma=sigma, niter=niter)
 
    #first fit a zeropoint, then match the lines, and then 
@@ -118,16 +93,16 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',       \
    if method=='MatchZero':
       func=st.findzeropoint
       ws=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=False, oneline=True, \
-                  rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,      \
+                  rstep=rstep, istart=istart, nrows=nrows, res=res, smooth=smooth, dres=dres, farr=farr,      \
                   dsigma=dsigma, dniter=niter, log=log, verbose=verbose, dc=10, ndstep=20)
 
       func=st.findwavelengthsolution
       ws=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=True, oneline=True,\
-                  rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,      \
+                  rstep=rstep, istart=istart, nrows=nrows, res=res, smooth=smooth, dres=dres, farr=farr,      \
                   dsigma=dsigma, dniter=niter, log=log, verbose=verbose, sigma=sigma, niter=niter)
       func=st.findzeropoint
       ImageSolution=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=False, oneline=oneline,\
-                  rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,      \
+                  rstep=rstep, istart=istart, nrows=nrows, res=res, smooth=smooth, dres=dres, farr=farr,      \
                   dsigma=dsigma, dniter=niter, log=log, verbose=verbose, dc=dc, ndstep=ndstep)
 
 
@@ -137,7 +112,7 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',       \
       dcoef=ws.coef*0.1
       dcoef[0]=dc
       ImageSolution=runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=True, oneline=oneline, \
-                  rstep=rstep, istart=istart, nrows=nrows, res=res, dres=dres, farr=farr,     \
+                  rstep=rstep, istart=istart, nrows=nrows, res=res, smooth=smooth, dres=dres, farr=farr,     \
                   dsigma=dsigma, dniter=niter, log=log, verbose=verbose, dcoef=dcoef, ndstep=ndstep)
 
 
@@ -146,7 +121,8 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',       \
    
 def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
                 fline=True, oneline=False, farr=None, rstep=20,\
-                istart=None, nrows=1, dsigma=5, dniter=5, res=2.0, dres=0.1, log=None, verbose=True, **kwargs):
+                istart=None, nrows=1, dsigma=5, dniter=5, smooth=0, res=2.0,  \
+                dres=0.1, log=None, verbose=True, **kwargs):
    """Starting in the middle of the image, it will determine the solution
       by working its way out to either edge and compiling all the results into 
       ImageSolution.  The image solution is only saved if the sigma is less than dres.
@@ -176,6 +152,10 @@ def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
        farr=apext.makeflat(specarr, istart, istart+nrows)
        farr=st.flatspectrum(xarr, farr, mode='poly', order=2)
 
+   #smooth the data
+   if smooth>0:
+      farr=st.smooth_spectra(xarr, farr, sigma=smooth)
+
    #detect the lines 
    cxp=detectlines.detectlines(xarr, farr, dsigma, dniter)
    nlines=len(cxp)
@@ -195,6 +175,14 @@ def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
    if oneline:
      mws=solution(xarr, farr, swarr, sfarr, ws, func, \
                     min_lines=min_lines,dsigma=dsigma, dniter=dniter, **kwargs)
+     for i in range(dniter-1):
+         mws=solution(xarr, farr, swarr, sfarr, mws, func, \
+                    min_lines=min_lines,dsigma=dsigma, dniter=dniter, **kwargs)
+
+
+     if verbose: 
+        msg="%5i %3i %3.2f" % (k, mws.func.mask.sum(), mws.sigma(mws.func.x, mws.func.y) )
+        print msg
      return mws
    else:
      ImageSolution[k]=ws
@@ -207,6 +195,9 @@ def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
            lws=getwsfromIS(k, ImageSolution)
            #set up the flux from the set of lines
            farr=apext.makeflat(specarr, k, k+nrows)
+
+           if smooth>0:
+              farr=st.smooth_spectra(xarr, farr, sigma=smooth)
 
            #continuum correct the spectrum if possible
            try:
@@ -241,7 +232,6 @@ def solution(xarr, farr, sl, sf, ws, func, min_lines=2, dsigma=5, dniter=3, pad=
    #check to see if there are any points
    xp=detectlines.detectlines(xarr, farr, dsigma, dniter)
 
-   #print len(xp)
    if len(xp) > min_lines and ws:
        #make the artificial list
        wmin=ws.value(xarr.min())

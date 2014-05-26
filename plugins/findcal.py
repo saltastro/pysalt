@@ -1,37 +1,11 @@
+#!/usr/bin/env python
 ################################# LICENSE ##################################
 # Copyright (c) 2009, South African Astronomical Observatory (SAAO)        #
-# All rights reserved.                                                     #
+# All rights reserved.  See License file for more details                  #
 #                                                                          #
-# Redistribution and use in source and binary forms, with or without       #
-# modification, are permitted provided that the following conditions       #
-# are met:                                                                 #
-#                                                                          #
-#     * Redistributions of source code must retain the above copyright     #
-#       notice, this list of conditions and the following disclaimer.      #
-#     * Redistributions in binary form must reproduce the above copyright  #
-#       notice, this list of conditions and the following disclaimer       #
-#       in the documentation and/or other materials provided with the      #
-#       distribution.                                                      #
-#     * Neither the name of the South African Astronomical Observatory     #
-#       (SAAO) nor the names of its contributors may be used to endorse    #
-#       or promote products derived from this software without specific    #
-#       prior written permission.                                          #
-#                                                                          #
-# THIS SOFTWARE IS PROVIDED BY THE SAAO ''AS IS'' AND ANY EXPRESS OR       #
-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED           #
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE   #
-# DISCLAIMED. IN NO EVENT SHALL THE SAAO BE LIABLE FOR ANY                 #
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL       #
-# DAMAGES (INCte: 2007/05/26
-# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)    #
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,      #
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN #
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE          #
-# POSSIBILITY OF SUCH DAMAGE.                                              #
 ############################################################################
 
 
-#!/usr/bin/env python
 
 """
 FINDCAL--From the list of observations for a night,
@@ -86,6 +60,24 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
     #loop through all the results and return only the Set of identical results
     caldict=create_caldict(results)
 
+
+    #insert the results into the database
+    for k in caldict:
+        #first check to see if it has already been entered
+        record=saltmysql.select(sdb, 'FileData_Id', 'SalticamNightlyCalibration', 'FileData_Id=%i' % k)
+        if len(record)<1:
+           #check for block_id
+           blockid=saltmysql.select(sdb, 'Block_Id', 'FileData', 'FileData_Id=%i' % k)[0][0]
+
+           #get the calibration types requested
+           if blockid:
+               request=saltmysql.select(sdb, 'SalticamCalibrationType_Id', 'SalitcamCalibration', 'Block_Id=%i' % blockid)
+               for cid in request:
+                   cid=cid[0]
+                   cmd_insert='NightInfo_Id=%i, FileData_Id=%i, SatlicamCalibrationType_Id=%i' % (night_id, k, cid)
+                   #saltmysql.insert(sdb, cmd_insert, 'SalitcamNightlyCalibration')
+               print k, " ".join([str(k) for k in caldict[k]])
+
     #list of rss calibration types
     #+-----------------------+----------------------------------+
     #| RssCalibrationType_Id | CalibrationType                  |
@@ -106,25 +98,6 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
     #|                     6 | Standard - Spectroscopic         |
     #|                    10 | Standard - Unpolarised           |
     #+-----------------------+----------------------------------+
-
-               
-    #insert the results into the database
-    for k in caldict:
-        #first check to see if it has already been entered
-        record=saltmysql.select(sdb, 'FileData_Id', 'SalticamNightlyCalibration', 'FileData_Id=%i' % k)
-        if len(record)<1:
-           #check for block_id
-           blockid=saltmysql.select(sdb, 'Block_Id', 'FileData', 'FileData_Id=%i' % k)[0][0]
-
-           #get the calibration types requested
-           if blockid:
-               request=saltmysql.select(sdb, 'SalticamCalibrationType_Id', 'SalitcamCalibration', 'Block_Id=%i' % blockid)
-               for cid in request:
-                   cid=cid[0]
-                   cmd_insert='NightInfo_Id=%i, FileData_Id=%i, SatlicamCalibrationType_Id=%i' % (night_id, k, cid)
-                   #saltmysql.insert(sdb, cmd_insert, 'SalitcamNightlyCalibration')
-               print k, " ".join([str(k) for k in caldict[k]])
-
 
     #select all the RSS data from this obsdate
     rssheaderlist='f.CCDTYPE, d.DETMODE, d.OBSMODE, CCDSUM, GAINSET, ROSPEED, FILTER, GRATING, GR_STA, AR_STA, MASKID'
@@ -266,7 +239,7 @@ def checkforflats(sdb, fid, caltype, plist, instr='rss', keylist=None, period=90
 
        #compare results
        for r in results: 
-           if compare_configs(keylist[-1], r[2:-1]): 
+           if compare_configs(keylist[:-1], r[2:-1]): 
               return True
 
  
@@ -296,9 +269,6 @@ def checkforspst(sdb, fid, keylist, plist, period=7):
 
        fid: int
            FileData_Id
-
-       dlist:  list
-          header information for a given file
 
        keylist: list
           list of RSS header keywords
@@ -334,10 +304,9 @@ def checkforspst(sdb, fid, keylist, plist, period=7):
 '''
     cmd_logic="Proposal_Code like 'CAL_SPST' and UTSTART>'%s'" % (utstart)
     results=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)
-
     #compare results
     for r in results: 
-        if compare_configs(keylist[-1], r[2:-1]): 
+        if compare_configs(keylist[:-1], r[2:-1]): 
            return True
 
     #now check the nightly calibrations table

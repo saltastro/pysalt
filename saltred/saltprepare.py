@@ -254,6 +254,6 @@ def createbadpixel(inhdu, bphdu, sci_ext, bp_ext):
 
 # -----------------------------------------------------------
 # main code
-
-parfile = iraf.osfn("saltred$saltprepare.par")
-t = iraf.IrafTaskFactory(taskname="saltprepare",value=parfile,function=saltprepare, pkgname='saltred')
+if not iraf.deftask('saltprepare'):
+   parfile = iraf.osfn("saltred$saltprepare.par")
+   t = iraf.IrafTaskFactory(taskname="saltprepare",value=parfile,function=saltprepare, pkgname='saltred')

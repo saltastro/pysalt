@@ -105,5 +105,6 @@ def convertsalt(img, oimg, ext=1, clobber=True):
 # -----------------------------------------------------------
 # main code
 
-parfile = iraf.osfn("saltred$salt2iraf.par")
-t = iraf.IrafTaskFactory(taskname="salt2iraf",value=parfile,function=salt2iraf, pkgname='saltred')
+if not iraf.deftask('salt2iraf'):
+   parfile = iraf.osfn("saltred$salt2iraf.par")
+   t = iraf.IrafTaskFactory(taskname="salt2iraf",value=parfile,function=salt2iraf, pkgname='saltred')

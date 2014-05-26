@@ -18,6 +18,7 @@ import copy
 import pyfits
 import numpy as np
 from scipy import interpolate as scint
+from  scipy.ndimage.filters import gaussian_filter1d
 from pyraf import iraf 
 import saltsafeio as saltio
 from salterror import SaltError
@@ -169,7 +170,9 @@ def findwavelengthsolution(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, sigma=5, 
        nws=WavelengthSolution.WavelengthSolution(xp[mask],wp[mask], order=ws.order, function=ws.function)
        nws.fit()
    else:
-       nws=None
+       nws=None 
+   #for i in range(len(xp)): print xp[i], wp[i], wp[i]-nws.value(xp[i])
+   #print nws.sigma(xp,wp)
    return nws
 
 def findfeatures(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, sigma=5, niter=5, sections=3):
@@ -443,7 +446,6 @@ def findxcor(xarr, farr, swarr, sfarr, ws, dcoef=None, ndstep=20, best=False, in
 
        #calculate the correlation value
        cc_arr[i]=ncor(farr, asfarr)
-
        if debug: print cc_arr[i], " ".join(["%f" % k for k in dlist[i]])
 
    #now set the best coefficients
@@ -457,8 +459,13 @@ def findxcor(xarr, farr, swarr, sfarr, ws, dcoef=None, ndstep=20, best=False, in
    for j in range(len(nws.coef)):
        if dcoef[j]!=0.0:
           i=cc_arr.argsort()[::-1]
-          tk=np.polyfit(darr[:,j][i[0:5]], cc_arr[i[0:5]], 2)
-          bval=-0.5*tk[1]/tk[0]
+          tk=np.polyfit(darr[:,j][i[0:5]], cc_arr[i[0:5]], 2) 
+
+          if tk[0]==0:
+             bval = 0
+          else:
+             bval=-0.5*tk[1]/tk[0]
+
           #make sure that the best value is close 
           if abs(bval-bcoef[j])<2*dcoef[j]/ndstep:
              bcoef[j]=bval
@@ -683,7 +690,7 @@ def writespectrum(spectra, outfile, error=False, ftype=None):
    for i in range(spectra.nwave):
        fout.write('%8.6f ' % spectra.wavelength[i])
        fout.write('%8.6e ' % spectra.flux[i])
-       if error: fout.write('%8.6e ' % spectra.sigma[i])
+       if error: fout.write('%8.6e ' % spectra.var[i])
        fout.write('\n')
    fout.close()
 
@@ -693,7 +700,6 @@ def crosslinematch(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, res=2, dres=0.1, 
        The following steps are employed in order to achive the match:
 
     """
-
     #setup initial wavelength array
     warr=ws.value(xarr)
     #detect lines in the input spectrum and identify the peaks and peak values
@@ -728,10 +734,9 @@ def crosslinematch(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, res=2, dres=0.1, 
            d=abs(nwp-sl[i])
            j=d.argmin()
            if d.min()<res:
-              if  lineorder(xp, xf, sl, sf, sl[i], xp[j], wdiff, nws):
+              if  lineorder(xp, xf, sl, sf, sl[i], xp[j], wdiff, nws) and abs(ws.value(xp[j])-sl[i])<mdiff:
                  xp_list.append(xp[j])
                  wp_list.append(sl[i])
-
     return np.array(xp_list), np.array(wp_list)
  
 
@@ -754,3 +759,10 @@ def lineorder(xp, xf, sl, sf, sw, xb, wdiff, nws):
     j_ord=j[xp[mask][j]==xb]
     if len(j_ord)>1: return False
     return i_ord==j_ord
+
+def smooth_spectra(xarr, farr, sigma=3, nkern=20):
+    """Given a xarr and flux, smooth the spectrum"""
+    xkern=np.arange(nkern)
+    kern=np.exp(-(xkern-0.5*nkern)**2/(sigma)**2)
+
+    return gaussian_filter1d(farr, sigma)

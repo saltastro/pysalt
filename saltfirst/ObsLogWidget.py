@@ -25,13 +25,20 @@ class ObsLogWidget(QtGui.QWidget):
         self.obstable.setHorizontalHeaderLabels(headerList)
 
         #set the rows
+
         for i in range(self.nrow):
-           self.setrow(i)
+           self.setrow(i, resize=False)  
+
+
+        for j in range(0, len(headerList)):
+           self.obstable.resizeColumnToContents(j)
+
 
         #set the selection and set the action
         if len(self.obsdict)>1:
            self.obstable.item(len(self.obsdict)-1, 0).setSelected(True)
         QtCore.QObject.connect(self.obstable, QtCore.SIGNAL('cellClicked (int,int)'), self.cellselected)
+   
 
         #add a print button
         self.printButton = QtGui.QPushButton("Print")
@@ -42,7 +49,6 @@ class ObsLogWidget(QtGui.QWidget):
         self.calsButton = QtGui.QPushButton("Calibrations")
         self.calsButton.clicked.connect(self.findcals)
  
-
 
         # Set up the layout
         mainLayout = QtGui.QVBoxLayout()
@@ -155,7 +161,7 @@ class ObsLogWidget(QtGui.QWidget):
        if rospeed=='FAST': r='F'
        return g+r
 
-   def setrow(self, i):
+   def setrow(self, i, resize=True):
        """Set all the values in a row from the obsdictionary"""
        if i >= len(self.obsdict): return
        k=self.obsdict.order()[i]
@@ -165,7 +171,7 @@ class ObsLogWidget(QtGui.QWidget):
        for j in range(1, len(self.obsdict[k])):
            item=self.parseItem(self.obsdict[k][j])
            self.obstable.setItem(i, j, item)
-           self.obstable.resizeColumnToContents(j)
+           if resize: self.obstable.resizeColumnToContents(j)
 
    def addobsdict(self, name, obslist):
        """Add an item ot the obsdict"""

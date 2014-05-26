@@ -382,6 +382,6 @@ def CombineArray(arr, method='average', ivar=None, bpm=None):
 
 # -----------------------------------------------------------
 # main code 
-
-parfile = iraf.osfn("saltred$saltcombine.par") 
-t = iraf.IrafTaskFactory(taskname="saltcombine",value=parfile,function=saltcombine, pkgname='saltred')
+if not iraf.deftask('saltcombine'):
+   parfile = iraf.osfn("saltred$saltcombine.par") 
+   t = iraf.IrafTaskFactory(taskname="saltcombine",value=parfile,function=saltcombine, pkgname='saltred')
