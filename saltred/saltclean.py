@@ -242,7 +242,8 @@ def saltclean(images, outpath, obslogfile=None, gaindb=None,xtalkfile=None,
        #process the science data
        for img in infiles:
            nimg=os.path.basename(img)
-           if not nimg in flatlist or not nimg in biaslist:
+           #print nimg, nimg in flatlist, nimg in biaslist
+           if not (nimg in biaslist):
                #open the image
                struct=pyfits.open(img)
                simg=outpath+'bxgp'+os.path.basename(img)
