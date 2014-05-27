@@ -180,19 +180,23 @@ def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
                     min_lines=min_lines,dsigma=dsigma, dniter=dniter, **kwargs)
 
 
-     if verbose: 
+     if verbose and mws is not None: 
         msg="%5i %3i %3.2f" % (k, mws.func.mask.sum(), mws.sigma(mws.func.x, mws.func.y) )
-        print msg
+        if log is not None:
+           log.message(msg)
      return mws
-   else:
-     ImageSolution[k]=ws
 
    #now loop through each step, and calculate the wavelengths for the given 
    if log is not None:
       log.message('%5s %3s %4s' % ('Line', 'N','RMS'), with_header=False)
-   for i in range(rstep,int(0.5*len(specarr)), rstep):
+
+   for i in range(0, int(0.5*len(specarr)), rstep):
        for k in [istart-i, istart+i]:
-           lws=getwsfromIS(k, ImageSolution)
+
+           if k in ImageSolution.keys(): continue
+
+           lws=getwsfromIS(k, ImageSolution, default_ws=ws)
+
            #set up the flux from the set of lines
            farr=apext.makeflat(specarr, k, k+nrows)
 
@@ -220,8 +224,6 @@ def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
                    msg="%5i %3i %3.2f" % (k, fws.func.mask.sum(), fws.sigma(fws.func.x, fws.func.y) )
                    if log is not None:
                       log.message(msg, with_header=False)
-                   else:
-	              print msg
 
    return ImageSolution
 
@@ -256,10 +258,11 @@ def solution(xarr, farr, sl, sf, ws, func, min_lines=2, dsigma=5, dniter=3, pad=
 
    return None
 
-def getwsfromIS(k, ImageSolution):
+def getwsfromIS(k, ImageSolution, default_ws=None):
     """From the imageSolution dictionary, find the ws which is nearest to the value k
 
     """
+    if len(ImageSolution)==0: return default_ws
     ISkeys=np.array(ImageSolution.keys())
     ws=ImageSolution[ISkeys[abs(ISkeys-k).argmin()]]
     if ws==None:
