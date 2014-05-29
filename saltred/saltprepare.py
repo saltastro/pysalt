@@ -2,32 +2,6 @@
 # Copyright (c) 2009, South African Astronomical Observatory (SAAO)        #
 # All rights reserved.                                                     #
 #                                                                          #
-# Redistribution and use in source and binary forms, with or without       #
-# modification, are permitted provided that the following conditions       #
-# are met:                                                                 #
-#                                                                          #
-#     * Redistributions of source code must retain the above copyright     #
-#       notice, this list of conditions and the following disclaimer.      #
-#     * Redistributions in binary form must reproduce the above copyright  #
-#       notice, this list of conditions and the following disclaimer       #
-#       in the documentation and/or other materials provided with the      #
-#       distribution.                                                      #
-#     * Neither the name of the South African Astronomical Observatory     #
-#       (SAAO) nor the names of its contributors may be used to endorse    #
-#       or promote products derived from this software without specific    #
-#       prior written permission.                                          #
-#                                                                          #
-# THIS SOFTWARE IS PROVIDED BY THE SAAO ''AS IS'' AND ANY EXPRESS OR       #
-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED           #
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE   #
-# DISCLAIMED. IN NO EVENT SHALL THE SAAO BE LIABLE FOR ANY                 #
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL       #
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS  #
-# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)    #
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,      #
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN #
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE          #
-# POSSIBILITY OF SUCH DAMAGE.                                              #
 ############################################################################
 
 #!/usr/bin/env python
@@ -106,7 +80,7 @@ def saltprepare(images,outimages,outpref,createvar=False, badpixelimage=None, cl
                badpixelstruct = saltio.openfits(badpixelimage)
            except saltio.SaltIOError,e:
                msg='badpixel image must be specificied\n %s' % e
-               raise SALTSpecError(msg)
+               raise SaltError(msg)
 
        # open each raw image file
        for img, oimg, in zip(infiles, outfiles):
@@ -238,11 +212,11 @@ def createbadpixel(inhdu, bphdu, sci_ext, bp_ext):
        
        if not saltkey.compare(inhdu[0], bphdu[0], 'INSTRUME', infile, bpfile):
            message = '%s and %s are not the same %s' % (infile,bpfile, 'INSTRUME')
-           raise SALTSpecError(message)
+           raise SaltError(message)
        for k in ['CCDSUM', 'NAXIS1', 'NAXIS2']:
            if not saltkey.compare(inhdu[sci_ext], bphdu[sci_ext], k, infile, bpfile):
                   message = '%s and %s are not the same %s' % (infile,bpfile, k)
-                  raise SALTSpecError(message)
+                  raise SaltError(message)
        data=bphdu[sci_ext].data.copy()
 
    header=inhdu[sci_ext].header.copy()
