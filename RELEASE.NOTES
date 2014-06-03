@@ -1,5 +1,17 @@
-Version 0.47 (1 December 2013):
+Version 0.47 (11 March 2014):
 -Add HRS basic reductions
+-updates to saltred taks for HRS data
+-significant improvements to wavelength identification
+-added smoothing to specidentify
+-added specslitnormalize
+-added specselfid
+-Added flux conserve option to specrectify
+-Removed warning when loading saltred tasks
+-improvements to findcal task in plugins
+-increased speed to quickred task in plugins
+-update of RSS amps file
+-bug fixes to masktool
+-updated README file
 
 Version 0.45 (27 September 2013):
 -Fixed bug in saltflat to work with different python version

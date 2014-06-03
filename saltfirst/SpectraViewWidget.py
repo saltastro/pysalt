@@ -10,7 +10,7 @@ from InterIdentify import ArcDisplay
 
 
 class SpectraViewWidget(QtGui.QWidget):
-   def __init__(self, warr, farr, snarr, name='', y1=900, y2=1100, hmin=150, wmin=400, smooth=5, parent=None):
+   def __init__(self, warr, farr, snarr, name='', y1=1010, y2=1030, hmin=150, wmin=400, smooth=5, parent=None):
        super(SpectraViewWidget, self).__init__(parent)
 
        self.y1=y1

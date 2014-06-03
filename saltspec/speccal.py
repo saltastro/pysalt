@@ -149,7 +149,7 @@ def calfunc(obs_spectra, std_spectra, ext_spectra, airmass, exptime, error=False
 
    #correct the error calc
    if error:
-      cal_spectra.sigma=obs_spectra.sigma*cal_spectra.flux/obs_spectra.flux
+      cal_spectra.var = obs_spectra.var * cal_spectra.flux / obs_spectra.flux
 
    return cal_spectra
 

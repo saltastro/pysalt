@@ -446,7 +446,6 @@ def findxcor(xarr, farr, swarr, sfarr, ws, dcoef=None, ndstep=20, best=False, in
 
        #calculate the correlation value
        cc_arr[i]=ncor(farr, asfarr)
-
        if debug: print cc_arr[i], " ".join(["%f" % k for k in dlist[i]])
 
    #now set the best coefficients
@@ -460,8 +459,13 @@ def findxcor(xarr, farr, swarr, sfarr, ws, dcoef=None, ndstep=20, best=False, in
    for j in range(len(nws.coef)):
        if dcoef[j]!=0.0:
           i=cc_arr.argsort()[::-1]
-          tk=np.polyfit(darr[:,j][i[0:5]], cc_arr[i[0:5]], 2)
-          bval=-0.5*tk[1]/tk[0]
+          tk=np.polyfit(darr[:,j][i[0:5]], cc_arr[i[0:5]], 2) 
+
+          if tk[0]==0:
+             bval = 0
+          else:
+             bval=-0.5*tk[1]/tk[0]
+
           #make sure that the best value is close 
           if abs(bval-bcoef[j])<2*dcoef[j]/ndstep:
              bcoef[j]=bval
@@ -686,7 +690,7 @@ def writespectrum(spectra, outfile, error=False, ftype=None):
    for i in range(spectra.nwave):
        fout.write('%8.6f ' % spectra.wavelength[i])
        fout.write('%8.6e ' % spectra.flux[i])
-       if error: fout.write('%8.6e ' % spectra.sigma[i])
+       if error: fout.write('%8.6e ' % spectra.var[i])
        fout.write('\n')
    fout.close()
 

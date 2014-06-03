@@ -174,5 +174,6 @@ def embedimage(struct, nccd=2, namps=2, nwindows=1):
 # -----------------------------------------------------------
 # main code
 
-parfile = iraf.osfn("saltred$saltembed.par")
-t = iraf.IrafTaskFactory(taskname="saltembed",value=parfile,function=saltembed, pkgname='saltred')
+if not iraf.deftask('saltembed'):
+    parfile = iraf.osfn("saltred$saltembed.par")
+    t =  iraf.IrafTaskFactory(taskname="saltembed",value=parfile,function=saltembed, pkgname='saltred')

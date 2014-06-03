@@ -52,19 +52,7 @@
         task  pysalt.pkg   = "pysalt$pysalt.cl"
         reset helpdb    = (envget("helpdb") // ",pysalt$lib/helpdb.mip")
 
-[5] To run some of the additional packages, it requires the user to compile the software associated with those packages.
-  [a] To install the Fabry-Perot packages on a linux system, follow these steps:
-     cd pysalt/saltfp/fortranfp/
-     cp Makefile.linux Makefile
-     make
-  If you working in OSX, then copy the Makefile.osx to Makefile instead.
-  [b] To install the BVIT packages (optional and only for the development version), follow these steps:
-     cd pysalt/bvittools/accelerate/
-     make
-        % cd /iraf/extern/pysalt/
-        % make
-
-[6] (Optional) build the HTML documentation.
+[5] (Optional) build the HTML documentation.
     Make sure you have Sphinx installed and run.
 
         % cd /iraf/extern/pysalt/
@@ -74,6 +62,6 @@
 
         /iraf/extern/pysalt/doc/build/html/index.html
 
-[7] Please use the SALT help desk for submitting questions:
+[5] Please use the SALT help desk for submitting questions:
     salthelp@salt.ac.za
 

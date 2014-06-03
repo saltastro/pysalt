@@ -62,7 +62,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
    def __init__(self, xarr, specarr, slines, sfluxes, ws, hmin=150, wmin=400, mdiff=20,
                 filename=None, res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, smooth=0, niter=5, istart=None,
                 nrows=1, rstep=100, method='Zeropoint', ivar=None, cmap='gray', scale='zscale', contrast=1.0,
-                log=None, verbose=True):
+                textcolor='green', log=None, verbose=True):
         """Default constructor."""
 
         #set up the variables
@@ -95,6 +95,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         self.smooth=smooth
         self.filename=filename
         self.ImageSolution={}
+        self.textcolor=textcolor
         self.log=log
         self.verbose=verbose
 
@@ -118,7 +119,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         self.arcdisplay=ArcDisplay(xarr, self.farr, slines, sfluxes, self.ws, specarr=self.specarr, 
                                    res=self.res, dres=self.dres, dc=self.dc, ndstep=self.ndstep, xp=[], wp=[],
                                    method=self.method,smooth=self.smooth, niter=self.niter, mdiff=self.mdiff,
-                                   sigma=self.sigma, log=self.log, verbose=self.verbose)
+                                   sigma=self.sigma, textcolor=self.textcolor, log=self.log, verbose=self.verbose)
         self.arcPage=arcWidget(self.arcdisplay,  hmin=hmin, wmin=wmin, y1=self.y1, y2=self.y2, name=self.filename)
         #set up the residual page
         self.errPage=errWidget(self.arcdisplay, hmin=hmin, wmin=wmin)
@@ -168,7 +169,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
        self.farr=apext.makeflat(self.specarr, self.y1, self.y2)
        #set up variables
        self.ws=self.newWS(0.5*(self.y1+self.y2))
-       self.arcdisplay=ArcDisplay(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, specarr=self.specarr, res=self.res, dres=self.dres, smooth=self.smooth, niter=self.niter, sigma=self.sigma, xp=[], wp=[], log=self.log, verbose=self.verbose)
+       self.arcdisplay=ArcDisplay(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, specarr=self.specarr, res=self.res, dres=self.dres, smooth=self.smooth, niter=self.niter, sigma=self.sigma, xp=[], wp=[], textcolor=self.textcolor, log=self.log, verbose=self.verbose)
        self.arcPage=arcWidget(self.arcdisplay,  hmin=self.hmin, wmin=self.wmin, y1=self.y1, y2=self.y2)
        self.connect(self.arcPage, QtCore.SIGNAL('savews()'), self.saveWS)
        #set up the residual page
@@ -332,7 +333,7 @@ class imageWidget(QtGui.QWidget):
        self.emit(QtCore.SIGNAL("runauto(int, int, int)"), self.y1, self.nrows, self.rstep)
 
 class arcWidget(QtGui.QWidget):
-    def __init__(self, arcdisplay, hmin=150, wmin=450, name=None,x1=0, w1=0, y1=None, y2=None, parent=None):
+    def __init__(self, arcdisplay, hmin=150, wmin=450, name=None,x1=0, w1=0, y1=None, y2=None,  parent=None):
         super(arcWidget, self).__init__(parent)
 
 
@@ -582,7 +583,7 @@ class ArcDisplay(QtGui.QWidget):
 
    def __init__(self, xarr, farr, slines, sfluxes, ws, xp=[], wp=[], mdiff=20, specarr=None, 
                 res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, smooth=0, niter=5, method='MatchZero', 
-                log=None, verbose=True):
+                textcolor='green', log=None, verbose=True):
        """Default constructor."""
        QtGui.QWidget.__init__(self)
 
@@ -621,6 +622,7 @@ class ArcDisplay(QtGui.QWidget):
        self.dc=dc
        self.ndstep=ndstep
        self.method=method
+       self.textcolor=textcolor
        self.log=log
        self.verbose=True
 
@@ -794,7 +796,7 @@ d - delete feature      u - undelete feature
        f=self.ymax-10*tsize*ppp
        for x,w in zip(self.xp, self.wp):
            w='%6.2f' % float(w)
-           self.axes.text(x, f, w, size='small', rotation='vertical', color='#00FF00') 
+           self.axes.text(x, f, w, size='small', rotation='vertical', color=self.textcolor)
 
    def plotErr(self):
        """Draw image to canvas."""
@@ -817,8 +819,9 @@ d - delete feature      u - undelete feature
    def testfeatures(self):
        """Run the test matching algorithm"""
        self.set_wdiff()
-       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes,
-                              self.ws, mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
+       res = max(self.res*0.25, 2)
+       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, 
+                               res=res,mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
        for x, w in zip(xp, wp):
           if w not in self.wp and w>-1: 
              self.xp.append(x)
@@ -834,9 +837,9 @@ d - delete feature      u - undelete feature
        self.set_wdiff()
 
        #xp, wp=st.findfeatures(self.xarr, self.farr, self.slines, self.sfluxes,
-       #                       self.ws, mdiff=self.mdiff, wdiff=self.wdiff, sigma=self.sigma, niter=self.niter, sections=3)
-       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes,
-                              self.ws, mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
+       #                       self.ws, mdiff=self.mdiff, wdiff=self.wdiff, sigma=self.sigma, niter=self.niter, sections=3)  
+       xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, 
+                               res=self.res, mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
        for x, w in zip(xp, wp):
           if w not in self.wp and w>-1: 
              self.xp.append(x)
@@ -1040,7 +1043,7 @@ d - delete feature      u - undelete feature
 def InterIdentify(xarr, specarr, slines, sfluxes, ws, mdiff=20, rstep=1, filename=None,
                   function='poly', order=3, sigma=3, smooth=0, niter=5, res=2, dres=0.1, dc=20, ndstep=20,
                   istart=None, method='Zeropoint', scale='zscale', cmap='gray', contrast=1.0,  
-                  log=None, verbose=True):
+                  textcolor='green', log=None, verbose=True):
 
   
         
@@ -1048,7 +1051,7 @@ def InterIdentify(xarr, specarr, slines, sfluxes, ws, mdiff=20, rstep=1, filenam
    App = QtGui.QApplication(sys.argv)
    aw = InterIdentifyWindow(xarr, specarr, slines, sfluxes, ws, rstep=rstep, mdiff=mdiff, sigma=sigma, niter=niter,
                             res=res, dres=dres,dc=dc, ndstep=ndstep, istart=istart, method=method, smooth=smooth, 
-                            cmap=cmap, scale=scale, contrast=contrast, filename=filename, log=log)
+                            cmap=cmap, scale=scale, contrast=contrast, filename=filename, textcolor=textcolor, log=log)
    aw.show()
    # Start application event loop
    exit=App.exec_()
