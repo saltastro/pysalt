@@ -34,7 +34,7 @@ from saltsafelog import logging
 from salterror import SaltError, SaltIOError
 
 
-from PySpectrograph.Spectra import apext, detectlines
+from PySpectrograph.Spectra import apext
 
 
 import spectools as st
@@ -157,7 +157,7 @@ def runsolution(xarr, specarr, slines, sfluxes, ws,  func, ivar=None,          \
       farr=st.smooth_spectra(xarr, farr, sigma=smooth)
 
    #detect the lines 
-   cxp=detectlines.detectlines(xarr, farr, dsigma, dniter)
+   cxp=st.detect_lines(xarr, farr, dsigma, dniter)
    nlines=len(cxp)
 
        
@@ -232,7 +232,7 @@ def solution(xarr, farr, sl, sf, ws, func, min_lines=2, dsigma=5, dniter=3, pad=
 
 
    #check to see if there are any points
-   xp=detectlines.detectlines(xarr, farr, dsigma, dniter)
+   xp=st.detect_lines(xarr, farr, dsigma, dniter)
 
    if len(xp) > min_lines and ws:
        #make the artificial list
