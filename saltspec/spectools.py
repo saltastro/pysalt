@@ -614,6 +614,8 @@ def getslitsize(slitname, config_file=''):
    if slitname.strip()=='PL0100N001': return 1.0
    if slitname.strip()=='PL0150N001': return 1.5
    if slitname.strip()=='PL0200N001': return 2.0
+   if slitname.strip()=='PL0300N001': return 3.0
+   if slitname.strip()=='PL0400N001': return 4.0
    if slitname.strip()=='PL0120P001': return 1.2
    try:
        return int(slitname.strip())
