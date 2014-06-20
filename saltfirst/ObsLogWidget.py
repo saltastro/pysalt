@@ -60,7 +60,7 @@ class ObsLogWidget(QtGui.QWidget):
    def cellselected(self, i, j):
        newfile=self.obstable.item(i,j).text()
        print i,j,newfile, 
-       self.emit(QtCore.SIGNAL("cellclicked(str)"), newfile)
+       self.emit(QtCore.SIGNAL("cellclicked(QString)"), newfile)
 
    def set_obsdict(self, obsdict):
        if obsdict is None:
@@ -135,10 +135,10 @@ class ObsLogWidget(QtGui.QWidget):
             % (name, timeobs, objname, propid, exptime, sbin, dmode, omode, \
                filtername, grating, graang, arang, slitname )
        logstr=hdrstr+outstr
-       self.emit(QtCore.SIGNAL("updateobslogdb(str)"), logstr)
+       self.emit(QtCore.SIGNAL("updateobslogdb(QString)"), logstr)
 
    def findcals(self):
-       self.emit(QtCore.SIGNAL("updatecals(str)"), '')
+       self.emit(QtCore.SIGNAL("updatecals(QString)"), '')
 
    def obsset(self,obsmode, detmode):
        obs=''
