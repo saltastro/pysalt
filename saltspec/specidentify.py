@@ -176,7 +176,7 @@ def specidentify(images,linelist, outfile, guesstype='rss', guessfile='',      \
                    if rstart=='middlerow':
                        ystart=int(0.5*len(data))
                    else:
-                       ystart=rstart
+                       ystart=int(rstart)
 
                    rss.gamma=0.0
                    if masktype=='MOS':
