@@ -48,9 +48,9 @@ from saltgui import ImageDisplay, MplCanvas
 from salterror import SaltIOError
 
 from PySpectrograph.Spectra import Spectrum, apext
-from PySpectrograph.WavelengthSolution import WavelengthSolution
 
 
+import WavelengthSolution
 import spectools as st
 import AutoIdentify as ai
 from spectools import SALTSpecError
