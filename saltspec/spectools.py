@@ -23,9 +23,8 @@ from pyraf import iraf
 import saltsafeio as saltio
 from salterror import SaltError
 from saltfit import interfit
+import WavelengthSolution
 
-
-from PySpectrograph.WavelengthSolution import WavelengthSolution
 from PySpectrograph.Spectra import Spectrum, apext, detectlines
 
 import pylab as pl
@@ -115,7 +114,7 @@ def findpoints(xarr, farr, sigma, niter, sections=0):
            else:
               xp=np.concatenate((xp,xa))
    else:
-       xp=detectlines.detect_lines(xarr, farr, sigma=sigma, niter=niter, center=True)
+       xp=detect_lines(xarr, farr, sigma=sigma, niter=niter, center=True)
 
    #create the list of the fluxes for each line 
    xc=xp.astype(int)
