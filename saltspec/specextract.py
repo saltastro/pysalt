@@ -215,7 +215,7 @@ def write_extract_fits(ofile, ap_list, clobber=False):
        #create the columns
        col1=pyfits.Column(name='wavelength', format='D', unit='Angstroms', array=ap.wave)
        col2=pyfits.Column(name='counts', format='D', unit='Counts', array=ap.ldata)
-       col3=pyfits.Column(name='counts_err', format='D', array=ap.lvar)
+       col3=pyfits.Column(name='counts_err', format='D', array=fvar)
 
        #add to the table
        tbhdu=pyfits.new_table([col1, col2, col3])
