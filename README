@@ -1,6 +1,6 @@
 
-	Installation of the PySALT external package V0.4
-	----------------------------------------------
+	Installation of the PySALT external package V0.47
+	-------------------------------------------------
 
 [0] This package requires IRAF version 2.12.2 or later, Pyraf version 1.7
     or later and the PyQt4 GUI toolkit.
@@ -38,7 +38,7 @@
    [b] Change directories to the PySALT root directory created above
    and unpack the download file pysalt.tar.gz
 
-        % cd /iraf/extern/pysalt/
+        % cd /iraf/extern/
         % tar zxvf <path>/pysalt.tar.gz 
 
     where <path> is the relative path from /iraf/extern/pysalt to the 
@@ -55,13 +55,13 @@
 [5] (Optional) build the HTML documentation.
     Make sure you have Sphinx installed and run.
 
-        % cd /iraf/extern/pysalt/
-        % make documentation
+        % cd /iraf/extern/pysalt/doc/
+        % make html
 
     Then point your webbrowser to:
 
         /iraf/extern/pysalt/doc/build/html/index.html
 
-[5] Please use the SALT help desk for submitting questions:
+[6] Please use the SALT help desk for submitting questions:
     salthelp@salt.ac.za
 

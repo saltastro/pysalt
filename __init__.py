@@ -4,5 +4,6 @@ The PySALT user package is the primary reduction and analysis software tools for
 """
 
 import pyraf
-from pyraf.iraf import pysalt 
+from iraf import pysalt 
 
+__version__=pysalt.verno
