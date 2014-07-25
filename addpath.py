@@ -78,7 +78,6 @@ _path = iraf.osfn('pysalt$proptools')
 if _path not in sys.path:
     sys.path.insert(1,_path)
 
-
 #Add the plugin directory if it exists
 _path = iraf.osfn('pysalt$plugins')
 if _path not in sys.path and os.path.isdir(_path):
