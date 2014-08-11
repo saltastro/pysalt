@@ -16,7 +16,7 @@ These pages are currently in the processes of being updated as of July 2014.   P
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    introduction
    tasks
