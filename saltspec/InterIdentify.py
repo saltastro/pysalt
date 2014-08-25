@@ -313,7 +313,7 @@ class imageWidget(QtGui.QWidget):
        self.nrows=int(self.nrValueEdit.text())
        self.rstep=int(self.nsValueEdit.text())
        if abs(self.y1-self.y2)!=self.nrows:
-          self.log.warning( "Warning: Update y2 to increase the row sampling")
+          if self.log: self.log.warning( "Warning: Update y2 to increase the row sampling")
        self.y1line.set_ydata([self.y1, self.y1])
        self.y2line.set_ydata([self.y2, self.y2])
        self.imdisplay.draw()
@@ -688,13 +688,13 @@ d - delete feature      u - undelete feature
        elif event.key=='c':
            #return the centroid
            if event.xdata:
-               self.log.message(str(event.xdata), with_header=False)
+               if self.log: self.log.message(str(event.xdata), with_header=False)
                cx=st.mcentroid(self.xarr, self.farr, xc=event.xdata, xdiff=self.mdiff)
                self.emit(QtCore.SIGNAL("updatex(float)"), cx)
        elif event.key=='x':
            #return the x position
            if event.xdata:
-               self.log.message(str(event.xdata), with_header=False)
+               if self.log: self.log.message(str(event.xdata), with_header=False)
                self.emit(QtCore.SIGNAL("updatex(float)"), event.xdata)
        elif event.key=='R':
            #reset the fit 
@@ -909,7 +909,7 @@ d - delete feature      u - undelete feature
        try:
            self.ws=st.findfit(np.array(self.xp), np.array(self.wp), ws=self.ws)
        except SALTSpecError, e:
-           self.log.warning(e)
+           if self.log: self.log.warning(e)
            return 
        del_list=[]
        if len(self.ws.func.x)!=len(self.xp):
