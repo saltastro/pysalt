@@ -23,9 +23,8 @@ from pyraf import iraf
 import saltsafeio as saltio
 from salterror import SaltError
 from saltfit import interfit
+import WavelengthSolution
 
-
-from PySpectrograph.WavelengthSolution import WavelengthSolution
 from PySpectrograph.Spectra import Spectrum, apext, detectlines
 
 import pylab as pl
@@ -115,7 +114,7 @@ def findpoints(xarr, farr, sigma, niter, sections=0):
            else:
               xp=np.concatenate((xp,xa))
    else:
-       xp=detectlines.detect_lines(xarr, farr, sigma=sigma, niter=niter, center=True)
+       xp=detect_lines(xarr, farr, sigma=sigma, niter=niter, center=True)
 
    #create the list of the fluxes for each line 
    xc=xp.astype(int)
@@ -673,19 +672,21 @@ def getslitsize(slitname, config_file=''):
    """Return the slit size for a given slit name"""
    if slitname.strip()=='PL0060N001': return 0.6
    if slitname.strip()=='PL0100N001': return 1.0
+   if slitname.strip()=='PL0120P001': return 1.2
+   if slitname.strip()=='PL0125N001': return 1.25
    if slitname.strip()=='PL0150N001': return 1.5
    if slitname.strip()=='PL0200N001': return 2.0
    if slitname.strip()=='PL0300N001': return 3.0
    if slitname.strip()=='PL0400N001': return 4.0
-   if slitname.strip()=='PL0120P001': return 1.2
+
    try:
        return int(slitname.strip())
    except:
        pass
    msg='Assuming a slit size of 1.0'
    return 1.0
-   msg='SPECTOOLS--Slitmask name not identified in config file'
-   raise SALTSpecError(msg)
+   #msg='SPECTOOLS--Slitmask name not identified in config file'
+   #raise SALTSpecError(msg)
 
 def makesection(section):
     """Convert a section that is a list of coordinates into 

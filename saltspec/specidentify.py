@@ -43,13 +43,14 @@ import saltsafekey as saltkey
 import saltsafeio as saltio
 from saltsafelog import logging
 from salterror import SaltError, SaltIOError
+import WavelengthSolution
 
 
-from PySpectrograph.WavelengthSolution import WavelengthSolution
 from PySpectrograph.Models import RSSModel
 
 import spectools as st
 import mostools as mt
+from specrectify import readsolascii, findlinesol, enterdatetime
 
 from spectools import SALTSpecError
 from InterIdentify import InterIdentify
@@ -189,7 +190,26 @@ def specidentify(images,linelist, outfile, guesstype='rss', guessfile='',      \
                    xarr=np.arange(len(data[ystart]), dtype='int64')
 
                    #get the guess for the wavelength solution
-                   ws=guess_ws(guesstype, xarr, guessfile=guessfile, rss=rss, function=function, order=order) 
+                   if guesstype=='rss':
+                       #set up the rss model
+                       ws=st.useRSSModel(xarr, rss, function=function, order=order, gamma=rss.gamma)
+                   elif guesstype=='file':
+                       soldict = {}
+                       soldict=readsolascii(guessfile, soldict) 
+                       timeobs=enterdatetime('%s %s' % (dateobs, utctime))
+                       exptime=saltkey.get('EXPTIME', hdu[0])
+                       filtername=saltkey.get('FILTER', hdu[0]).strip()
+                       try:
+                          slitid=saltkey.get('SLITNAME', hdu[i])
+                       except:
+                          slitid=None
+
+                       function, order, coef=findlinesol(soldict, ystart, timeobs, exptime, instrume, grating, grang, arang, filtername, slitid, xarr=None)
+                       ws=WavelengthSolution.WavelengthSolution(xarr, xarr, function=function, order=order)
+                       ws.set_coef(coef)
+                   else:
+                       raise SALTSpecError('This guesstype is not currently supported')
+          
  
                    #identify the spectral lines
                    ImageSolution=identify(data, slines, sfluxes, xarr, ystart, ws=ws, function=function, 
@@ -205,23 +225,6 @@ def specidentify(images,linelist, outfile, guesstype='rss', guessfile='',      \
                                filename=img, log=log, verbose=verbose)
 
 
-def guess_ws(guesstype, xarr, guessfile=None, rss=None, function='polynomial', order=3):
-   """Create the wavelength solution based on the input guess type
-   """
-
-   #determine the type of first guess.  Assumes none 
-   if guesstype=='rss':
-       #set up the rss model
-       ws=st.useRSSModel(xarr, rss, function=function, order=order, gamma=rss.gamma)
-   elif guesstype=='user':
-       raise SALTSpecError('This guesstype is not currently supported')
-   elif guesstype=='image':
-       raise SALTSpecError('This guesstype is not currently supported')
-   elif guesstype=='None':
-       raise SALTSpecError('This guesstype is not currently supported')
-   else:
-       ws=None
-   return ws
 
 
 #------------------------------------------------------------------

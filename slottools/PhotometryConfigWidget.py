@@ -96,7 +96,7 @@ class PhotometryConfigWidget(QtGui.QWidget):
                     'comparison' : { 'color' : 'g', 'width' : 2 }}
 
         # Import gui
-        from ui.ui_photometryconfigwidget import Ui_PhotometryConfigWidget
+        from ui_photometryconfigwidget import Ui_PhotometryConfigWidget
 
         # Setup widget
         QtGui.QWidget.__init__(self, parent)

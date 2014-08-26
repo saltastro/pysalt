@@ -1,4 +1,16 @@
-Version 0.47 (11 March 2014):
+Version 0.50 (1 Oct 2014?--last updated 26 Jul 2014):
+- Updated installation instructions
+- Updated documentation number
+- Moved Wavelength solution code into spectools
+- Moved detectlines to spectools
+- Added 'e' feature to specidentify that adds closest matched line
+- Updated line lists
+- Fixed spectra writing function
+- Improved line matching for low resolution gratings
+- Removed use of depreciated ascardlist
+- Added check for invalid values in saltflat
+
+Version 0.47 (04 April 2014):
 -Add HRS basic reductions
 -updates to saltred taks for HRS data
 -significant improvements to wavelength identification
