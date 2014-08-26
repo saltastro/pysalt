@@ -1,7 +1,7 @@
 images,s,a,'',,,'Input arc image'
 linelist,s,a,'',,,'Line list'
 outfile,s,a,'',,,Output ascii file with image solution'
-guesstype,s,h,'rss','rss',,'Type of initial guess'
+guesstype,s,h,'rss','rss|file',,'Type of initial guess'
 guessfile,s,h,'','',,'File for initial guess'
 automethod,s,h,'Matchlines','Zeropoint|Matchlines|MatchZero',,'Automated line identification'
 function,s,h,'polynomial','polynomial|legendre|chebyshev|model',,'Function to fit'
