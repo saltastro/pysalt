@@ -52,7 +52,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'PySALT'
-copyright = u'2009, South African Astronomical Observatory (SAAO)'
+copyright = u'2014, South African Astronomical Observatory (SAAO)'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -214,7 +214,7 @@ todo_include_todos = True
 print "START PREPROCESSING"
 
 # Autogenerate module documentation in *modules* directory for all modules listed in *modules.lst*
-print "Automatically generating API documentation for modules in 'modules.lst'."
+print "Automatica2014generating API documentation for modules in 'modules.lst'."
 
 # Remove old versions
 if os.path.exists('modules'):
@@ -225,8 +225,26 @@ modstubs.autogen('modules.lst','modules')
 
 # Autogenerate rst from IRAF help files
 print "Automatically converting IRAF help file documentation for tasks listed in 'tasks.lst'."
-with open('tasks.lst') as f:
-    tasks=[t.strip() for t in f.readlines()]
+iraf.load('pysalt')
+pysalt_list = []
+for i in iraf.getTaskList():
+    i = i.split('.')
+    if i[0].count('pysalt') and len(i)>1:
+         try:
+             iraf.load(i[1])
+             pysalt_list.append(i[1])
+         except:
+             pass
+
+tasks=[]
+for i in iraf.getTaskList():
+    i = i.split('.')
+    if i[0] in pysalt_list and len(i)>1: 
+       tasks.append('%s/doc/%s.hlp' % (i[0], i[1]))
+    
+
+#with open('tasks.lst') as f:
+#    tasks=[t.strip() for t in f.readlines()]
 
 root='../../'
 out='./tasks/'
@@ -238,7 +256,10 @@ if os.path.exists(out):
 os.mkdir(out)
 for task in tasks:
     print "Converting help for task:",task
-    rst=iraf2format.help2ReStructuredText(root+task)
+    if os.path.isfile(root+task):
+       rst=iraf2format.help2ReStructuredText(root+task)
+    else:
+       continue
 
     temp=task.split('/')
 
