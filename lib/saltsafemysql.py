@@ -292,6 +292,17 @@ def create_insert(db, ImageHeader, FileNameString, PipelineFileNameString):
     except KeyError:
        BlockString=''
        
+    #get the block id
+    try:
+       BlockVisitString=ImageHeader['BVISITID'].strip()
+       BlockVisitString=saltio.checkfornone(BlockVisitString)
+       try:
+          if int(BlockVisitString)==0: BlockVisitString=None
+       except:
+          pass
+    except KeyError:
+       BlockVisitString=''
+
 
 
     #create the insertion command for the data
@@ -313,6 +324,7 @@ def create_insert(db, ImageHeader, FileNameString, PipelineFileNameString):
         insert_command += "NExposures='%i',"%nexposures
         insert_command += "FileSize='%i'"%filesize
         if BlockString: insert_command += ",Block_Id='%s'"%BlockString
+        if BlockVisitString: insert_command += ",BlockVisit_Id='%s'"%BlockVisitString
     except Exception, e:
         message='Could not create insert command because %s' % e
         raise SALTMySQLError(message)
