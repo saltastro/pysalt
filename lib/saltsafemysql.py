@@ -56,6 +56,22 @@ def connectdb(host,dbname,user,passwd):
 
     return db
 
+def connectelsview(host, dbname,user,passwd):
+    """Connect to  a ELS viewer with converted to fix timestamp serialization issue
+    """
+    db = ''
+    try:
+       orig_conv = MySQLdb.converters.conversions
+       conv_iter = iter(orig_conv)
+       convert = dict(zip(conv_iter, [str,] * len(orig_conv.keys())))
+       db = MySQLdb.connect(host=host,db=dbname,user=user,passwd=passwd, conv=convert)
+    except Exception, e:
+       message = 'Cannot connect to %s due to %s' % (host, str(e))
+       raise SALTMySQLError(message)
+
+    return db
+
+
 def select(db, selection, table, logic):
     """Select a record from a table"""
     record=''
