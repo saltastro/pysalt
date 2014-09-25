@@ -63,8 +63,8 @@ import pylab as pl
 
 def specrectify(images,outimages, outpref, solfile=None, caltype='line',            \
                 function='polynomial', order=3, inttype='linear', w1=None,     \
-                w2=None, dw=None, nw=None, blank=0, conserve=False, clobber=True,              \
-                logfile='salt.log',verbose=True):
+                w2=None, dw=None, nw=None, blank=0, conserve=False, nearest=False,
+                clobber=True, logfile='salt.log',verbose=True):
 
    with logging(logfile,debug) as log:
 
@@ -95,7 +95,8 @@ def specrectify(images,outimages, outpref, solfile=None, caltype='line',        
            hdu=saltsafeio.openfits(img)
            hdu=rectify(hdu, soldict, caltype=caltype, function=function, 
                    order=order, inttype=inttype, w1=w1, w2=w2, dw=dw, nw=nw, 
-                   pixscale=0.0, blank=blank, conserve=conserve, clobber=clobber, log=log, verbose=verbose)
+                   pixscale=0.0, blank=blank, conserve=conserve, nearest=nearest, 
+                   clobber=clobber, log=log, verbose=verbose)
            #write out the oimg
            saltsafeio.writefits(hdu, oimg, clobber=clobber)
 
@@ -105,7 +106,7 @@ def specrectify(images,outimages, outpref, solfile=None, caltype='line',        
 
 def rectify(hdu, soldict, caltype='line', function='poly', order=3, inttype='interp', 
             w1=None, w2=None, dw=None, nw=None, blank=0, pixscale=0.0, time_interp=False, 
-            conserve=False, clobber=True, log=None, verbose=True):
+            conserve=False, nearest=False, clobber=True, log=None, verbose=True):
    """Read in an image and a set of wavlength solutions.  Calculate the best
       wavelength solution for a given dataset and then apply that data set to the 
       image 
@@ -162,7 +163,7 @@ def rectify(hdu, soldict, caltype='line', function='poly', order=3, inttype='int
           slitid=None
        #set up a wavelength solution
        try:
-           w_arr=findsol(xarr, soldict, istart, caltype, timeobs, exptime, instrume, grating, grang, arang, filtername, 
+           w_arr=findsol(xarr, soldict, istart, caltype, nearest, timeobs, exptime, instrume, grating, grang, arang, filtername, 
               slit, xbin, ybin, slitid, function, order )
        except SALTSpecError, e:
            if slitid: 
@@ -173,7 +174,7 @@ def rectify(hdu, soldict, caltype='line', function='poly', order=3, inttype='int
               raise SALTSpecError(e)
  
        if w_arr is None: 
-          w_arr=findsol(xarr, soldict, istart, 'rss', timeobs, exptime, instrume, grating, grang, arang, filtername, 
+          w_arr=findsol(xarr, soldict, istart, 'rss', nearest, timeobs, exptime, instrume, grating, grang, arang, filtername, 
               slit, xbin, ybin, slitid, function, order )
   
        #set up the output x-axis
@@ -200,7 +201,7 @@ def rectify(hdu, soldict, caltype='line', function='poly', order=3, inttype='int
        #for a given line in the image
        for j in range(len(hdu[i].data)):
            #find the wavelength solution for the data
-           w_arr=findsol(xarr, soldict, j, caltype, timeobs, exptime, instrume, grating, grang, arang, filtername, 
+           w_arr=findsol(xarr, soldict, j, caltype, nearest, timeobs, exptime, instrume, grating, grang, arang, filtername, 
               slit, xbin, ybin, slitid, function, order )
 
            #apply that wavelength solution to the data
@@ -273,13 +274,13 @@ def makeinterpsolution(xarr, soldict,  timeobs, exptime, instrume, grating, gran
    wsrow=soldict[bsol][9]
    wscoef=[]
    for y_i in wsrow:
-       function, order, coef=findlinesol( soldict, y_i, timeobs, exptime, instrume, grating, grang, arang, filtername, slitid, xarr)
+       function, order, coef=findlinesol( soldict, y_i, nearest, timeobs, exptime, instrume, grating, grang, arang, filtername, slitid, xarr)
        wscoef.append(coef)
 
 
    return [timeobs, instrume, grating, grang, arang, filtername, None, function, order, wsrow, wscoef]
 
-def findsol(xarr, soldict, y_i, caltype, timeobs, exptime, instrume, grating, grang, arang, filtername,
+def findsol(xarr, soldict, y_i, caltype, nearest, timeobs, exptime, instrume, grating, grang, arang, filtername,
               slit, xbin, ybin, slitid, function, order ):
    """Find the wavelength solution.  Either from a database containing all the 
       solutions adn calculate the best one or calculate based on the model
@@ -288,7 +289,7 @@ def findsol(xarr, soldict, y_i, caltype, timeobs, exptime, instrume, grating, gr
  
 
    if caltype=='line':
-      function, order, coef=findlinesol( soldict, y_i, timeobs, exptime, instrume, grating, grang, arang, filtername, slitid, xarr)
+      function, order, coef=findlinesol( soldict, y_i, nearest, timeobs, exptime, instrume, grating, grang, arang, filtername, slitid, xarr)
       if function is None: 
           msg='No solution matches for %s, %s, %s, %s, %s, %s' % (instrume, grating, grang, arang, filtername, slitid)
           raise SALTSpecError(msg)
@@ -339,7 +340,7 @@ def calcsol(xarr, y_i, instrume, grating, grang, arang, filtername, slit, xbin, 
 # -----------------------------------------------------------------------------
 # Find the best wavelength solution
 
-def findlinesol(soldict, yc, timeobs, exptime, instrume, grating, grang, arang, filtername, slitid, xarr=None):
+def findlinesol(soldict, yc, nearest, timeobs, exptime, instrume, grating, grang, arang, filtername, slitid, xarr=None):
     """Find the best wavelength solution given a datetime of the observation
        and a wavelenght line.  We will assume that the best solution is found
        between the two solutions which are on either side of the timeobs or 
@@ -393,6 +394,9 @@ def findlinesol(soldict, yc, timeobs, exptime, instrume, grating, grang, arang, 
 
        #If xarr is None, return the solution closest in time to the obsevation
        if coef is None: return function, order, coef
+
+       #if nearest, return that
+       if nearest: return function, order, coef
 
        #If xarr, then calculation w_arr for each of the solutions available,
        #After calculating the solution, calculated the time weighted average
