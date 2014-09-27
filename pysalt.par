@@ -1,6 +1,6 @@
 # Package parameters for the PySALT package
 
 logfile,s,h,"pysalt.log",,,"Logfile for tasks in the PySALT package"
-version,s,h,"22Feb2008",,,"Package version date"
-verno,s,h,"v0.3",,,"Package version number"
+version,s,h,"1OOct2014",,,"Package version date"
+verno,s,h,"v0.5dev",,,"Package version number"
 motd,b,h,"yes",,,"Print welcome message"

@@ -140,6 +140,20 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
             struct=saltio.openfits(img)
             ylen,xlen=struct[1].data.shape
             xbin, ybin = saltkey.ccdbin(struct[0], img)
+            #setup the VARIANCE and BPM frames       
+            if saltkey.found('VAREXT', struct[1]):
+                varext=saltkey.get('VAREXT', struct[1])
+                varlist=[]
+            else:
+                varext=None
+
+            #setup the BPM frames       
+            if saltkey.found('BPMEXT', struct[1]):
+                bpmext=saltkey.get('BPMEXT', struct[1])
+                bpmlist = []
+            else:
+                bpmext=None
+
 
             #open the slit definition file or identify the slits in the image
             slitmask=None
@@ -178,6 +192,12 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
             spline_x = 0.5*(np.array(spline_x[:-1])+np.array(spline_x[1:]))
             extracted_spectra, spline_positions = mt.extract_slits(slit_positions,\
                  spline_x, struct[1].data, order=order, padding=padding)
+            if varext:
+                 extracted_var, var_positions = mt.extract_slits(slit_positions,\
+                    spline_x, struct[varext].data, order=order, padding=padding)
+            if bpmext:
+                 extracted_bpm, bpm_positions = mt.extract_slits(slit_positions,\
+                    spline_x, struct[bpmext].data, order=order, padding=padding)
 
             #write out the data to the new array
             # create the new file
@@ -196,12 +216,22 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
              
             #add each 
             imglist=[]
-            for i in range(len(spline_positions)):
+            nslits = len(spline_positions)
+            for i in range(nslits):
                y1=spline_positions[i][0].min()
                y2=spline_positions[i][1].max()
                msg='Extracted Spectra %i between %i to %i' % (i+1, y1,y2)
                #log.message(msg, with_header=False, with_stdout=verbose)
-               imglist.append(pyfits.ImageHDU(extracted_spectra[i], header=struct[1].header))
+               sdu = pyfits.ImageHDU(extracted_spectra[i], header=struct[1].header)
+               if varext:
+                  vdu = pyfits.ImageHDU(extracted_var[i], header=struct[varext].header)
+                  sdu.header.update('VAREXT', i + nslits + 1)
+                  varlist.append(vdu)
+               if bpmext:
+                  bdu = pyfits.ImageHDU(extracted_bpm[i], header=struct[bpmext].header)
+                  sdu.header.update('BPMEXT', i + 2*nslits + 1)
+                  bpmlist.append(bdu)
+               imglist.append(sdu)
                
                #add in some additional keywords
                imglist[i].header.update('MINY', y1, comment='Lower Y value in original image')
@@ -223,6 +253,8 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
   
             #add to the hdulist
             hdulist += imglist
+            if varext: hdulist += varlist
+            if bpmext: hdulist += bpmlist
   
             #write the slit positions to the header
             # create the binary table HDU that contains the split positions

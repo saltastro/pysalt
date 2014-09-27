@@ -123,9 +123,10 @@ global color=green dashlist=8 3 width=1 font="helvetica 10 normal roman" select=
 physical
 """ % img)
              for ring in ring_list:
-                 fout.write('circle(%f, %f, %f)\n' % (ring.xc(),ring.yc(),ring.prad()))
-                 fout.write('circle(%f, %f, %f)\n' % (ring.xc(),ring.yc(),ring.prad()-5*ring.sigma()))
-                 fout.write('circle(%f, %f, %f)\n' % (ring.xc(),ring.yc(),ring.prad()+5*ring.sigma()))
+                 print ring
+                 fout.write('circle(%f, %f, %f)\n' % (ring.xc,ring.yc,ring.prad))
+                 fout.write('circle(%f, %f, %f)\n' % (ring.xc,ring.yc,ring.prad-5*ring.sigma))
+                 fout.write('circle(%f, %f, %f)\n' % (ring.xc,ring.yc,ring.prad+5*ring.sigma))
 
              fout.close()
              display(img, catname=regfile, rformat='reg')

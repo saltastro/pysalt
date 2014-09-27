@@ -1,0 +1,103 @@
+.. _saltfpzeropoint:
+
+***************
+saltfpzeropoint
+***************
+
+
+Name
+====
+
+saltfpzeropoint -- Updated header information with FP coefficients
+
+Usage
+=====
+
+saltfpzeropoint images outfiles outpref calfile fpA (fpB) (fpC) (fpD) (fpE) (fpF)
+(clobber) (logfile) (verbose)
+
+Parameters
+==========
+
+
+*images*
+    String. Name of the input images, or the name of a file containing a list of ring input images. If a list file is used, it should contain one ring input file per line. In this case the name of the list file should be preceded with an ``@`` character to indicate that a file list is being input. No wildcards are accepted. The ring image/s must have been processed by saltprepare or saltfpprep.
+
+*outfile*
+    String. Output file which stores the fitting results. If this is a new file a comment line (up to 80 characters) may be added. If the output file already exists, the results of SALTFPCALRING's fits will be appended to the end of the file.
+
+*outpref*
+    String. If the outpref string is non-zero in length and contains
+    characters other than a blank space, it will override any value of the
+    outimages argument. Output file names will use the name list provided
+    in the images argument, but adding a prefix to the basename of
+    each  output file defined by outpref. An absolute or relative directory
+    path can be included in the prefix, e.g. 'outpref=/Volumes/data/p'.
+
+*calfile*
+    String. File with calibration data information.  This file is the output from saltfpcalring.
+
+*fpA*
+    Real.  Fabry-Perot A coefficient.   This value should be the etalon A value that is in the header.
+
+*fpB*
+    Real.  Fabry-Perot B coefficient.   This value should be the etalon B value that is in the header.
+
+*fpC*
+    Real.  Fabry-Perot C coefficient.   This value should be the etalon C value that is in the header.
+
+*fpD*
+    Real.  Fabry-Perot D coefficient.   This value should be the etalon D value that is in the header.
+
+*fpE*
+    Real.  Fabry-Perot E coefficient.   This value should be the etalon E value that is in the header.
+
+*fpF*
+    Real.  Fabry-Perot F coefficient.   This value should be the etalon F value that is in the header and corrected for image binning.
+
+*clobber*
+    boolean.  If true, overwrite outfile.
+
+*logfile*
+    String. Name of an ascii file for storing log and error messages
+    written by the task. The file may be new, or messages can also be
+    appended to a pre-existing file.
+
+*verbose*
+    Boolean. Verbose (yes) or quiet (no) execution of the routine.
+
+Description
+===========
+
+
+SALTFPZEROPOINT adds all of the FP coefficents to the image header.  The task will take the data in the calfile and calculate the appropriate FP coefficients for each of the frames.  It will then add the information to the headers as each coefficient having its own keyword.
+
+
+Examples
+========
+
+1. To update the image headers with new FP coefficient values:
+
+--> saltfpzeropoint images=f*fits outimages=f*fits outpref= calfile=calring.dat fpa=6667.2
+fpb=0.120633 fpc=0.0 fpd=0.0 fpe=0.0 fpf=5707.23 clobber=yes logfile=salt.log
+verbose=yes
+
+
+Time and disk requirements
+==========================
+
+Individual unbinned full frame RSS image files can be 112MB in
+size. It is recommended to use workstations with a minimum of 512MB
+RAM. On a linux machine with 2.8 Ghz processor and 2 Gb of RAM, one
+2051x2051 image in 0.85 sec.
+
+
+Bugs and limitations
+====================
+
+Send feedback and bug reports to salthelp@saao.ac.za
+
+See also
+========
+
+ :ref:`saltfpcalring`

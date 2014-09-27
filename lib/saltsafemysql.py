@@ -56,6 +56,22 @@ def connectdb(host,dbname,user,passwd):
 
     return db
 
+def connectelsview(host, dbname,user,passwd):
+    """Connect to  a ELS viewer with converted to fix timestamp serialization issue
+    """
+    db = ''
+    try:
+       orig_conv = MySQLdb.converters.conversions
+       conv_iter = iter(orig_conv)
+       convert = dict(zip(conv_iter, [str,] * len(orig_conv.keys())))
+       db = MySQLdb.connect(host=host,db=dbname,user=user,passwd=passwd, conv=convert)
+    except Exception, e:
+       message = 'Cannot connect to %s due to %s' % (host, str(e))
+       raise SALTMySQLError(message)
+
+    return db
+
+
 def select(db, selection, table, logic):
     """Select a record from a table"""
     record=''
@@ -292,6 +308,17 @@ def create_insert(db, ImageHeader, FileNameString, PipelineFileNameString):
     except KeyError:
        BlockString=''
        
+    #get the block id
+    try:
+       BlockVisitString=ImageHeader['BVISITID'].strip()
+       BlockVisitString=saltio.checkfornone(BlockVisitString)
+       try:
+          if int(BlockVisitString)==0: BlockVisitString=None
+       except:
+          pass
+    except KeyError:
+       BlockVisitString=''
+
 
 
     #create the insertion command for the data
@@ -313,6 +340,7 @@ def create_insert(db, ImageHeader, FileNameString, PipelineFileNameString):
         insert_command += "NExposures='%i',"%nexposures
         insert_command += "FileSize='%i'"%filesize
         if BlockString: insert_command += ",Block_Id='%s'"%BlockString
+        if BlockVisitString: insert_command += ",BlockVisit_Id='%s'"%BlockVisitString
     except Exception, e:
         message='Could not create insert command because %s' % e
         raise SALTMySQLError(message)

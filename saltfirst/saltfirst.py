@@ -1,4 +1,4 @@
-################################# LICENSE ##################################
+############################### LICENSE ##################################
 # Copyright (c) 2009, South African Astronomical Observatory (SAAO)        #
 # All rights reserved.                                                     #
 #                                                                          #
@@ -121,8 +121,8 @@ class FirstWindow(QtGui.QMainWindow):
         self.clobber=clobber
         self.scamwatch=True
         self.rsswatch=True
-        self.hrswatch=True
-        self.hrbwatch=True
+        self.hrswatch=False
+        self.hrbwatch=False
         self.objsection=None
         self.sdbhost=sdbhost
         self.sdbname=sdbname
@@ -200,11 +200,11 @@ class FirstWindow(QtGui.QMainWindow):
         self.ctimer.start(ctime)
         self.connect(self.ctimer, QtCore.SIGNAL("timeout()"), self.updatetime)
         #add signal catches
-        self.connect(self, QtCore.SIGNAL('updatespec(str)'), self.updatespecview)
+        self.connect(self, QtCore.SIGNAL('updatespec(QString)'), self.updatespecview)
         self.connect(self.thread, QtCore.SIGNAL('finishedthread(QString)'), self.updatetabs)
-        self.connect(self.obsTab, QtCore.SIGNAL('cellclicked(str)'), self.updatetabs)
-        self.connect(self.obsTab, QtCore.SIGNAL('updateobslogdb(str)'), self.updateobslogdb)
-        self.connect(self.obsTab, QtCore.SIGNAL('updatecals(str)'), self.updatecals)
+        self.connect(self.obsTab, QtCore.SIGNAL('cellclicked(QString)'), self.updatetabs)
+        self.connect(self.obsTab, QtCore.SIGNAL('updateobslogdb(QString)'), self.updateobslogdb)
+        self.connect(self.obsTab, QtCore.SIGNAL('updatecals(QString)'), self.updatecals)
         self.connect(self.specTab, QtCore.SIGNAL('updateextract(int,int)'), self.updateextract)
         # Set the main widget as the central widget
         self.setCentralWidget(self.main)
@@ -254,7 +254,7 @@ class FirstWindow(QtGui.QMainWindow):
 
    def updateobslogdb(self, logstr):
        #print logstr
-       #print self.obsdate
+       print "Updating Obslog for ", self.obsdate
        sdbloadobslog(logstr, self.obsdate, self.sdbhost, self.sdbname, self.sdbuser, self.password)
        pickle.dump(self.obsdict, open(self.pickle_file, 'wb'))
        
@@ -268,6 +268,7 @@ class FirstWindow(QtGui.QMainWindow):
        print "UPDATE:", name, key, value
 
    def updatespecview(self, name):
+       name = str(name)
        print "UPDATING SPECVIEW with %s" % name
        specfile='./smbxp'+name.split('.fits')[0]+'.txt'
        warr, farr, snarr=np.loadtxt(specfile, usecols=(0,1,2), unpack=True)
@@ -375,10 +376,12 @@ class FirstWindow(QtGui.QMainWindow):
        if not self.rsswatch and edir.count('rss'):
            self.watcher.addPath(self.rssdir)
            edir=self.rssdir
-       if not self.hrswatch and edir.count('hrdet'):
+
+       #Perhaps edit to turn off? 
+       if self.hrswatch and edir.count('hrdet'):
            self.watcher.addPath(self.hrsdir)
            edir=self.hrsdir
-       if not self.hrbwatch and edir.count('hbdet'):
+       if self.hrbwatch and edir.count('hbdet'):
            self.watcher.addPath(self.hrsdir)
            edir=self.hrsdir
 
@@ -488,7 +491,7 @@ class FirstWindow(QtGui.QMainWindow):
 
        #set up the HRS files
        self.hrsdir ='%shrdet/data/%s/%s/raw/' % (imdir, obsdate[0:4], obsdate[4:])
-       if os.path.isdir(self.hrsdir):
+       if os.path.isdir(self.hrsdir) and self.hrswatch:
            self.hrsfiles=glob.glob(self.hrsdir+'R*')
            self.hrsfiles.sort()
        else:
@@ -498,7 +501,7 @@ class FirstWindow(QtGui.QMainWindow):
 
        #set up the HRS files
        self.hrbdir ='%shbdet/data/%s/%s/raw/' % (imdir, obsdate[0:4], obsdate[4:])
-       if os.path.isdir(self.hrbdir):
+       if os.path.isdir(self.hrbdir) and self.hrbwatch:
            self.hrbfiles=glob.glob(self.hrbdir+'H*')
            self.hrbfiles.sort()
        else:
@@ -537,6 +540,7 @@ class FirstWindow(QtGui.QMainWindow):
            self.hdu.verify('exception')
            name=getbasename(self.hdu)
            imlist=getimagedetails(self.hdu)
+           self.hdu.close()
        except IndexError:
            time.sleep(5)
            name=self.addtoobsdict(infile)
@@ -577,6 +581,7 @@ class FirstWindow(QtGui.QMainWindow):
       print filename
       if infile.startswith('H') or infile.startswith('R'):
           shutil.copy(filename, outfile)
+          return iminfo
 
       if filename.count('.txt'): return iminfo
 
@@ -658,16 +663,17 @@ class FirstWindow(QtGui.QMainWindow):
           iminfo[headerList.index('NSOURCES')]='%i' % nsources
           iminfo[headerList.index('SEEING')]='%f' % see
           #self.emit(QtCore.SIGNAL("updateimlist(str,str,str)"), (name, 'SEEING', '%f' % see))
-          #self.emit(QtCore.SIGNAL("updatespec(str)"), name)
+          #self.emit(QtCore.SIGNAL("updatespec(QString)"), name)
 
       #If the images are spectral images, run specreduce on them
       if obsmode=='SPECTROSCOPY': # and not(target in ['FLAT', 'BIAS']):
           y1,y2=quickspec(outfile, lampid, objsection=self.objsection, findobj=True, clobber=True, logfile=logfile, verbose=verbose)
           print y1,y2
+          specfile=outpath+'smbxp'+infile.split('.fits')[0]+'.txt'
+          #In here, so it doesn't break when the first checkdata  runs
           try:
-              specfile=outpath+'smbxp'+infile.split('.fits')[0]+'.txt'
               self.specTab.updaterange(y1,y2)
-              self.emit(QtCore.SIGNAL("updatespec(str)"), infile)
+              self.emit(QtCore.SIGNAL("updatespec(QString)"), infile)
           except Exception,e:
               message="SALTFIRST--ERROR:  Could not wavelength calibrate %s because %s" % (infile, e)
               fout=open(logfile, 'a')
@@ -707,6 +713,7 @@ def getimagedetails(hdu):
    """Return all the pertinant image header details"""
    filename=hdu._HDUList__file.name
    imlist=[filename]
+   print filename
    for k in headerList[1:]:
        try:
            value=saltkey.get(k, hdu[0])

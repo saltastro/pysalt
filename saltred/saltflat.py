@@ -100,17 +100,28 @@ def saltflat(images,outimages,outpref, flatimage,minflat=1, allext=False, clobbe
        #determine the global mean
        fmean=0
        fcount=0
-       for fext in flatstruct:
-           if fext.name=='SCI' and fext.data is not None:
-              fmean += fext.data.sum()
-              fcount += fext.data.size
+       #replace bad pixels
+       for i in range(len(flatstruct)):
+           if flatstruct[i].data is not None and (flatstruct[i].name=='SCI' or flatstruct[i].name=='PRIMARY'):
+              data = flatstruct[i].data
+              mask = (data > minflat) 
+              if (numpy.nan==flatstruct[i].data).sum() or (numpy.inf==flatstruct[i].data).sum():
+                    message = '\nWARNING -- SALTFLAT: %s contains invalid values' % flatimage
+                    log.warning(message,with_stdout=verbose)
+              flatstruct[i].data[mask==0] = minflat
+              flatstruct[i].data[flatstruct[i].data==numpy.inf] = minflat
+
+              #determine the mean
+              mask = (data > minflat) 
+              fmean += data[mask].sum()
+              fcount += data[mask].size
        if fcount>0: fmean=fmean/fcount
 
-       for fext in flatstruct:
-           if fext.name=='PRIMARY':
+       for i in range(len(flatstruct)):
+           if flatstruct[i].name=='PRIMARY':
                 #is it a flat--if not throw a warning
                 try:
-                    key_ccdtype=saltkey.get('CCDTYPE', fext)
+                    key_ccdtype=saltkey.get('CCDTYPE', flatstruct[i])
                 except:
                     key_ccdtype=None
                 if key_ccdtype!='FLAT':
@@ -118,19 +129,18 @@ def saltflat(images,outimages,outpref, flatimage,minflat=1, allext=False, clobbe
                     log.warning(message,with_stdout=verbose)
 
                 #if there are data, normalize it
-                if fext.data is not None:
-                    fext.data=flatnormalize(fext.data, minflat)
+                if flatstruct[i].data is not None:
+                    flatstruct[i].data=flatnormalize(flatstruct[i].data, minflat)
 
            #Noramlize the science extensions
-           if fext.name=='SCI':
-                if fext.data is not None:
-                    if allext is False: fmean=fext.data.mean()
-                    fext.data=flatnormalize(fext.data, minflat, fmean)
+           if flatstruct[i].name=='SCI':
+                if flatstruct[i].data is not None:
+                    if allext is False: fmean=flatstruct[i].data.mean()
+                    flatstruct[i].data=flatnormalize(flatstruct[i].data, minflat, fmean)
                     
-
            #Apply to the variance frames
-           if saltkey.found('VAREXT', fext):
-               varext=saltkey.get('VAREXT',fext)
+           if saltkey.found('VAREXT', flatstruct[i]):
+               varext=saltkey.get('VAREXT',flatstruct[i])
                flatstruct[varext].data=flatstruct[varext].data/fmean**2
 
 
@@ -168,12 +178,12 @@ def flatnormalize(data, minflat, fmean=1):
     """Calculate the mean of the data and return a normalized data array
     """
     try:
-        min_ind=numpy.where(data<minflat)
-        data[min_ind]=minflat
+        mask = (data < minflat) + (data == numpy.nan) + (data == numpy.inf)
+        data[mask]=minflat
         data=data/fmean
     except Exception, e:
         message='ERROR--FLATNORMALIZE:  Data could not be normalized because %s' % e
-        raise SaltError(msg)
+        raise SaltError(message)
 
     return data
 
@@ -206,7 +216,7 @@ def flat(struct,fstruct):
                struct[varext].data=(struct[i].data/fstruct[i].data)*(struct[varext].data/struct[i].data**2+fvar/fstruct[i].data**2)
 
             #flatten the data
-            struct[i].data=struct[i].data/fstruct[i].data
+            struct[i].data = struct[i].data / fstruct[i].data
 
     return struct
 

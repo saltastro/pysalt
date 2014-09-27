@@ -1,10 +1,3 @@
-pipetools/doc/saltedtky.hlp
-pipetools/doc/saltemail.hlp
-pipetools/doc/saltfast.hlp
-pipetools/doc/saltftp.hlp
-pipetools/doc/salthtml.hlp
-pipetools/doc/saltobsid.hlp
-pipetools/doc/saltpipe.hlp
 saltred/doc/saltbias.hlp
 saltred/doc/saltclean.hlp
 saltred/doc/saltcrclean.hlp
@@ -20,7 +13,3 @@ slottools/doc/slotphot.hlp
 slottools/doc/slotutcfix.hlp
 slottools/doc/slotview.hlp
 slottools/doc/slotpreview.hlp
-bvittools/doc/bvittofits.hlp
-bvittools/doc/bvitphot.hlp
-bvittools/doc/bvitpreview.hlp
-bvittools/doc/bvitview.hlp

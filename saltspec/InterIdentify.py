@@ -48,9 +48,9 @@ from saltgui import ImageDisplay, MplCanvas
 from salterror import SaltIOError
 
 from PySpectrograph.Spectra import Spectrum, apext
-from PySpectrograph.WavelengthSolution import WavelengthSolution
 
 
+import WavelengthSolution
 import spectools as st
 import AutoIdentify as ai
 from spectools import SALTSpecError
@@ -313,7 +313,7 @@ class imageWidget(QtGui.QWidget):
        self.nrows=int(self.nrValueEdit.text())
        self.rstep=int(self.nsValueEdit.text())
        if abs(self.y1-self.y2)!=self.nrows:
-          self.log.warning( "Warning: Update y2 to increase the row sampling")
+          if self.log: self.log.warning( "Warning: Update y2 to increase the row sampling")
        self.y1line.set_ydata([self.y1, self.y1])
        self.y2line.set_ydata([self.y2, self.y2])
        self.imdisplay.draw()
@@ -620,6 +620,7 @@ class ArcDisplay(QtGui.QWidget):
        self.res=res  
        self.dres=dres
        self.dc=dc
+       self.sections=6
        self.ndstep=ndstep
        self.method=method
        self.textcolor=textcolor
@@ -671,6 +672,7 @@ b - identify features   f - fit solution
 p - print features      P - print solution
 z - zeropoint fit       Z - find zeropoint and dispersion
 r - redraw spectrum     R - reset values
+e - add closest line    L - show detected peaks
 d - delete feature      u - undelete feature
 """
        print helpoutput
@@ -686,13 +688,13 @@ d - delete feature      u - undelete feature
        elif event.key=='c':
            #return the centroid
            if event.xdata:
-               self.log.message(str(event.xdata), with_header=False)
+               if self.log: self.log.message(str(event.xdata), with_header=False)
                cx=st.mcentroid(self.xarr, self.farr, xc=event.xdata, xdiff=self.mdiff)
                self.emit(QtCore.SIGNAL("updatex(float)"), cx)
        elif event.key=='x':
            #return the x position
            if event.xdata:
-               self.log.message(str(event.xdata), with_header=False)
+               if self.log: self.log.message(str(event.xdata), with_header=False)
                self.emit(QtCore.SIGNAL("updatex(float)"), event.xdata)
        elif event.key=='R':
            #reset the fit 
@@ -716,7 +718,7 @@ d - delete feature      u - undelete feature
        elif event.key=='e':
            #find closest feature from existing fit and line list
            #and match it
-           pass
+           self.addclosestline(event.xdata)
        elif event.key=='i':
            #reset identified features
            pass
@@ -733,6 +735,9 @@ d - delete feature      u - undelete feature
                self.isFeature=True
                self.plotFeatures()
                self.redraw_canvas()
+       elif event.key=='L':
+           #plot the sources that are detected
+           self.plotDetections()
        elif event.key=='p':
            #print information about features
            for i in range(len(self.xp)):
@@ -785,10 +790,16 @@ d - delete feature      u - undelete feature
        self.fpcurve,=self.axes.plot(self.xarr,asfarr,linewidth=0.5,linestyle='-',
                                 marker='None',color='r')
 
+   def plotDetections(self):
+       """Plot the lines that are detected"""
+       xp, xf=st.findpoints(self.xarr, self.farr, self.sigma, self.niter, sections=self.sections)
+       print xp
+       self.axes.plot(xp, xf , ls='', marker='|', ms=20, color='#000000')
+
    def plotFeatures(self):
        """Plot features identified in the line list"""
        fl=np.array(self.xp)*0.0+0.25*self.farr.max()
-       self.splines=self.axes.plot(self.xp, fl , ls='', marker='|', ms=20, color='#00FF00')
+       self.splines=self.axes.plot(self.xp, fl , ls='', marker='|', ms=20, color=self.textcolor)
        #set up the text position
        tsize=0.83
        self.ymin, self.ymax = self.axes.get_ylim()
@@ -821,7 +832,8 @@ d - delete feature      u - undelete feature
        self.set_wdiff()
        res = max(self.res*0.25, 2)
        xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, 
-                               res=res,mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
+                               res=res,mdiff=self.mdiff, wdiff=20, sigma=self.sigma, 
+                               niter=self.niter, sections=self.sections)
        for x, w in zip(xp, wp):
           if w not in self.wp and w>-1: 
              self.xp.append(x)
@@ -839,7 +851,8 @@ d - delete feature      u - undelete feature
        #xp, wp=st.findfeatures(self.xarr, self.farr, self.slines, self.sfluxes,
        #                       self.ws, mdiff=self.mdiff, wdiff=self.wdiff, sigma=self.sigma, niter=self.niter, sections=3)  
        xp,wp=st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes, self.ws, 
-                               res=self.res, mdiff=self.mdiff, wdiff=20, sigma=self.sigma, niter=self.niter)
+                               res=self.res, mdiff=self.mdiff, wdiff=20, 
+                               sections=self.sections, sigma=self.sigma, niter=self.niter)
        for x, w in zip(xp, wp):
           if w not in self.wp and w>-1: 
              self.xp.append(x)
@@ -848,6 +861,21 @@ d - delete feature      u - undelete feature
        #print
        self.plotFeatures()
        self.redraw_canvas()
+
+   def addclosestline(self, x):
+       """Find the closes line to the centroided position and 
+          add it
+       """
+       cx=st.mcentroid(self.xarr, self.farr, xc=x, xdiff=self.mdiff)
+       w = self.ws.value(cx)
+       d = abs(self.slines - w)
+       w = self.slines[d.argmin()]
+
+       self.xp.append(x)
+       self.wp.append(w)
+       self.plotFeatures()
+       self.redraw_canvas()
+
          
    def findzp(self):
        """Find the zeropoint for the source and plot of the new value
@@ -881,7 +909,7 @@ d - delete feature      u - undelete feature
        try:
            self.ws=st.findfit(np.array(self.xp), np.array(self.wp), ws=self.ws)
        except SALTSpecError, e:
-           self.log.warning(e)
+           if self.log: self.log.warning(e)
            return 
        del_list=[]
        if len(self.ws.func.x)!=len(self.xp):

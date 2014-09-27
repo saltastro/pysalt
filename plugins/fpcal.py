@@ -65,7 +65,7 @@ def fpcal(profile, flatimage=None, minflat=15000, bthresh=5, niter=5, displayima
        saltflat(profile, outimages='', outpref='p', flatimage=flatimage,minflat=minflat, clobber=clobber, logfile=logfile, verbose=verbose)
 
    #run saltfpprep
-   saltfpprep('p'+profile, outimages='', outpref='f', full_reduce=False, clobber=clobber, logfile=logfile, verbose=verbose)
+   saltfpprep('p'+profile, outimages='', outpref='f', clobber=clobber, logfile=logfile, verbose=verbose)
 
    #run saltfpringfit
    section='[600:800,300:500]' #*TODO* Update so it automatically determines this

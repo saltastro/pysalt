@@ -248,7 +248,10 @@ def centerring(data, axc, ayc, radmax=450, radstep=50, nbins=8):
        t2=t1+nsteps
        mask=(theta>t1)*(theta<t2)*(abs(r-radmax)<radstep)
        theta_arr[i]=0.5*(t1+t2)
-       rad_arr[i]=fitradius(r[mask], data[mask])
+       try:
+           rad_arr[i]=fitradius(r[mask], data[mask])
+       except:
+           pass
        #r[mask][j]
    x_arr=rad_arr*np.cos(theta_arr-0.5*math.pi)
    y_arr=rad_arr*np.sin(theta_arr-0.5*math.pi)

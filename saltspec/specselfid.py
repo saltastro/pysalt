@@ -22,6 +22,7 @@ from pyraf import iraf
 from iraf import pysalt
 
 import saltsafeio as saltio
+import saltsafekey as saltkey
 from saltsafelog import logging, SaltLog
 
 
@@ -67,6 +68,12 @@ def specselfid(images,outimages, outpref, refimage=None, ystart='middlerow', rst
                 else:
                    sdata=rhdu[i].data
                 hdu[i].data=selfid(hdu[i].data, sdata, ystart=ystart, rstep=rstep)
+                if saltkey.found('VAREXT', hdu[i]):
+                   varext=saltkey.get('VAREXT', hdu[i])
+                   hdu[varext].data=selfid(hdu[varext].data, sdata, ystart=ystart, rstep=rstep)
+                if saltkey.found('BPMEXT', hdu[i]):
+                   bpmext=saltkey.get('BPMEXT', hdu[i])
+                   hdu[bpmext].data=selfid(hdu[bpmext].data, sdata, ystart=ystart, rstep=rstep)
 
            #write out the oimg
            saltio.writefits(hdu, oimg, clobber=clobber)

@@ -4,15 +4,6 @@
 Task help
 #########
 
-*********
-pipetools
-*********
-.. toctree::
-    :maxdepth: 1
-    :glob:
-
-    tasks/pipetools/*
-
 *******
 saltred
 *******
@@ -42,11 +33,11 @@ slottools
     tasks/slottools/*
 
 *********
-bvittools
+saltfp
 *********
 .. toctree::
     :maxdepth: 1
     :glob:
 
-    tasks/bvittools/*
+    tasks/saltfp/*
 

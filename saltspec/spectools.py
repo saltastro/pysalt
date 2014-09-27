@@ -23,9 +23,8 @@ from pyraf import iraf
 import saltsafeio as saltio
 from salterror import SaltError
 from saltfit import interfit
+import WavelengthSolution
 
-
-from PySpectrograph.WavelengthSolution import WavelengthSolution
 from PySpectrograph.Spectra import Spectrum, apext, detectlines
 
 import pylab as pl
@@ -102,9 +101,6 @@ def clipstats(yarr, thresh, iter):
 def findpoints(xarr, farr, sigma, niter, sections=0):
    """Find all the peaks and the peak flux in a spectrum
 
-      TODO:  This can be updated to detect the lines ones
-      and then use int to find the pixels
-      Also you can get rid of that loop by using interpolate
    """
    if sections:
        nsec=len(xarr)/sections
@@ -112,18 +108,82 @@ def findpoints(xarr, farr, sigma, niter, sections=0):
        for i in range(sections):
            x1=i*nsec
            x2=x1+nsec
-           xa=detectlines.detectlines(xarr[x1:x2], farr[x1:x2], sigma=sigma, niter=niter, center=True)
+           xa=detect_lines(xarr[x1:x2], farr[x1:x2], sigma=sigma, niter=niter, center=True)
            if xp is None:
               xp=xa.copy()
            else:
               xp=np.concatenate((xp,xa))
    else:
-       xp=detectlines.detectlines(xarr, farr, sigma=sigma, niter=niter, center=True)
+       xp=detect_lines(xarr, farr, sigma=sigma, niter=niter, center=True)
 
    #create the list of the fluxes for each line 
    xc=xp.astype(int)
    xf=farr[xc]
    return xp, xf
+
+def find_backstats(f_arr, sigma, niter):
+   """Iteratively calculate the statistics of an array"""
+   ave=f_arr.mean()
+   std=f_arr.std()
+   for i in range(niter):
+       mask=(abs(f_arr-ave)<sigma*std)
+       ave=f_arr[mask].mean()
+       std=f_arr[mask].std()
+   return ave, std
+
+
+def find_peaks(f_arr, sigma, niter, bsigma=None):
+   """Go through an ordered array and find any element which is a peak"""
+   #set up the variables
+   if bsigma==None:
+      bsigma=sigma
+
+   #determine the background statistics
+   back_ave, back_std=find_backstats(f_arr, sigma, niter)
+
+   #calculate the differences between the pixels
+   dfh=f_arr[1:-1]-f_arr[:-2]
+   dfl=f_arr[1:-1]-f_arr[2:]
+
+   #find the objects
+   mask=(dfh>0)*(dfl>0)*(abs(f_arr[1:-1]-back_ave)>back_std*sigma)
+   t=np.where(mask)[0]
+   return t+1
+
+def detect_lines(w_arr, f_arr, sigma=3, bsigma=None, niter=5, mask=None, kern=default_kernal, center=False):
+   """Detect lines goes through a 1-D spectra and detect peaks
+
+      w_arr--xaxis array (pixels, wavelength, etc)
+      f_arr--yaxis array (flux, counts, etc)
+      sigma--Threshold for detecting sources
+      bsigma--Threshold for determining background statistics
+      niter--iterations to determine background
+      center--return centroids and not pixels
+      mask--Pixels not to use
+   """
+   #set up the variables
+   if bsigma==None:
+      bsigma=sigma
+
+   if mask:
+       f_arr=f_arr[mask]
+       w_arr=w_arr[mask]
+
+   #find all peaks
+   peaks=find_peaks(f_arr, sigma, niter, bsigma=bsigma)
+
+   #set the output values
+   xp=w_arr[peaks]
+   if center:
+       xdiff=int(0.5*len(kern)+1)
+       x_arr=np.arange(len(w_arr))
+       xp=xp*1.0
+       for i in range(len(peaks)):
+           cmask=(abs(x_arr-peaks[i])<xdiff)
+           xp[i]=detectlines.centroid(w_arr, f_arr, kern=kern, mask=cmask)
+
+   return xp
+
 
 
 def flatspectrum(xarr, yarr, mode='mean', thresh=3, iter=5, order=3):
@@ -612,17 +672,21 @@ def getslitsize(slitname, config_file=''):
    """Return the slit size for a given slit name"""
    if slitname.strip()=='PL0060N001': return 0.6
    if slitname.strip()=='PL0100N001': return 1.0
+   if slitname.strip()=='PL0120P001': return 1.2
+   if slitname.strip()=='PL0125N001': return 1.25
    if slitname.strip()=='PL0150N001': return 1.5
    if slitname.strip()=='PL0200N001': return 2.0
-   if slitname.strip()=='PL0120P001': return 1.2
+   if slitname.strip()=='PL0300N001': return 3.0
+   if slitname.strip()=='PL0400N001': return 4.0
+
    try:
        return int(slitname.strip())
    except:
        pass
    msg='Assuming a slit size of 1.0'
    return 1.0
-   msg='SPECTOOLS--Slitmask name not identified in config file'
-   raise SALTSpecError(msg)
+   #msg='SPECTOOLS--Slitmask name not identified in config file'
+   #raise SALTSpecError(msg)
 
 def makesection(section):
     """Convert a section that is a list of coordinates into 

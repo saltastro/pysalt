@@ -47,10 +47,9 @@ import saltsafekey as saltkey
 import saltsafeio
 from saltsafelog import logging, SaltLog
 
-
-from PySpectrograph.WavelengthSolution import WavelengthSolution
 from PySpectrograph.Models import RSSModel
 
+import WavelengthSolution
 import spectools as st
 from spectools import SALTSpecError
 
