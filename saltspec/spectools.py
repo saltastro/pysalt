@@ -848,3 +848,20 @@ def smooth_spectra(xarr, farr, sigma=3, nkern=20):
     kern=np.exp(-(xkern-0.5*nkern)**2/(sigma)**2)
 
     return gaussian_filter1d(farr, sigma)
+
+
+def boxcar_smooth(spec, smoothwidth):
+    # get the average wavelength separation for the observed spectrum
+    # This will work best if the spectrum has equal linear wavelength spacings
+    wavespace = np.diff(spec.wavelength).mean()
+    # kw
+    kw = int(smoothwidth/wavespace)
+    # make sure the kernel width is odd
+    if kw % 2 == 0:
+        kw += 1
+    kernel = np.ones(kw)
+    # Conserve flux
+    kernel /= kernel.sum()
+    smoothed = spec.flux.copy()
+    smoothed[(kw/2):-(kw/2)] = np.convolve(spec.flux, kernel, mode='valid')
+    return smoothed

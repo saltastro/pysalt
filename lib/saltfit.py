@@ -188,58 +188,32 @@ class curfit:
     def erf(self, coef, x, y, v):
         """Error function to be minimized in least-squares fit"""
         self.set_coef(coef)
-        return (y - self.__call__(x)) / v
+        return (y-self.__call__(x))/v
 
     def sigma(self, x, y):
         """Return the RMS of the fit """
-        # if there aren't many data points return the RMS
-        if len(x) < 4: sig = (((y - self(x)) ** 2).mean()) ** 0.5
-        # Otherwise get the average distance between the 16th and 84th percentiles
-        # of the residuals divided by 2
-        # This should be less sensitive to outliers
-        else:
-            # Sort the residuals
-            rsdls = np.sort(y - self(x))
-            # Get the correct indices and take their difference
-            sig = (rsdls[int(0.84 * len(rsdls))] - rsdls[int(0.16 * len(rsdls))]) / 2.0
-        return sig
+        return (((y-self(x))**2).mean())**0.5
 
     def chisq(self, x, y, err):
         """Return the chi^2 of the fit"""
-        return (((y - self(x)) / err) ** 2).sum()
+        return (((y-self(x))/err)**2).sum()
 
     def fit(self, task=0, s=None, t=None, full_output=1, warn=False):
         """Fit the function to the data"""
         if self.function == 'spline':
             self.set_weight(self.yerr)
-            self.results = interpolate.splrep(self.x, self.y, w=self.weight, task=0,
-                                            s=None, t=None, k=self.order, full_output=full_output)
+            self.results = interpolate.splrep(self.x, self.y, w=self.weight,
+                                              task=0, s=None, t=None,
+                                              k=self.order,
+                                              full_output=full_output)
             # w=None, k=self.order, s=s, t=t, task=task,
             # full_output=full_output)
             self.set_coef(self.results[0])
-        else:
-            # Fit using the Iterated Reweighted Least Squares Method so that
-            #we are robust to outliers
-            # Initialize the weights to 1's
-            weights = np.ones(len(self.x))
-            # Do 4 iterations for now
-            for i in range(4):
-                # do a linear least squares fit
-                self.results = optimize.leastsq(self.erf_weights, self.coef,
-                                              args=(self.x, self.y, self.yerr, weights),
-                                              full_output=full_output)
-                self.set_coef(self.results[0])
-                # Recalculate the weights (using the biweights)
-                # Start with the residuals
-                r = (self.y - self.__call__(self.x)) / self.yerr
-                # calculate the median absolute deviation
-                # and normalize it to 50% confidence level (0.6745 sigma for a gaussian)
-                s = np.median(abs(r - np.median(r))) / 0.6745
-                biweight = lambda x: ((abs(x) < 1.0) * (1.0 - x ** 2) ** 2.0) ** 0.5
-                weights = biweight(r / s)
-                # We could update p0 to p1 but I would worry that could put us in a
-                # strange part of chi^2 space.
 
+        else:
+            self.results = optimize.leastsq(self.erf, self.coef,
+                                            args=(self.x, self.y, self.yerr),
+                                            full_output=full_output)
             self.set_coef(self.results[0])
 
 
@@ -299,13 +273,43 @@ class interfit(curfit):
             self.yerr = err[mask]
 
 
-    def interfit(self):
+    def interfit(self, full_output=1):
         """Fit a function and then iterate it to reject possible outlyiers"""
-        self.fit()
-        for i in range(self.niter):
-            self.set_mask()
-            self.set_arrays(self.x_orig, self.y_orig, self.mask, err=self.yerr_orig)
-            self.fit()
+        if self.function == 'spline':
+            self.set_weight(self.yerr)
+            self.results = interpolate.splrep(self.x, self.y, w=self.weight,
+                                              task=0, s=None, t=None,
+                                              k=self.order,
+                                              full_output=full_output)
+            # w=None, k=self.order, s=s, t=t, task=task,
+            # full_output=full_output)
+            self.set_coef(self.results[0])
+        else:
+            # Fit using the Iterated Reweighted Least Squares Method so that
+            # we are robust to outliers
+            # Initialize the weights to 1's
+            weights = np.ones(len(self.x))
+            # Do 4 iterations for now
+            for i in range(self.niter):
+                # do a linear least squares fit
+                self.results = optimize.leastsq(self.erf_weights, self.coef,
+                                                args=(self.x, self.y,
+                                                      self.yerr, weights),
+                                                full_output=full_output)
+                self.set_coef(self.results[0])
+                # Recalculate the weights (using the biweights)
+                # Start with the residuals
+                r = (self.y - self.__call__(self.x)) / self.yerr
+                # calculate the median absolute deviation
+                # and normalize it to 50% confidence level (0.6745 sigma for a gaussian)
+                s = np.median(abs(r - np.median(r))) / 0.6745
+                biweight = lambda x: ((abs(x) < 1.0) * (1.0 - x ** 2) ** 2.0) ** 0.5
+                weights = biweight(r / s)
+                # We could update p0 to p1 but I would worry that could put us in a
+                # strange part of chi^2 space.
+
+            self.set_coef(self.results[0])
+
 
 def poly(x, y, order, rej_lo, rej_hi, niter):
     """linear least square polynomial fit with sigma-clipping

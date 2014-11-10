@@ -14,7 +14,7 @@ LIMITATIONS
 
 import numpy as np
 
-from lib.saltfit import interfit
+from saltfit import interfit
 from PySpectrograph.WavelengthSolution.ModelSolution import ModelSolution
 
 
