@@ -18,6 +18,7 @@ Updates
 20120319   - Update to new error handling
            - Changed the mosaic to use the whole frame and not trim some data
              off
+20141111   - Added option to replace the masked regions
 """
 
 import os
@@ -43,8 +44,8 @@ debug = True
 # core routine
 
 def saltmosaic(images, outimages, outpref, geomfile, interp='linear',
-               geotran=True, cleanup=True, clobber=False, logfile=None,
-               verbose=True):
+               geotran=True, cleanup=True, fill=False, clobber=False, 
+               logfile=None, verbose=True):
 
     # Start the logging
     with logging(logfile, debug) as log:
@@ -83,6 +84,7 @@ def saltmosaic(images, outimages, outpref, geomfile, interp='linear',
                 rotation,
                 interp_type=interp,
                 geotran=geotran,
+                fill=fill,
                 cleanup=cleanup,
                 log=log,
                 verbose=verbose)
@@ -107,8 +109,8 @@ def saltmosaic(images, outimages, outpref, geomfile, interp='linear',
 
 
 def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
-                boundary='constant', constant=0, geotran=True, cleanup=True,
-                log=None, verbose=False):
+                boundary='constant', constant=0, geotran=True, fill=False, 
+                cleanup=True, log=None, verbose=False):
     """Given a SALT image struct, combine each of the individual amplifiers and
         apply the geometric CCD transformations to the image
     """
@@ -159,7 +161,6 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
         tilehdu = [None] * (3 * int(nsciext / 2) + 1)
     else:
         tilehdu = [None] * int(nsciext / 2 + 1)
-    print len(tilehdu)
     tilehdu[0] = pyfits.PrimaryHDU()
     tilehdu[0].header = struct[0].header
 
@@ -439,43 +440,24 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
                 tstruct = pyfits.PrimaryHDU(tranhdu[hdu])
                 tstruct.writeto(tranfile[hdu])
                 if varframe:
-                    tranhdu[
-                        hdu +
-                        nccds] = geometric_transform(
-                        tilehdu[
-                            hdu +
-                            3].data,
+                    tranhdu[ hdu + nccds] = geometric_transform(
+                        tilehdu[ hdu + 3].data,
                         tran_func,
                         prefilter=False,
                         order=1,
                         extra_arguments=(
-                            xsh[ccd] /
-                            2,
-                            ysh[ccd] /
-                            2,
-                            1,
-                            1,
-                            xrot[ccd],
-                            yrot[ccd]))
-                    tranhdu[
-                        hdu +
-                        2 *
-                        nccds] = geometric_transform(
-                        tilehdu[
-                            hdu +
-                            6].data,
+                            xsh[ccd] / 2, ysh[ccd] / 2,
+                            1, 1,
+                            xrot[ccd], yrot[ccd]))
+                    tranhdu[ hdu + 2 * nccds] = geometric_transform(
+                        tilehdu[ hdu + 6].data,
                         tran_func,
                         prefilter=False,
                         order=1,
                         extra_arguments=(
-                            xsh[ccd] /
-                            2,
-                            ysh[ccd] /
-                            2,
-                            1,
-                            1,
-                            xrot[ccd],
-                            yrot[ccd]))
+                            xsh[ccd] / 2, ysh[ccd] / 2,
+                            1, 1,
+                            xrot[ccd], yrot[ccd]))
 
         else:
             log.message(
@@ -485,8 +467,6 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
             if varframe:
                 tranhdu[hdu + nccds] = tilehdu[ccd + nccds].data
                 tranhdu[hdu + 2 * nccds] = tilehdu[ccd + 2 * nccds].data
-
-    print tranfile
 
     # open outfile
     if varframe:
@@ -527,6 +507,17 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
         if varframe:
             vardata[y1:y2, x1:x2] = tranhdu[hdu + nccds]
             bpmdata[y1:y2, x1:x2] = tranhdu[hdu + 2 * nccds]
+
+    #make sure to cover up all the gaps
+    if varframe:
+        bpmdata[outdata==0] = 1
+
+    #fill in the gaps if requested
+    if fill:
+        if varframe:
+            outdata = fill_gaps(outdata, bpmdata)
+        else:
+            outdata = fill_gaps(outdata, 0)
 
     # add to the file
     outlist[1] = pyfits.ImageHDU(outdata)
@@ -589,6 +580,44 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
 
     # return the file
     return outstruct
+
+def fill_gaps(data, mask):
+    """Interpolate in the gaps in the data
+
+       Parameters
+       ----------
+       data: np.ndarray
+          data to have values filled in for
+     
+       mask: float or nd.ndarray
+          If an nd.ndarray, it will be assumed to be a mask
+          with values equal to 1 where they should be interpolated 
+          over.  If a float, pixels with that value will be replaced
+
+    """
+    from scipy import ndimage as nd
+    ys, xs = data.shape
+    if isinstance(mask, numpy.ndarray):
+       mask = (mask==0)
+       for i in range(ys):
+            x = numpy.arange(xs)
+            rdata = data[i,:]
+            rmask = mask[i,:]
+            rmask = nd.minimum_filter(rmask, size=3)
+            rdata = numpy.interp(x, x[rmask], rdata[rmask])
+            data[i, rmask==0] = rdata[rmask==0]
+    else:
+       mask = (data!=mask)
+       for i in range(ys):
+            x = numpy.arange(xs)
+            rdata = data[i,:]
+            rmask = mask[i,:]
+            rmask = nd.minimum_filter(rmask, size=3)
+            rdata = numpy.interp(x, x[rmask], rdata[rmask])
+            data[i, rmask==0] = rdata[rmask==0]
+
+       
+    return data
 
 
 def tran_func(a, xshift, yshift, xmag, ymag, xrot, yrot):
