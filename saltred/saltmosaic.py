@@ -24,6 +24,7 @@ Updates
 import os
 import time
 import numpy
+from scipy import ndimage as nd
 import pyfits
 from pyraf import iraf
 
@@ -44,7 +45,7 @@ debug = True
 # core routine
 
 def saltmosaic(images, outimages, outpref, geomfile, interp='linear',
-               geotran=True, cleanup=True, fill=False, clobber=False, 
+               geotran=True, cleanup=True, fill=False, clobber=False,
                logfile=None, verbose=True):
 
     # Start the logging
@@ -109,7 +110,7 @@ def saltmosaic(images, outimages, outpref, geomfile, interp='linear',
 
 
 def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
-                boundary='constant', constant=0, geotran=True, fill=False, 
+                boundary='constant', constant=0, geotran=True, fill=False,
                 cleanup=True, log=None, verbose=False):
     """Given a SALT image struct, combine each of the individual amplifiers and
         apply the geometric CCD transformations to the image
@@ -440,8 +441,8 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
                 tstruct = pyfits.PrimaryHDU(tranhdu[hdu])
                 tstruct.writeto(tranfile[hdu])
                 if varframe:
-                    tranhdu[ hdu + nccds] = geometric_transform(
-                        tilehdu[ hdu + 3].data,
+                    tranhdu[hdu + nccds] = geometric_transform(
+                        tilehdu[hdu + 3].data,
                         tran_func,
                         prefilter=False,
                         order=1,
@@ -449,8 +450,8 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
                             xsh[ccd] / 2, ysh[ccd] / 2,
                             1, 1,
                             xrot[ccd], yrot[ccd]))
-                    tranhdu[ hdu + 2 * nccds] = geometric_transform(
-                        tilehdu[ hdu + 6].data,
+                    tranhdu[hdu + 2 * nccds] = geometric_transform(
+                        tilehdu[hdu + 6].data,
                         tran_func,
                         prefilter=False,
                         order=1,
@@ -508,11 +509,14 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
             vardata[y1:y2, x1:x2] = tranhdu[hdu + nccds]
             bpmdata[y1:y2, x1:x2] = tranhdu[hdu + 2 * nccds]
 
-    #make sure to cover up all the gaps
+    # make sure to cover up all the gaps include bad areas
     if varframe:
-        bpmdata[outdata==0] = 1
+        baddata = (outdata == 0)
+        baddata = nd.maximum_filter(baddata, size=3)
+        bpmdata[baddata] = 1
+        
 
-    #fill in the gaps if requested
+    # fill in the gaps if requested
     if fill:
         if varframe:
             outdata = fill_gaps(outdata, bpmdata)
@@ -581,6 +585,7 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
     # return the file
     return outstruct
 
+
 def fill_gaps(data, mask):
     """Interpolate in the gaps in the data
 
@@ -588,35 +593,33 @@ def fill_gaps(data, mask):
        ----------
        data: np.ndarray
           data to have values filled in for
-     
+
        mask: float or nd.ndarray
           If an nd.ndarray, it will be assumed to be a mask
-          with values equal to 1 where they should be interpolated 
+          with values equal to 1 where they should be interpolated
           over.  If a float, pixels with that value will be replaced
 
     """
-    from scipy import ndimage as nd
     ys, xs = data.shape
     if isinstance(mask, numpy.ndarray):
-       mask = (mask==0)
-       for i in range(ys):
+        mask = (mask == 0)
+        for i in range(ys):
             x = numpy.arange(xs)
-            rdata = data[i,:]
-            rmask = mask[i,:]
+            rdata = data[i, :]
+            rmask = mask[i, :]
             rmask = nd.minimum_filter(rmask, size=3)
             rdata = numpy.interp(x, x[rmask], rdata[rmask])
-            data[i, rmask==0] = rdata[rmask==0]
+            data[i, rmask == 0] = rdata[rmask == 0]
     else:
-       mask = (data!=mask)
-       for i in range(ys):
+        mask = (data != mask)
+        for i in range(ys):
             x = numpy.arange(xs)
-            rdata = data[i,:]
-            rmask = mask[i,:]
+            rdata = data[i, :]
+            rmask = mask[i, :]
             rmask = nd.minimum_filter(rmask, size=3)
             rdata = numpy.interp(x, x[rmask], rdata[rmask])
-            data[i, rmask==0] = rdata[rmask==0]
+            data[i, rmask == 0] = rdata[rmask == 0]
 
-       
     return data
 
 
