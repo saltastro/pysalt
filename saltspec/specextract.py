@@ -118,7 +118,8 @@ def extract (hdu, ext=1, method='normal', section=[], minsize=3.0, thresh=3.0, c
        warr=w0+dw*xarr
 
        #convert from air to vacuum
-       if convert:  warr=Spectrum.air2vac(warr)
+       if convert:  
+          warr=Spectrum.air2vac(warr)
 
   
        #set up the sections in case of findobj
