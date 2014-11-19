@@ -170,6 +170,10 @@ def checkforbias(sdb, k, instr='rss'):
        caltable='SalticamNightlyCalibration' 
        logic='SalticamCalibrationType_Id=1'
        fitstable='FitsHeaderSalticam'
+    elif instr=='hrs':
+       caltable='HrsNightlyCalibration' 
+       logic='HrsCalibrationType_Id=3'
+       fitstable='FitsHeaderHrs'
  
  
     #get all the bias requests
