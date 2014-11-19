@@ -107,7 +107,7 @@ def cleandata(filename, iminfo=None, prodir='.', interp='linear', cleanup=True, 
    biasfile=outpath+'bxp'+infile
    saltred.saltmosaic(images=biasfile,
                    outimages='',outpref=outpath+'m',geomfile=geomfile,
-                   interp=interp,cleanup=cleanup,clobber=clobber,logfile=logfile,
+                   interp=interp,cleanup=cleanup,fill=True, clobber=clobber,logfile=logfile,
                    verbose=verbose, status=status)
    profile=outpath+'mbxp'+infile
 
