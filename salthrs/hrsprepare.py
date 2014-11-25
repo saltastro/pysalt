@@ -76,9 +76,9 @@ def prepare(hdu):
 
     #get key parameters
     try:
-        nccd=saltkey.get('CCDAMPS', hdu[0])
+        nccd=saltkey.get('CCDNAMPS', hdu[0])
     except:
-        nccd=saltkey.get('NAMPS', hdu[0])
+        nccd=saltkey.get('CCDAMPS', hdu[0])
     xbin, ybin=saltkey.ccdbin(hdu[0])
     gain=saltkey.get('GAIN', hdu[0])
     gain=gain.split()
