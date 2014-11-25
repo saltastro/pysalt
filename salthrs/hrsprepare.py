@@ -75,7 +75,10 @@ def prepare(hdu):
        raise SaltError('%s is not an HRS detector' % detnam)
 
     #get key parameters
-    nccd=saltkey.get('CCDAMPS', hdu[0])
+    try:
+        nccd=saltkey.get('CCDAMPS', hdu[0])
+    except:
+        nccd=saltkey.get('NAMPS', hdu[0])
     xbin, ybin=saltkey.ccdbin(hdu[0])
     gain=saltkey.get('GAIN', hdu[0])
     gain=gain.split()
