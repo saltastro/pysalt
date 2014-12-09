@@ -1,39 +1,10 @@
 #!/usr/bin/env python
-################################# LICENSE ##################################
 # Copyright (c) 2009, South African Astronomical Observatory (SAAO)        #
 # All rights reserved.                                                     #
-#                                                                          #
-# Redistribution and use in source and binary forms, with or without       #
-# modification, are permitted provided that the following conditions       #
-# are met:                                                                 #
-#                                                                          #
-#     * Redistributions of source code must retain the above copyright     #
-#       notice, this list of conditions and the following disclaimer.      #
-#     * Redistributions in binary form must reproduce the above copyright  #
-#       notice, this list of conditions and the following disclaimer       #
-#       in the documentation and/or other materials provided with the      #
-#       distribution.                                                      #
-#     * Neither the name of the South African Astronomical Observatory     #
-#       (SAAO) nor the names of its contributors may be used to endorse    #
-#       or promote products derived from this software without specific    #
-#       prior written permission.                                          #
-#                                                                          #
-# THIS SOFTWARE IS PROVIDED BY THE SAAO ''AS IS'' AND ANY EXPRESS OR       #
-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED           #
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE   #
-# DISCLAIMED. IN NO EVENT SHALL THE SAAO BE LIABLE FOR ANY                 #
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL       #
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS  #
-# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)    #
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,      #
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN #
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE          #
-# POSSIBILITY OF SUCH DAMAGE.                                              #
-############################################################################
 """
 SPECSENS calulates the calibration curve given an observation, a standard star,
-and the extinction curve for the site.  The task assumes a 1-D spectrum that 
-has already been sensed from the original observations.  
+and the extinction curve for the site.  The task assumes a 1-D spectrum that
+has already been sensed from the original observations.
 
 Author                 Version      Date
 -----------------------------------------------
@@ -128,7 +99,7 @@ def specsens(specfile, outfile, stdfile, extfile, airmass=None, exptime=None,
         from sklearn.gaussian_process import GaussianProcess
         # Instanciate a Gaussian Process model
 
-        dy = obs_spectra.var[mask]**0.5
+        dy = obs_spectra.var[mask] ** 0.5
         dy /= obs_spectra.flux[mask] / cal_spectra.flux[mask]
         y = cal_spectra.flux[mask]
         gp = GaussianProcess(corr='squared_exponential', theta0=1e-2,
@@ -143,27 +114,17 @@ def specsens(specfile, outfile, stdfile, extfile, airmass=None, exptime=None,
 
         cal_spectra.flux = y_pred
 
-#        print 'plotting...'
-#        figure()
-#        plot(cal_spectra.wavelength, cal_spectra.flux * obs_spectra.flux)
-#        plot(std_spectra.wavelength, std_spectra.flux)
-#        plot(obs_spectra.wavelength, obs_spectra.flux*cal_spectra.flux.mean()/obs_spectra.flux.mean())
-#        plot(std_spectra.wavelength, std_spectra.flux*cal_spectra.flux.mean()/std_spectra.flux.mean())
-#        plot(cal_spectra.wavelength, fit(cal_spectra.wavelength))
-#        plot(cal_spectra.wavelength, test_spectra_flux)
-#        plot(cal_spectra.wavelength, test_spectra_flux * std_spectra.flux / cal_spectra.flux)
-#        plot(std_spectra.wavelength, std_spectra.flux )
-#        show()
-
         # write the spectra out
         st.writespectrum(cal_spectra, outfile, ftype='ascii')
 
 
 def sensfunc(obs_spectra, std_spectra, ext_spectra, airmass, exptime):
-    """Given an observe spectra, calculate the calibration curve for the spectra.  All data is interpolated to the 
-       binning of the obs_spectra.  The calibrated spectra is then calculated from 
+    """Given an observe spectra, calculate the calibration curve for the
+       spectra.  All data is interpolated to the binning of the obs_spectra.
+       The calibrated spectra is then calculated from
        C =  F_obs/ F_std / 10**(-0.4*A*E)/T/dW
-       where F_obs is the observed flux from the source,  F_std  is the standard spectra, A is the airmass, E is the
+       where F_obs is the observed flux from the source,  F_std  is the
+       standard spectra, A is the airmass, E is the
        extinction in mags, T is the exposure time and dW is the bandpass
 
     Parameters
