@@ -1,69 +1,66 @@
 FC=gfortran
-FC_FLAGS=-lm -L/usr/X11R6/lib -lX11 -L/opt/local/lib -lcpgplot -lpgplot -lpng -lz -lcfitsio
-F2PY=f2py-2.7 -c --f77exec=/opt/local/bin/gfortran-mp-4.6 --f90exec=/opt/local/bin/gfortran-mp-4.6
+FC_FLAGS=-lX11 -lpgplot /usr/lib/libcfitsio.a
+#FC_FLAGS=-lm -L/usr/X11R6/lib -lX11 -L/sw/lib -laquaterm -L/sw/lib/pgplot -lcpgplot -lpgplot -L/sw/lib -lpng -lz /sw/lib/libcfitsio.a
 
 all: RSSPrep masking calring calibrate ringfilter nightring calprofile skyring eprofile
 
-clean:
-	rm -f *.o *.so *~
-
 RSSPrep: RSSPrep_wrapper 
-	${F2PY} ${FC_FLAGS} RSSPrep_wrapper.pyf RSSPrep.f biwgt.f polyfit.f gaussj.f getpfp.f 
+	f2py -c --fcompiler=${FC} ${FC_FLAGS} RSSPrep_wrapper.pyf RSSPrep.f biwgt.f polyfit.f gaussj.f getpfp.f 
 
 masking: masking_wrapper masking.f biwgt.f getpfp.f deletefile.f
-	${F2PY} ${FC_FLAGS} masking_wrapper.pyf masking.f biwgt.f getpfp.f deletefile.f
+	f2py -c --fcompiler=${FC} ${FC_FLAGS} masking_wrapper.pyf masking.f biwgt.f getpfp.f deletefile.f
 
 calring: calring_wrapper
-	${F2PY} ${FC_FLAGS} calring_wrapper.pyf calring.f ringcen.f ringpro.f evoigt.f biwgt.f center.f lowpass.f mrqfit.f gaussj.f realft.f four1.f getpfp.f
+	f2py -c --fcompiler=${FC} ${FC_FLAGS} calring_wrapper.pyf calring.f ringcen.f ringpro.f evoigt.f biwgt.f center.f lowpass.f mrqfit.f gaussj.f realft.f four1.f getpfp.f
 
 calibrate: calibrate_wrapper
-	${F2PY} ${FC_FLAGS}  calibrate_wrapper.pyf calibrate.f mrqfit2d.f gaussj.f
+	f2py -c --fcompiler=${FC} ${FC_FLAGS}  calibrate_wrapper.pyf calibrate.f mrqfit2d.f gaussj.f
 
 ringfilter: ringfilter_wrapper
-	${F2PY} ${FC_FLAGS} ringfilter_wrapper.pyf ringfilter.f biwgt.f center.f realft.f four1.f evoigt.f lowpass.f mrqfit.f gaussj.f getpfp.f
+	f2py -c --fcompiler=${FC} ${FC_FLAGS} ringfilter_wrapper.pyf ringfilter.f biwgt.f center.f realft.f four1.f evoigt.f lowpass.f mrqfit.f gaussj.f getpfp.f
 
 nightring: nightring_wrapper
-	${F2PY} ${FC_FLAGS} nightring_wrapper.pyf nightring.f biwgt.f lowpass.f center.f evoigt.f getpfp.f realft.f four1.f mrqfit.f gaussj.f 
+	f2py -c --fcompiler=${FC} ${FC_FLAGS} nightring_wrapper.pyf nightring.f biwgt.f lowpass.f center.f evoigt.f getpfp.f realft.f four1.f mrqfit.f gaussj.f 
 
 calprofile: calprofile_wrapper
-	${F2PY} ${FC_FLAGS} calprofile_wrapper.pyf calprofile.f ringcen.f ringpro.f biwgt.f lowpass.f center.f evoigt.f  getpfp.f realft.f four1.f mrqfit.f gaussj.f
+	f2py -c --fcompiler=${FC} ${FC_FLAGS} calprofile_wrapper.pyf calprofile.f ringcen.f ringpro.f biwgt.f lowpass.f center.f evoigt.f  getpfp.f realft.f four1.f mrqfit.f gaussj.f
 
 eprofile: eprofile_wrapper
-	${F2PY} ${FC_FLAGS} eprofile_wrapper.pyf eprofile.f evoigt.f mrqfit.f gaussj.f 
+	f2py -c --fcompiler=${FC} ${FC_FLAGS} eprofile_wrapper.pyf eprofile.f evoigt.f mrqfit.f gaussj.f 
 
 skyring: skyring_wrapper
-	${F2PY} ${FC_FLAGS} skyring_wrapper.pyf skyring.f realft.f four1.f spline.f deletefile.f
+	f2py -c --fcompiler=${FC} ${FC_FLAGS} skyring_wrapper.pyf skyring.f realft.f four1.f spline.f deletefile.f
 
 #set up the wrappers
 
 RSSPrep_wrapper: RSSPrep.f biwgt.f polyfit.f gaussj.f getpfp.f
-	f2py-2.7 -m RSSPrep_wrapper -h RSSPrep_wrapper.pyf --overwrite-signature RSSPrep.f biwgt.f polyfit.f gaussj.f getpfp.f
+	f2py -m RSSPrep_wrapper -h RSSPrep_wrapper.pyf --overwrite-signature RSSPrep.f biwgt.f polyfit.f gaussj.f getpfp.f
 
 masking_wrapper: masking.f biwgt.f getpfp.f deletefile.f
-	f2py-2.7 -m masking_wrapper -h masking_wrapper.pyf --overwrite-signature masking.f biwgt.f getpfp.f deletefile.f
+	f2py -m masking_wrapper -h masking_wrapper.pyf --overwrite-signature masking.f biwgt.f getpfp.f deletefile.f
 
 calring_wrapper: calring.f ringcen.f ringpro.f evoigt.f biwgt.f center.f lowpass.f mrqfit.f gaussj.f realft.f four1.f getpfp.f
-	f2py-2.7 -m calring_wrapper -h calring_wrapper.pyf --overwrite-signature calring.f ringcen.f ringpro.f evoigt.f biwgt.f center.f lowpass.f mrqfit.f gaussj.f realft.f four1.f getpfp.f
+	f2py -m calring_wrapper -h calring_wrapper.pyf --overwrite-signature calring.f ringcen.f ringpro.f evoigt.f biwgt.f center.f lowpass.f mrqfit.f gaussj.f realft.f four1.f getpfp.f
 
 calibrate_wrapper:  calibrate.f mrqfit2d.f gaussj.f
-	f2py-2.7 -m calibrate_wrapper -h calibrate_wrapper.pyf --overwrite-signature  calibrate.f mrqfit2d.f gaussj.f
+	f2py -m calibrate_wrapper -h calibrate_wrapper.pyf --overwrite-signature  calibrate.f mrqfit2d.f gaussj.f
 
 ringfilter_wrapper: ringfilter.f biwgt.f center.f realft.f four1.f evoigt.f lowpass.f mrqfit.f gaussj.f getpfp.f
-	f2py-2.7 -m ringfilter_wrapper -h ringfilter_wrapper.pyf --overwrite-signature ringfilter.f biwgt.f center.f realft.f four1.f evoigt.f lowpass.f mrqfit.f gaussj.f getpfp.f
+	f2py -m ringfilter_wrapper -h ringfilter_wrapper.pyf --overwrite-signature ringfilter.f biwgt.f center.f realft.f four1.f evoigt.f lowpass.f mrqfit.f gaussj.f getpfp.f
 
 nightring_wrapper: ringfilter.f biwgt.f center.f realft.f four1.f evoigt.f lowpass.f mrqfit.f gaussj.f getpfp.f
-	f2py-2.7 -m nightring_wrapper -h nightring_wrapper.pyf --overwrite-signature nightring.f biwgt.f lowpass.f center.f evoigt.f getpfp.f realft.f four1.f mrqfit.f gaussj.f
+	f2py -m nightring_wrapper -h nightring_wrapper.pyf --overwrite-signature nightring.f biwgt.f lowpass.f center.f evoigt.f getpfp.f realft.f four1.f mrqfit.f gaussj.f
 
 calprofile_wrapper: calprofile.f ringcen.f ringpro.f biwgt.f lowpass.f center.f evoigt.f  getpfp.f realft.f four1.f mrqfit.f gaussj.f
-	f2py-2.7 -m calprofile_wrapper -h calprofile_wrapper.pyf --overwrite-signature calprofile.f ringcen.f ringpro.f biwgt.f lowpass.f center.f evoigt.f  getpfp.f realft.f four1.f mrqfit.f gaussj.f
+	f2py -m calprofile_wrapper -h calprofile_wrapper.pyf --overwrite-signature calprofile.f ringcen.f ringpro.f biwgt.f lowpass.f center.f evoigt.f  getpfp.f realft.f four1.f mrqfit.f gaussj.f
 
 
 eprofile_wrapper: eprofile.f evoigt.f mrqfit.f gaussj.f
-	f2py-2.7 -m eprofile_wrapper -h eprofile_wrapper.pyf --overwrite-signature eprofile.f evoigt.f mrqfit.f gaussj.f
+	f2py -m eprofile_wrapper -h eprofile_wrapper.pyf --overwrite-signature eprofile.f evoigt.f mrqfit.f gaussj.f
 
 
 skyring_wrapper: skyring.f realft.f four1.f spline.f deletefile.f
-	f2py-2.7 -m skyring_wrapper -h skyring_wrapper.pyf --overwrite-signature skyring.f realft.f four1.f spline.f deletefile.f
+	f2py -m skyring_wrapper -h skyring_wrapper.pyf --overwrite-signature skyring.f realft.f four1.f spline.f deletefile.f
 
 
 #evelocity_wrapper
