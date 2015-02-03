@@ -45,7 +45,7 @@ debug = True
 # core routine
 
 def saltmosaic(images, outimages, outpref, geomfile, interp='linear',
-               geotran=True, cleanup=True, fill=False, clobber=False,
+               geotran=True, fill=False, cleanup=True, clobber=False,
                logfile=None, verbose=True):
 
     # Start the logging
