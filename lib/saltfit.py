@@ -303,11 +303,13 @@ class interfit(curfit):
                 # calculate the median absolute deviation
                 # and normalize it to 50% confidence level (0.6745 sigma for a gaussian)
                 s = np.median(abs(r - np.median(r))) / 0.6745
-                biweight = lambda x: ((abs(x) < 1.0) * (1.0 - x ** 2) ** 2.0) ** 0.5
+                biweight = lambda x: ((abs(x) < self.thresh) * (1.0 - x ** 2) ** 2.0) ** 0.5
+                print self.thresh
                 weights = biweight(r / s)
                 # We could update p0 to p1 but I would worry that could put us in a
                 # strange part of chi^2 space.
 
+            self.mask = (weights>0)
             self.set_coef(self.results[0])
 
 

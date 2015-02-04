@@ -1050,17 +1050,16 @@ class ArcDisplay(QtGui.QWidget):
             self.ws = st.findfit(
                 np.array(
                     self.xp), np.array(
-                    self.wp), ws=self.ws)
+                    self.wp), ws=self.ws, thresh=self.ws.thresh)
         except SALTSpecError as e:
             self.log.warning(e)
             return
+
         del_list = []
-        if len(self.ws.func.x) != len(self.xp):
-            for x in self.xp:
-                if x not in self.ws.func.x:
-                    del_list.append(x)
-            for x in del_list:
-                self.deletepoints(x, save=True)
+        for i in range(len(self.ws.func.mask)):
+            if self.ws.func.mask[i] == 0:
+                self.deletepoints(self.ws.func.x[i], w=self.ws.func.y[i],
+                                  save=True)
         self.rms = self.ws.sigma(self.ws.x_arr, self.ws.w_arr)
         self.redraw_canvas()
 
@@ -1105,7 +1104,7 @@ class ArcDisplay(QtGui.QWidget):
             self.xp.append(x)
             self.wp.append(w)
 
-    def deletepoints(self, x, y=None, save=False):
+    def deletepoints(self, x, y=None, w=None, save=False):
         """ Delete points from the line list
         """
         dist = (np.array(self.xp) - x) ** 2
@@ -1117,6 +1116,9 @@ class ArcDisplay(QtGui.QWidget):
             dist += norm * (self.wp - w - y) ** 2
             # print y, norm, dist.min()
             # print y, dist.min()
+        elif w is not None:
+            norm = self.xarr.max() / abs(self.wp - w).max()
+            dist += norm * (self.wp - w)**2
         in_minw = dist.argmin()
 
         if save:
