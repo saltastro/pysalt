@@ -49,7 +49,7 @@ autoidentify_options = ['Zeropoint', 'Matchlines', 'MatchZero']
 def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',
                  rstep=1, istart=None, nrows=1, res=2, dres=0.1, dsigma=5,
                  sigma=5, smooth=0, niter=5, mdiff=20, dc=20, ndstep=20, farr=None,
-                 oneline=False, log=None, verbose=True):
+                 subback=0, oneline=False, log=None, verbose=True):
     """Automatically find the wavlength solution for the entire image.  The following
        methods are used:
 
