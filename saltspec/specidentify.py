@@ -67,8 +67,8 @@ debug = True
 def specidentify(images, linelist, outfile, guesstype='rss', guessfile='',
                  automethod='Matchlines', function='poly', order=3, rstep=100,
                  rstart='middlerow', mdiff=5, thresh=3, niter=5, smooth=0,
-                 inter=True, startext=0,  clobber=False, textcolor='black',
-                 logfile='salt.log', verbose=True):
+                 subback=0, inter=True, startext=0,  clobber=False, 
+                 textcolor='black', logfile='salt.log', verbose=True):
 
     with logging(logfile, debug) as log:
 
@@ -220,7 +220,7 @@ def specidentify(images, linelist, outfile, guesstype='rss', guessfile='',
                     ImageSolution = identify(data, slines, sfluxes, xarr, ystart, ws=ws, function=function,
                                              order=order, rstep=rstep,  mdiff=mdiff, thresh=thresh, niter=niter,
                                              method=automethod, res=res, dres=dres, smooth=smooth, inter=inter, filename=img,
-                                             textcolor=textcolor, log=log, verbose=verbose)
+                                             subback=0, textcolor=textcolor, log=log, verbose=verbose)
 
                     if outfile and len(ImageSolution):
                         writeIS(ImageSolution, outfile, dateobs=dateobs, utctime=utctime, instrume=instrume,
@@ -233,7 +233,7 @@ def specidentify(images, linelist, outfile, guesstype='rss', guessfile='',
 def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', order=3,
              rstep=1, nrows=1, mdiff=5, thresh=3, niter=5, dc=3, ndstep=50, dsigma=5,
              method='Zeropoint', res=2, dres=0.2, filename=None, smooth=0, inter=True,
-             textcolor='green', log=None, verbose=True):
+             subback=0, textcolor='green', log=None, verbose=True):
     """For a given image, find the solution for each row in the file.  Use the appropriate first guess and
        guess type along with the appropriate function and order for the fit.
 
@@ -257,6 +257,7 @@ def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', orde
        method--method for automatic wavelength determination
        dsigma--detection threshhold for the lines
        rstart--first line to extract
+       subback--order for function to subtract off background
        inter--run in interactive mode
        textcolor--color for wavelengths
        verbose--print out the results
@@ -276,12 +277,12 @@ def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', orde
                                       function=function, order=order, sigma=thresh, niter=niter,
                                       res=res, dres=dres, dc=dc, ndstep=ndstep, istart=istart,
                                       method=method, smooth=smooth, filename=filename,
-                                      textcolor=textcolor, log=log, verbose=True)
+                                      subback=subback, textcolor=textcolor, log=log, verbose=True)
     else:
         ImageSolution = AutoIdentify(xarr, data, slines, sfluxes, ws,
                                      rstep=rstep, method=method, istart=istart, nrows=nrows, mdiff=mdiff,
                                      dsigma=dsigma, res=res, dres=2 * dres, dc=dc, ndstep=ndstep, sigma=thresh,
-                                     smooth=smooth, niter=niter, log=log, verbose=verbose)
+                                     subback=subback, smooth=smooth, niter=niter, log=log, verbose=verbose)
 
     return ImageSolution
 

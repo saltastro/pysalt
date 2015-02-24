@@ -220,7 +220,7 @@ def flatspectrum(xarr, yarr, mode='mean', thresh=3, iter=5, order=3):
     elif mode == 'poly':
         # calculate the statistics and mask all of the mask with values above
         # these
-        it = interfit(xarr, yarr, function='poly', order=2)
+        it = interfit(xarr, yarr, function='poly', order=order)
         it.interfit()
         sarr = yarr - it(xarr)
     elif mode == 'mask':

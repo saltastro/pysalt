@@ -48,7 +48,6 @@ from salterror import SaltIOError
 
 from PySpectrograph.Spectra import Spectrum, apext
 
-
 import WavelengthSolution
 import spectools as st
 import AutoIdentify as ai
@@ -62,7 +61,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
     def __init__(self, xarr, specarr, slines, sfluxes, ws, hmin=150, wmin=400, mdiff=20,
                  filename=None, res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, smooth=0, niter=5, istart=None,
                  nrows=1, rstep=100, method='Zeropoint', ivar=None, cmap='gray', scale='zscale', contrast=1.0,
-                 textcolor='green', log=None, verbose=True):
+                 subback=0, textcolor='green', log=None, verbose=True):
         """Default constructor."""
 
         # set up the variables
@@ -93,6 +92,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         self.scale = scale
         self.contrast = contrast
         self.smooth = smooth
+        self.subback = subback
         self.filename = filename
         self.ImageSolution = {}
         self.textcolor = textcolor
@@ -114,11 +114,11 @@ class InterIdentifyWindow(QtGui.QMainWindow):
 
         # set up the arc page
         self.farr = apext.makeflat(self.specarr, self.y1, self.y2)
+        self.farr = st.flatspectrum(xarr, self.farr, order=self.subback)
 
         # set up variables
         self.arcdisplay = ArcDisplay(xarr, self.farr, slines, sfluxes, self.ws, specarr=self.specarr,
-                                     res=self.res, dres=self.dres, dc=self.dc, ndstep=self.ndstep, xp=[
-                                     ], wp=[],
+                                     res=self.res, dres=self.dres, dc=self.dc, ndstep=self.ndstep, xp=[], wp=[],
                                      method=self.method, smooth=self.smooth, niter=self.niter, mdiff=self.mdiff,
                                      sigma=self.sigma, textcolor=self.textcolor, log=self.log, verbose=self.verbose)
         self.arcPage = arcWidget(
@@ -176,6 +176,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         self.y1 = y1
         self.y2 = y2
         self.farr = apext.makeflat(self.specarr, self.y1, self.y2)
+        self.farr = st.flatspectrum(xarr, self.farr, order=self.subback)
         # set up variables
         self.ws = self.newWS(0.5 * (self.y1 + self.y2))
         self.arcdisplay = ArcDisplay(
@@ -1215,12 +1216,12 @@ class ArcDisplay(QtGui.QWidget):
 def InterIdentify(xarr, specarr, slines, sfluxes, ws, mdiff=20, rstep=1, filename=None,
                   function='poly', order=3, sigma=3, smooth=0, niter=5, res=2, dres=0.1, dc=20, ndstep=20,
                   istart=None, method='Zeropoint', scale='zscale', cmap='gray', contrast=1.0,
-                  textcolor='green', log=None, verbose=True):
+                  subback=0, textcolor='green', log=None, verbose=True):
 
     # Create GUI
     App = QtGui.QApplication(sys.argv)
     aw = InterIdentifyWindow(xarr, specarr, slines, sfluxes, ws, rstep=rstep, mdiff=mdiff, sigma=sigma, niter=niter,
-                             res=res, dres=dres, dc=dc, ndstep=ndstep, istart=istart, method=method, smooth=smooth,
+                             res=res, dres=dres, dc=dc, ndstep=ndstep, istart=istart, method=method, smooth=smooth,subback=subback,
                              cmap=cmap, scale=scale, contrast=contrast, filename=filename, textcolor=textcolor, log=log)
     aw.show()
     # Start application event loop
