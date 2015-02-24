@@ -86,7 +86,7 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',
             wdiff = mdiff
         wdiff = 20
         ImageSolution = runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=True, oneline=oneline,
-                                    rstep=rstep, istart=istart, nrows=nrows, res=res, smooth=smooth, dres=dres, farr=farr,
+                                    rstep=rstep, istart=istart, nrows=nrows, res=res, subback=subback, smooth=smooth, dres=dres, farr=farr,
                                     dsigma=dsigma, dniter=niter, log=log, verbose=verbose, mdiff=mdiff, wdiff=wdiff, sigma=sigma, niter=niter)
 
     # first fit a zeropoint, then match the lines, and then
@@ -94,16 +94,16 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',
     if method == 'MatchZero':
         func = st.findzeropoint
         ws = runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=False, oneline=True,
-                         rstep=rstep, istart=istart, nrows=nrows, res=res, smooth=smooth, dres=dres, farr=farr,
+                         rstep=rstep, istart=istart, nrows=nrows, res=res, subback=subback, smooth=smooth, dres=dres, farr=farr,
                          dsigma=dsigma, dniter=niter, log=log, verbose=verbose, dc=10, ndstep=20)
 
         func = st.findwavelengthsolution
         ws = runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=True, oneline=True,
-                         rstep=rstep, istart=istart, nrows=nrows, res=res, smooth=smooth, dres=dres, farr=farr,
+                         rstep=rstep, istart=istart, nrows=nrows, res=res, subback=subback, smooth=smooth, dres=dres, farr=farr,
                          dsigma=dsigma, dniter=niter, log=log, verbose=verbose, sigma=sigma, niter=niter)
         func = st.findzeropoint
         ImageSolution = runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=False, oneline=oneline,
-                                    rstep=rstep, istart=istart, nrows=nrows, res=res, smooth=smooth, dres=dres, farr=farr,
+                                    rstep=rstep, istart=istart, nrows=nrows, res=res, subback=subback, smooth=smooth, dres=dres, farr=farr,
                                     dsigma=dsigma, dniter=niter, log=log, verbose=verbose, dc=dc, ndstep=ndstep)
 
     if method == 'FullXcor':
@@ -113,7 +113,7 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',
         dcoef = ws.coef * 0.1
         dcoef[0] = dc
         ImageSolution = runsolution(xarr, specarr, slines, sfluxes, ws, func, fline=True, oneline=oneline,
-                                    rstep=rstep, istart=istart, nrows=nrows, res=res, smooth=smooth, dres=dres, farr=farr,
+                                    rstep=rstep, istart=istart, nrows=nrows, res=res, subback=subback, smooth=smooth, dres=dres, farr=farr,
                                     dsigma=dsigma, dniter=niter, log=log, verbose=verbose, dcoef=dcoef, ndstep=ndstep)
 
     return ImageSolution
@@ -121,7 +121,7 @@ def AutoIdentify(xarr, specarr, slines, sfluxes, ws, method='Zeropoint',
 
 def runsolution(xarr, specarr, slines, sfluxes, ws, func, ivar=None,
                 fline=True, oneline=False, farr=None, rstep=20,
-                istart=None, nrows=1, dsigma=5, dniter=5, smooth=0, res=2.0,
+                istart=None, nrows=1, dsigma=5, dniter=5, subback=0, smooth=0, res=2.0,
                 dres=0.1, log=None, verbose=True, **kwargs):
     """Starting in the middle of the image, it will determine the solution
        by working its way out to either edge and compiling all the results into
@@ -152,7 +152,7 @@ def runsolution(xarr, specarr, slines, sfluxes, ws, func, ivar=None,
     if farr is None:
         specext = apext.apext(xarr, specarr, ivar=ivar)
         farr = apext.makeflat(specarr, istart, istart + nrows)
-        farr = st.flatspectrum(xarr, farr, mode='poly', order=2)
+        farr = st.flatspectrum(xarr, farr, mode='poly', order=subback)
 
     # smooth the data
     if smooth > 0:
@@ -210,7 +210,7 @@ def runsolution(xarr, specarr, slines, sfluxes, ws, func, ivar=None,
 
             # continuum correct the spectrum if possible
             try:
-                farr = st.flatspectrum(xarr, farr, mode='poly', order=2)
+                farr = st.flatspectrum(xarr, farr, mode='poly', order=subback)
             except:
                 continue
 
