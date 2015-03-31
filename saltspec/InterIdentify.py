@@ -39,7 +39,7 @@ from pyraf.iraf import pysalt
 
 # Gui library imports
 from PyQt4 import QtGui, QtCore
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT
 
 # Salt imports
 import saltsafeio
@@ -114,7 +114,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
 
         # set up the arc page
         self.farr = apext.makeflat(self.specarr, self.y1, self.y2)
-        self.farr = st.flatspectrum(xarr, self.farr, order=self.subback)
+        self.farr = st.flatspectrum(self.xarr, self.farr, order=self.subback)
 
         # set up variables
         self.arcdisplay = ArcDisplay(xarr, self.farr, slines, sfluxes, self.ws, specarr=self.specarr,
@@ -176,7 +176,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         self.y1 = y1
         self.y2 = y2
         self.farr = apext.makeflat(self.specarr, self.y1, self.y2)
-        self.farr = st.flatspectrum(xarr, self.farr, order=self.subback)
+        self.farr = st.flatspectrum(self.xarr, self.farr, order=self.subback)
         # set up variables
         self.ws = self.newWS(0.5 * (self.y1 + self.y2))
         self.arcdisplay = ArcDisplay(
@@ -308,7 +308,7 @@ class imageWidget(QtGui.QWidget):
             [self.x1, self.x2], [self.y2, self.y2], ls='-', color='#00FF00')
 
         # Add navigation toolbars for each widget to enable zooming
-        self.toolbar = NavigationToolbar2QTAgg(self.imdisplay, self)
+        self.toolbar = NavigationToolbar2QT(self.imdisplay, self)
 
         # set up the information panel
         self.infopanel = QtGui.QWidget()
@@ -412,7 +412,7 @@ class arcWidget(QtGui.QWidget):
         self.arcdisplay.plotArc()
 
         # Add navigation toolbars for each widget to enable zooming
-        self.toolbar = NavigationToolbar2QTAgg(self.arcdisplay.arcfigure, self)
+        self.toolbar = NavigationToolbar2QT(self.arcdisplay.arcfigure, self)
 
         # set up the information panel
         self.infopanel = QtGui.QWidget()
@@ -582,7 +582,7 @@ class errWidget(QtGui.QWidget):
         self.arcdisplay.plotErr()
 
         # Add navigation toolbars for each widget to enable zooming
-        self.toolbar = NavigationToolbar2QTAgg(self.arcdisplay.errfigure, self)
+        self.toolbar = NavigationToolbar2QT(self.arcdisplay.errfigure, self)
 
         # set up the information panel
         self.infopanel = QtGui.QWidget()
