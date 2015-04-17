@@ -9,6 +9,7 @@ function,s,h,'polynomial','polynomial|legendre|chebyshev|model',,'Function to fi
 order,i,h,3,,,'Order of function'
 thresh,r,h,3,,,'Threshhold for rejection'
 niter,i,h,5,,,'Number of iterations for rejection'
+fitter,s,h,'gaussian','gaussian|iterfit',,'Method to fit function'
 clobber,b,h,no,,,'Overwrite exisitng files?'
 logfile,s,h,'salt.log',,,'Logfile'
 verbose,b,h,yes,,,'Verbose?'
