@@ -20,6 +20,7 @@ import numpy as np
 from scipy import interpolate as scint
 from scipy.ndimage.filters import gaussian_filter1d
 from scipy.optimize import minimize
+from scipy import signal
 from pyraf import iraf
 import saltsafeio as saltio
 from salterror import SaltError
@@ -64,12 +65,21 @@ def mcentroid(xarr, yarr, kern=default_kernal, xc=None, xdiff=None,
     """
     if xdiff < len(kern):
         xdiff = len(kern)
+
     if xc is not None and xdiff:
         mask = (abs(xarr - xc) < xdiff)
     else:
         mask = np.ones(len(xarr), dtype=bool)
 
-    return detectlines.centroid(xarr, yarr, kern=kern, mask=mask, mode=mode)
+    # convle the input array with the default kernal
+    warr = np.convolve(yarr[mask], kern, mode='same')
+
+    # interpolate the results
+    # imask is used to make sure we are only gettin the
+    # center pixels
+    imask = (abs(xarr[mask]-xarr[mask].mean()) < 3)
+    cx = np.interp(0, warr[imask], xarr[mask][imask])
+    return cx
 
 
 def interpolate(x, x_arr, y_arr, type='interp', order=3, left=None,
@@ -188,17 +198,15 @@ def detect_lines(w_arr, f_arr, sigma=3, bsigma=None, niter=5, mask=None,
         w_arr = w_arr[mask]
 
     # find all peaks
-    peaks = find_peaks(f_arr, sigma, niter, bsigma=bsigma)
-
+    xp = signal.find_peaks_cwt(f_arr, np.array([sigma]))
+    xp = np.array(xp)
+  
     # set the output values
-    xp = w_arr[peaks]
     if center:
         xdiff = int(0.5 * len(kern) + 1)
-        x_arr = np.arange(len(w_arr))
         xp = xp * 1.0
-        for i in range(len(peaks)):
-            cmask = (abs(x_arr - peaks[i]) < xdiff)
-            xp[i] = detectlines.centroid(w_arr, f_arr, kern=kern, mask=cmask)
+        for i in range(len(xp)):
+            xp[i] = mcentroid(w_arr, f_arr, kern=kern, xdiff=xdiff, xc=w_arr[xp[i]])
 
     return xp
 
