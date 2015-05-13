@@ -69,7 +69,17 @@ def mcentroid(xarr, yarr, kern=default_kernal, xc=None, xdiff=None,
     else:
         mask = np.ones(len(xarr), dtype=bool)
 
-    return detectlines.centroid(xarr, yarr, kern=kern, mask=mask, mode=mode)
+    # convle the input array with the default kernal
+    warr = np.convolve(yarr, kern, mode='same')
+
+    # interpolate the results
+    # imask is used to make sure we are only gettin the
+    # center pixels
+    imask = (xarr-xarr.mean() < 3)
+    cx = np.interp(0, warr[imask], xarr[imask])
+
+    return cx
+
 
 
 def interpolate(x, x_arr, y_arr, type='interp', order=3, left=None,
