@@ -302,6 +302,7 @@ def rectify(hdu, soldict, caltype='line', function='poly', order=3, inttype='int
             saltkey.new('CRVAL2', 0.0, 'WCS: Y Reference pixel', hdu[i])
             saltkey.new('CDELT1', 1.0, 'WCS: X pixel size', hdu[i])
             saltkey.new('CDELT2', 1.0, 'WCS: Y pixel size', hdu[i])
+            saltkey.new('DC-FLAG', 0, 'Dispesion Corrected image', hdu[i])
 
     return hdu
 
