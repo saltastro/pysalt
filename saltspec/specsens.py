@@ -49,17 +49,17 @@ debug = True
 
 def specsens(specfile, outfile, stdfile, extfile, airmass=None, exptime=None,
              stdzp=3.68e-20, function='polynomial', order=3, thresh=3, niter=5,
-             clobber=True, logfile='salt.log', verbose=True):
+             fitter='gaussian', clobber=True, logfile='salt.log', verbose=True):
 
     with logging(logfile, debug) as log:
 
         # read in the specfile and create a spectrum object
-        obs_spectra = st.readspectrum(specfile, error=True, ftype='ascii')
+        obs_spectra = st.readspectrum(specfile.strip(), error=True, ftype='ascii')
 
         # smooth the observed spectrum
         # read in the std file and convert from magnitudes to fnu
         # then convert it to fwave (ergs/s/cm2/A)
-        std_spectra = st.readspectrum(stdfile, error=False, ftype='ascii')
+        std_spectra = st.readspectrum(stdfile.strip(), error=False, ftype='ascii')
         std_spectra.flux = Spectrum.magtoflux(std_spectra.flux, stdzp)
         std_spectra.flux = Spectrum.fnutofwave(
             std_spectra.wavelength, std_spectra.flux)
@@ -69,7 +69,7 @@ def specsens(specfile, outfile, stdfile, extfile, airmass=None, exptime=None,
         # Smooth the observed spectrum to that bandpass
         obs_spectra.flux = st.boxcar_smooth(obs_spectra, std_bandpass)
         # read in the extinction file (leave in magnitudes)
-        ext_spectra = st.readspectrum(extfile, error=False, ftype='ascii')
+        ext_spectra = st.readspectrum(extfile.strip(), error=False, ftype='ascii')
 
         # determine the airmass if not specified
         if saltio.checkfornone(airmass) is None:
@@ -96,23 +96,29 @@ def specsens(specfile, outfile, stdfile, extfile, airmass=None, exptime=None,
 
         # now fit the data
         # Fit using a gaussian process.
-        from sklearn.gaussian_process import GaussianProcess
-        # Instanciate a Gaussian Process model
+        if fitter=='gaussian':
+            from sklearn.gaussian_process import GaussianProcess
+            #Instanciate a Gaussian Process model
 
-        dy = obs_spectra.var[mask] ** 0.5
-        dy /= obs_spectra.flux[mask] / cal_spectra.flux[mask]
-        y = cal_spectra.flux[mask]
-        gp = GaussianProcess(corr='squared_exponential', theta0=1e-2,
-                             thetaL=1e-4, thetaU=0.1, nugget=(dy / y) ** 2.0)
-        X = np.atleast_2d(cal_spectra.wavelength[mask]).T
-        # Fit to data using Maximum Likelihood Estimation of the parameters
-        gp.fit(X, y)
+            dy = obs_spectra.var[mask] ** 0.5
+            dy /= obs_spectra.flux[mask] / cal_spectra.flux[mask]
+            y = cal_spectra.flux[mask]
+            gp = GaussianProcess(corr='squared_exponential', theta0=1e-2,
+                                 thetaL=1e-4, thetaU=0.1, nugget=(dy / y) ** 2.0)
+            X = np.atleast_2d(cal_spectra.wavelength[mask]).T
+            # Fit to data using Maximum Likelihood Estimation of the parameters
+            gp.fit(X, y)
+    
+            x = np.atleast_2d(cal_spectra.wavelength).T
+            # Make the prediction on the meshed x-axis (ask for MSE as well)
+            y_pred = gp.predict(x)
 
-        x = np.atleast_2d(cal_spectra.wavelength).T
-        # Make the prediction on the meshed x-axis (ask for MSE as well)
-        y_pred = gp.predict(x)
+            cal_spectra.flux = y_pred
 
-        cal_spectra.flux = y_pred
+        else:
+            fit=interfit(cal_spectra.wavelength[mask], cal_spectra.flux[mask], function=function, order=order, thresh=thresh, niter=niter)
+            fit.interfit()
+            cal_spectra.flux=fit(cal_spectra.wavelength)
 
         # write the spectra out
         st.writespectrum(cal_spectra, outfile, ftype='ascii')

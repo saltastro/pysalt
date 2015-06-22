@@ -45,7 +45,7 @@ debug = True
 # core routine
 
 def saltmosaic(images, outimages, outpref, geomfile, interp='linear',
-               geotran=True, cleanup=True, fill=False, clobber=False,
+               geotran=True, fill=False, cleanup=True, clobber=False,
                logfile=None, verbose=True):
 
     # Start the logging
@@ -519,7 +519,7 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
     # fill in the gaps if requested
     if fill:
         if varframe:
-            outdata = fill_gaps(outdata, bpmdata)
+            outdata = fill_gaps(outdata, 0)
         else:
             outdata = fill_gaps(outdata, 0)
 
@@ -608,8 +608,9 @@ def fill_gaps(data, mask):
             rdata = data[i, :]
             rmask = mask[i, :]
             rmask = nd.minimum_filter(rmask, size=3)
-            rdata = numpy.interp(x, x[rmask], rdata[rmask])
-            data[i, rmask == 0] = rdata[rmask == 0]
+            if rmask.any() == True:
+                rdata = numpy.interp(x, x[rmask], rdata[rmask])
+                data[i, rmask == 0] = rdata[rmask == 0]
     else:
         mask = (data != mask)
         for i in range(ys):
@@ -617,8 +618,9 @@ def fill_gaps(data, mask):
             rdata = data[i, :]
             rmask = mask[i, :]
             rmask = nd.minimum_filter(rmask, size=3)
-            rdata = numpy.interp(x, x[rmask], rdata[rmask])
-            data[i, rmask == 0] = rdata[rmask == 0]
+            if rmask.any() == True:
+                rdata = numpy.interp(x, x[rmask], rdata[rmask])
+                data[i, rmask == 0] = rdata[rmask == 0]
 
     return data
 

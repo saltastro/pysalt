@@ -39,7 +39,7 @@ from pyraf.iraf import pysalt
 
 # Gui library imports
 from PyQt4 import QtGui, QtCore
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT
 
 # Salt imports
 import saltsafeio
@@ -47,7 +47,6 @@ from saltgui import ImageDisplay, MplCanvas
 from salterror import SaltIOError
 
 from PySpectrograph.Spectra import Spectrum, apext
-
 
 import WavelengthSolution
 import spectools as st
@@ -62,7 +61,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
     def __init__(self, xarr, specarr, slines, sfluxes, ws, hmin=150, wmin=400, mdiff=20,
                  filename=None, res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, smooth=0, niter=5, istart=None,
                  nrows=1, rstep=100, method='Zeropoint', ivar=None, cmap='gray', scale='zscale', contrast=1.0,
-                 textcolor='green', log=None, verbose=True):
+                 subback=0, textcolor='green', log=None, verbose=True):
         """Default constructor."""
 
         # set up the variables
@@ -93,6 +92,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         self.scale = scale
         self.contrast = contrast
         self.smooth = smooth
+        self.subback = subback
         self.filename = filename
         self.ImageSolution = {}
         self.textcolor = textcolor
@@ -114,11 +114,11 @@ class InterIdentifyWindow(QtGui.QMainWindow):
 
         # set up the arc page
         self.farr = apext.makeflat(self.specarr, self.y1, self.y2)
+        self.farr = st.flatspectrum(self.xarr, self.farr, order=self.subback)
 
         # set up variables
         self.arcdisplay = ArcDisplay(xarr, self.farr, slines, sfluxes, self.ws, specarr=self.specarr,
-                                     res=self.res, dres=self.dres, dc=self.dc, ndstep=self.ndstep, xp=[
-                                     ], wp=[],
+                                     res=self.res, dres=self.dres, dc=self.dc, ndstep=self.ndstep, xp=[], wp=[],
                                      method=self.method, smooth=self.smooth, niter=self.niter, mdiff=self.mdiff,
                                      sigma=self.sigma, textcolor=self.textcolor, log=self.log, verbose=self.verbose)
         self.arcPage = arcWidget(
@@ -176,6 +176,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         self.y1 = y1
         self.y2 = y2
         self.farr = apext.makeflat(self.specarr, self.y1, self.y2)
+        self.farr = st.flatspectrum(self.xarr, self.farr, order=self.subback)
         # set up variables
         self.ws = self.newWS(0.5 * (self.y1 + self.y2))
         self.arcdisplay = ArcDisplay(
@@ -307,7 +308,7 @@ class imageWidget(QtGui.QWidget):
             [self.x1, self.x2], [self.y2, self.y2], ls='-', color='#00FF00')
 
         # Add navigation toolbars for each widget to enable zooming
-        self.toolbar = NavigationToolbar2QTAgg(self.imdisplay, self)
+        self.toolbar = NavigationToolbar2QT(self.imdisplay, self)
 
         # set up the information panel
         self.infopanel = QtGui.QWidget()
@@ -411,7 +412,7 @@ class arcWidget(QtGui.QWidget):
         self.arcdisplay.plotArc()
 
         # Add navigation toolbars for each widget to enable zooming
-        self.toolbar = NavigationToolbar2QTAgg(self.arcdisplay.arcfigure, self)
+        self.toolbar = NavigationToolbar2QT(self.arcdisplay.arcfigure, self)
 
         # set up the information panel
         self.infopanel = QtGui.QWidget()
@@ -581,7 +582,7 @@ class errWidget(QtGui.QWidget):
         self.arcdisplay.plotErr()
 
         # Add navigation toolbars for each widget to enable zooming
-        self.toolbar = NavigationToolbar2QTAgg(self.arcdisplay.errfigure, self)
+        self.toolbar = NavigationToolbar2QT(self.arcdisplay.errfigure, self)
 
         # set up the information panel
         self.infopanel = QtGui.QWidget()
@@ -1050,17 +1051,16 @@ class ArcDisplay(QtGui.QWidget):
             self.ws = st.findfit(
                 np.array(
                     self.xp), np.array(
-                    self.wp), ws=self.ws)
+                    self.wp), ws=self.ws, thresh=self.ws.thresh)
         except SALTSpecError as e:
             self.log.warning(e)
             return
+
         del_list = []
-        if len(self.ws.func.x) != len(self.xp):
-            for x in self.xp:
-                if x not in self.ws.func.x:
-                    del_list.append(x)
-            for x in del_list:
-                self.deletepoints(x, save=True)
+        for i in range(len(self.ws.func.mask)):
+            if self.ws.func.mask[i] == 0:
+                self.deletepoints(self.ws.func.x[i], w=self.ws.func.y[i],
+                                  save=True)
         self.rms = self.ws.sigma(self.ws.x_arr, self.ws.w_arr)
         self.redraw_canvas()
 
@@ -1105,7 +1105,7 @@ class ArcDisplay(QtGui.QWidget):
             self.xp.append(x)
             self.wp.append(w)
 
-    def deletepoints(self, x, y=None, save=False):
+    def deletepoints(self, x, y=None, w=None, save=False):
         """ Delete points from the line list
         """
         dist = (np.array(self.xp) - x) ** 2
@@ -1117,6 +1117,9 @@ class ArcDisplay(QtGui.QWidget):
             dist += norm * (self.wp - w - y) ** 2
             # print y, norm, dist.min()
             # print y, dist.min()
+        elif w is not None:
+            norm = self.xarr.max() / abs(self.wp - w).max()
+            dist += norm * (self.wp - w)**2
         in_minw = dist.argmin()
 
         if save:
@@ -1213,12 +1216,12 @@ class ArcDisplay(QtGui.QWidget):
 def InterIdentify(xarr, specarr, slines, sfluxes, ws, mdiff=20, rstep=1, filename=None,
                   function='poly', order=3, sigma=3, smooth=0, niter=5, res=2, dres=0.1, dc=20, ndstep=20,
                   istart=None, method='Zeropoint', scale='zscale', cmap='gray', contrast=1.0,
-                  textcolor='green', log=None, verbose=True):
+                  subback=0, textcolor='green', log=None, verbose=True):
 
     # Create GUI
     App = QtGui.QApplication(sys.argv)
     aw = InterIdentifyWindow(xarr, specarr, slines, sfluxes, ws, rstep=rstep, mdiff=mdiff, sigma=sigma, niter=niter,
-                             res=res, dres=dres, dc=dc, ndstep=ndstep, istart=istart, method=method, smooth=smooth,
+                             res=res, dres=dres, dc=dc, ndstep=ndstep, istart=istart, method=method, smooth=smooth,subback=subback,
                              cmap=cmap, scale=scale, contrast=contrast, filename=filename, textcolor=textcolor, log=log)
     aw.show()
     # Start application event loop
