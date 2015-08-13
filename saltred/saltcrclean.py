@@ -192,6 +192,7 @@ def multicrclean(struct, crtype='fast', thresh=5, mbox=5, bbox=11, bthresh=3, fl
 
 
    results=[p.apply_async(cleancosmicrays, i) for i in task_list]
+   p.close()
 
 
    for i, hdu in enumerate(struct):
