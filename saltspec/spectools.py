@@ -959,5 +959,5 @@ def boxcar_smooth(spec, smoothwidth):
     # Conserve flux
     kernel /= kernel.sum()
     smoothed = spec.flux.copy()
-    smoothed[(kw / 2):-(kw / 2)] = np.convolve(spec.flux, kernel, mode='valid')
+    smoothed = np.convolve(spec.flux, kernel, mode='same')
     return smoothed
