@@ -54,7 +54,7 @@
 
 from __future__ import with_statement
 
-import os, string, sys, glob, pyfits, time
+import os, string, sys, glob, time
 from pyraf import iraf
 from pyraf.iraf import pysalt
 import numpy as np
