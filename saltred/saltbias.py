@@ -252,6 +252,16 @@ def bias(struct,subover=True,trim=True, subbias=False, bstruct=None,
                ofit=np.array(yarr)*0.0
                osigma=0.0
 
+           #if it hasn't been already, convert image to
+           #double format
+           struct[i].data = 1.0 * struct[i].data
+           try:
+               struct[i].header.remove('BZERO')
+               struct[i].header.remove('BSCALE')
+           except:
+               pass
+
+
            #subtract the overscan region
            for j in range(len(struct[i].data[0])):
                struct[i].data[y1:y2,j] -= ofit
