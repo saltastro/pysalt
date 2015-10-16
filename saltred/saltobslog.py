@@ -61,7 +61,8 @@
 from __future__ import with_statement
 
 from pyraf import iraf
-import os, glob, time, pyfits
+import os, glob, time 
+from astropy.io import fits
 
 import saltsafekey as saltkey
 import saltsafeio as saltio
@@ -118,13 +119,13 @@ def createobslogfits(headerDict):
    col=[]
    for k, f in zip(headerList, formatList):
        print k,f, headerDict[k]
-       col.append(pyfits.Column(name=k, format=f, array=headerDict[k]))
+       col.append(fits.Column(name=k, format=f, array=headerDict[k]))
    for k, f in zip(scamheaderList, scamformatList):
        print k,f, headerDict[k]
-       col.append(pyfits.Column(name=k, format=f, array=headerDict[k]))
+       col.append(fits.Column(name=k, format=f, array=headerDict[k]))
    for k, f in zip(rssheaderList, rssformatList):
        print k,f, headerDict[k]
-       col.append(pyfits.Column(name=k, format=f, array=headerDict[k]))
+       col.append(fits.Column(name=k, format=f, array=headerDict[k]))
    # construct FITS table from columns
    table = saltio.fitscolumns(col)
 

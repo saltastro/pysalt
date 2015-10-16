@@ -45,7 +45,8 @@ import numpy as np
 
 from pyraf import iraf
 from pyraf.iraf import pysalt
-import os, string, sys, glob, pyfits, time
+import os, string, sys, glob, time
+from astropy.io import fits
 
 import saltsafekey as saltkey
 import saltsafeio as saltio
@@ -200,15 +201,20 @@ def CreateVariance(inhdu, sci_ext, var_ext):
    header=inhdu.header.copy()
    header['EXTVER']=var_ext
    header.update('SCIEXT',sci_ext,comment='Extension of science frame')
-   return pyfits.ImageHDU(data=data, header=header, name='VAR')
+   return fits.ImageHDU(data=data, header=header, name='VAR')
 
 def createbadpixel(inhdu, bphdu, sci_ext, bp_ext):
    """Create the bad pixel hdu from a bad pixel hdu"""
    if bphdu is None:
        data=inhdu[sci_ext].data*0.0
    else:
-       infile=inhdu._HDUList__file.name
-       bpfile=bphdu._HDUList__file.name
+       try:
+           infile=inhdu._HDUList__file.name
+           bpfile=bphdu._HDUList__file.name
+       except:
+           infile=inhdu.filename
+           bpfile=bphdu.filename
+    
        
        if not saltkey.compare(inhdu[0], bphdu[0], 'INSTRUME', infile, bpfile):
            message = '%s and %s are not the same %s' % (infile,bpfile, 'INSTRUME')
@@ -222,7 +228,7 @@ def createbadpixel(inhdu, bphdu, sci_ext, bp_ext):
    header=inhdu[sci_ext].header.copy()
    header['EXTVER']=bp_ext
    header.update('SCIEXT',sci_ext,comment='Extension of science frame')
-   return pyfits.ImageHDU(data=data, header=header, name='BPM')
+   return fits.ImageHDU(data=data, header=header, name='BPM')
 
 
 

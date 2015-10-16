@@ -35,7 +35,7 @@ import sys
 import os
 
 # Pyraf modules
-import pyfits
+from astropy.io import fits
 from pyraf import iraf 
 from pyraf.iraf import pysalt
 
@@ -138,7 +138,7 @@ def saltheadtime(images,timetype,writetoheader,clobber,logfile,verbose,debug):
             #Open file to write new time to header, if desired.
             if writetoheader:
                 try:
-                    filetowrite=pyfits.open(file,mode='update')
+                    filetowrite=fits.open(file,mode='update')
                 except Exception, e:
                     print e
                 

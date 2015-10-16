@@ -2,32 +2,6 @@
 # Copyright (c) 2009, South African Astronomical Observatory (SAAO)        #
 # All rights reserved.                                                     #
 #                                                                          #
-# Redistribution and use in source and binary forms, with or without       #
-# modification, are permitted provided that the following conditions       #
-# are met:                                                                 #
-#                                                                          #
-#     * Redistributions of source code must retain the above copyright     #
-#       notice, this list of conditions and the following disclaimer.      #
-#     * Redistributions in binary form must reproduce the above copyright  #
-#       notice, this list of conditions and the following disclaimer       #
-#       in the documentation and/or other materials provided with the      #
-#       distribution.                                                      #
-#     * Neither the name of the South African Astronomical Observatory     #
-#       (SAAO) nor the names of its contributors may be used to endorse    #
-#       or promote products derived from this software without specific    #
-#       prior written permission.                                          #
-#                                                                          #
-# THIS SOFTWARE IS PROVIDED BY THE SAAO ''AS IS'' AND ANY EXPRESS OR       #
-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED           #
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE   #
-# DISCLAIMED. IN NO EVENT SHALL THE SAAO BE LIABLE FOR ANY                 #
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL       #
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS  #
-# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)    #
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,      #
-# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN #
-# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE          #
-# POSSIBILITY OF SUCH DAMAGE.                                              #
 ############################################################################
 
 """Module for handling IO in SALT software.
@@ -43,7 +17,7 @@ import smtplib
 from email.mime.text import MIMEText
 
 
-import pyfits
+from astropy.io import fits
 import numpy as np
 
 from salterror import SaltIOError
@@ -91,7 +65,7 @@ def get_exposure(files, number=1):
     """
 
     try:
-        f=pyfits.open(files[0])
+        f=fits.open(files[0])
 
         # Check if primary HDU contains data
         if f[0].data is None:
@@ -123,7 +97,7 @@ def build_exposure_index(files):
 
     for name in files:
         try:
-            f=pyfits.open(name)
+            f=fits.open(name)
 
             index+=[(name,number) for number in range(len(f)) if f[number].data is not None]
 
@@ -148,7 +122,7 @@ def get_indexed_exposure(files,index,number=1):
     """
 
     try:
-        f=pyfits.open(index[number-1][0])
+        f=fits.open(index[number-1][0])
 
         output=np.asarray(f[index[number-1][1]].data)
 
@@ -214,7 +188,7 @@ def tmpfile(path):
 def openfits(infile, mode='copyonwrite', memmap=False):
     """open FITS file"""
     try:
-        struct = pyfits.open(infile, mode=mode, memmap=memmap)
+        struct = fits.open(infile, mode=mode, memmap=memmap)
     except Exception, e:
         msg='Cannot open %s as a FITS file because %s'  % (infile, e)
         raise SaltIOError(msg)
@@ -224,7 +198,7 @@ def openfits(infile, mode='copyonwrite', memmap=False):
 def openupdatefits(infile):
     """open FITS file for updating"""
     try:
-        struct = pyfits.open(infile,mode='update')
+        struct = fits.open(infile,mode='update')
     except:
         raise SaltIOError('Cannot open '+infile+' as a FITS file')
         struct = None
@@ -289,7 +263,7 @@ def fitscolumns(columns):
     """construct FITS table columns"""
     table=''
     try:
-        table = pyfits.ColDefs(columns)
+        table = fits.ColDefs(columns)
     except:
         raise SaltIOError('Cannot define table columns')
     return table
@@ -298,7 +272,7 @@ def newfitstable(table,infile=None):
     """write FITS table"""
     struct=''
     try:
-        struct = pyfits.new_table(table)
+        struct = fits.new_table(table)
     except Exception, e:
         raise SaltIOError('Cannot create new table because %s' % e)
     return struct

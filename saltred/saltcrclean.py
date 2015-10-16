@@ -56,7 +56,7 @@ Updates
 from __future__ import with_statement
 
 
-import os, time, pyfits
+import os, time
 import numpy as np
 
 try:
