@@ -134,6 +134,11 @@ class Slitlets:
             self.update_slit_flags(i)
 
     def readascii(self, infile, form='short'):
+        #check the number of columns in the catalog
+        l = len(open(infile).readline().split())
+        print l
+        if l==10: form='long'
+      
 
         if form=='short':
             dnames=('name', 'targ_ra', 'targ_dec', 'equinox', 'mag', 'band', 'priority')
@@ -168,8 +173,12 @@ class Slitlets:
                    mtypes.append(self.dformat[i])
             #set up the default values
             default_list=[np.zeros(len(object_arr))]*len(mnames)
+            length=object_arr['length']
             object_arr=rfn.append_fields(object_arr, names=mnames, data=default_list, dtypes=mtypes,
                      fill_value=0, usemask=False)
+            object_arr['len1'] = 0.5 * length
+            object_arr['len2'] = 0.5 * length
+            print object_arr
         else:
             message='This format is not supported'
             raise SlitError(message)
