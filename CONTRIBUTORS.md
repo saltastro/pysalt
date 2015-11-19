@@ -24,9 +24,10 @@ E. Zietsman
 D. Gilbank
 P. Kotze
 C. Hettlage
-L. Bartlett
 A. Schroeder
 C. McCully
 A. Eigenbrot
+B. Miszalski
 L. Tyas
 E. Depagne
+L. Bartlett
