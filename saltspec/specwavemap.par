@@ -1,0 +1,13 @@
+images,s,a,'',,,'Input image'
+outimages,s,a,'',,,'Output images or list of output images'
+outpref,s,a,'x',,,'Prefix for output images'
+solfile,s,a,'',,,'File with wavelength solution'
+caltype,s,h,'line','line|rss',,'Calibration type for solution'
+function,s,h,'polynomial','polynomial',,'Function to fit'
+order,i,h,3,,,'Order of function'
+blank,r,h,0,,,'Value if outside the solution'
+nearest,b,h,no,,,'Use nearest solution'
+clobber,b,h,no,,,'Overwrite exisitng files?'
+logfile,s,h,'salt.log',,,'Logfile'
+verbose,b,h,yes,,,'Verbose?'
+mode,s,h,"al" 
