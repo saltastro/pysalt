@@ -51,8 +51,7 @@ import pylab as pl
 # core routine
 
 def specwavemap(images, outimages, outpref, solfile=None, caltype='line',
-                function='polynomial', order=3, 
-                blank=0, conserve=False, nearest=False,
+                function='polynomial', order=3, blank=0, nearest=False,
                 clobber=True, logfile='salt.log', verbose=True):
 
     with logging(logfile, debug) as log:
