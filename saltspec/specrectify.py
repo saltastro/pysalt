@@ -691,10 +691,7 @@ def subtracttime(d1, d2):
 
 
 # main code
-
-parfile = iraf.osfn("saltspec$specrectify.par")
-t = iraf.IrafTaskFactory(
-    taskname="specrectify",
-    value=parfile,
-    function=specrectify,
-    pkgname='saltspec')
+if not iraf.deftask('specrectify'):
+    parfile = iraf.osfn("saltspec$specrectify.par")
+    t = iraf.IrafTaskFactory(taskname="specrectify", value=parfile, 
+                             function=specrectify, pkgname='saltspec')
