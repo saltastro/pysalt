@@ -6,8 +6,6 @@ SPECWAVMAP is a program to read in SALT RSS spectroscopic data and
 a wavelength solution for that data.  It will then create a wavemap, where
 each pixel will have a corresponding wavelength
 
-Based on algorithm by K. Nordseick 
-
 Author                 Version      Date
 -----------------------------------------------
 S. M. Crawford (SAAO)    1.0       06 Jan 2015
