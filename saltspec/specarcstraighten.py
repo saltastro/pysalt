@@ -161,17 +161,10 @@ def arcstraight(data, xarr, istart, ws=None, function='poly', order=3,
     # extract the central row
     oxarr = xarr.copy()
     ofarr = data[istart]
-    print function, order
     ws = WavelengthSolution.WavelengthSolution(xarr, xarr, function, order)
     ws.fit()
-    print ws.coef
     ImageSolution[istart] = ws
-    if dcoef is None:
-        docef = ws.coef * 0.0
-        dcoef[0] = 10.0
-    else:
-        dcoef = np.array(dcoef)
-    print dcoef
+    if dcoef is not None: ws.coef = dcoef
 
     data = nd.gaussian_filter(data, 3)
 
@@ -181,17 +174,13 @@ def arcstraight(data, xarr, istart, ws=None, function='poly', order=3,
             lws = getwsfromIS(k, ImageSolution)
             xarr = np.arange(len(data[k]))
             farr = apext.makeflat(data, k, k + nrows)
-            nws = st.findxcor(
+            nws = st.fitxcor(
                 xarr,
                 farr,
                 oxarr,
                 ofarr,
                 lws,
-                dcoef=dcoef,
-                ndstep=ndstep,
-                best=True,
-                inttype='interp',
-                debug=False)
+                interptype='interp')
             ImageSolution[k] = nws
             print k, nws.coef
 

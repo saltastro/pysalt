@@ -517,7 +517,7 @@ def xcorfun(p, xarr, farr, swarr, sfarr, interptype, ws):
     return abs(1.0 / ncor(farr, asfarr))
 
 
-def fitxcor(xarr, farr, swarr, sfarr, ws, interptype='interp', debug=False):
+def fitxcor(xarr, farr, swarr, sfarr, ws, interptype='interp', method='Nelder-Mead'):
     """Maximize the normalized cross correlation coefficient for the full
         wavelength solution
     """
@@ -528,7 +528,7 @@ def fitxcor(xarr, farr, swarr, sfarr, ws, interptype='interp', debug=False):
             ws.x_arr, ws.w_arr, ws.function, ws.order)
         nws.coef.set_coef(ws.coef)
 
-    res = minimize(xcorfun, nws.coef, method='Nelder-Mead',
+    res = minimize(xcorfun, nws.coef, method=method,
                    args=(xarr, farr, swarr, sfarr, interptype, nws))
     bcoef = res['x']
     nws.set_coef(bcoef)
