@@ -6,6 +6,10 @@ SPECWAVMAP is a program to read in SALT RSS spectroscopic data and
 a wavelength solution for that data.  It will then create a wavemap, where
 each pixel will have a corresponding wavelength
 
+If a wavemap already exists and the solution for that data set only has a 
+single line in it, then it updates the existing wave map based on that solution
+and the values in the wavemap.
+
 Author                 Version      Date
 -----------------------------------------------
 S. M. Crawford (SAAO)    1.0       06 Jan 2015
@@ -142,6 +146,7 @@ def wavemap(hdu, soldict, caltype='line', function='poly', order=3,
             if log:
                 log.message('Correcting extension %i' % i)
             istart = int(0.5 * len(hdu[i].data))
+
             # open up the data
             # set up the xarr and initial wavlength solution
             xarr = np.arange(len(hdu[i].data[istart]), dtype='int64')
@@ -151,6 +156,27 @@ def wavemap(hdu, soldict, caltype='line', function='poly', order=3,
                 slitid = saltkey.get('SLITNAME', hdu[i])
             except:
                 slitid = None
+           
+            #check to see if wavext is already there and if so, then check update
+            #that for the transformation from xshift to wavelength
+            if saltkey.found('WAVEXT',hdu[i]):
+                w_ext = saltkey.get('WAVEXT', hdu[i])-1
+                wavemap = hdu[w_ext].data
+                function, order, coef = sr.findlinesol(soldict, istart, nearest, 
+                          timeobs, exptime, instrume, grating, grang, arang, 
+                          filtername, slitid, xarr)
+                ws = WavelengthSolution.WavelengthSolution(
+                     xarr,
+                     xarr,
+                     function=function,
+                     order=order)
+                ws.set_coef(coef)
+                for j in range(len(hdu[i].data)):
+                    wavemap[j,:] = ws.value(wavemap[j,:])
+                if array_only: return wavemap
+                hdu[w_ext].data = wavemap
+                continue
+ 
             # set up a wavelength solution -- still in here for testing MOS data
             try:
                 w_arr = sr.findsol(xarr, soldict, istart, caltype, nearest, timeobs, exptime, instrume, grating, grang, arang, filtername,
@@ -181,8 +207,7 @@ def wavemap(hdu, soldict, caltype='line', function='poly', order=3,
             # write out the oimg
             hduwav = fits.ImageHDU(data=wavemap, header=hdu[i].header, name='WAV')
             hdu.append(hduwav)
-            saltkey.new('WAVEXT', len(hdu), 'Extension for Wavelength Map', hdu[i])
-
+            saltkey.new('WAVEXT', len(hdu)-1, 'Extension for Wavelength Map', hdu[i])
 
     return hdu
 
