@@ -172,7 +172,7 @@ def checkforbias(sdb, k, instr='rss'):
        fitstable='FitsHeaderSalticam'
     elif instr=='hrs':
        caltable='HrsNightlyCalibration' 
-       logic='HrsCalibrationType_Id=3'
+       logic='HrsCalibrationType_Id=1'
        fitstable='FitsHeaderHrs'
  
  
