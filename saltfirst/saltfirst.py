@@ -29,6 +29,7 @@ from astropy.io import fits as pyfits
 import pickle
 import numpy as np
 import scipy as sp
+import warnings
 
 # Gui library imports
 from PyQt4 import QtGui, QtCore
@@ -121,8 +122,8 @@ class FirstWindow(QtGui.QMainWindow):
         self.clobber=clobber
         self.scamwatch=True
         self.rsswatch=True
-        self.hrswatch=False
-        self.hrbwatch=False
+        self.hrswatch=True 
+        self.hrbwatch=True
         self.objsection=None
         self.sdbhost=sdbhost
         self.sdbname=sdbname
@@ -382,8 +383,8 @@ class FirstWindow(QtGui.QMainWindow):
            self.watcher.addPath(self.hrsdir)
            edir=self.hrsdir
        if self.hrbwatch and edir.count('hbdet'):
-           self.watcher.addPath(self.hrsdir)
-           edir=self.hrsdir
+           self.watcher.addPath(self.hrbdir)
+           edir=self.hrbdir
 
        #check the directory for new files
        files=glob.glob(edir+'*')
@@ -536,13 +537,15 @@ class FirstWindow(QtGui.QMainWindow):
 
    def addtoobsdict(self, infile):
        try:
+           warnings.warn('error')
            self.hdu=saltio.openfits(infile)
            self.hdu.verify('exception')
+           warnings.warn('default')
            name=getbasename(self.hdu)
            imlist=getimagedetails(self.hdu)
            self.hdu.close()
        except IndexError:
-           time.sleep(5)
+           time.sleep(10)
            name=self.addtoobsdict(infile)
            return name
        except Exception, e:
@@ -580,7 +583,7 @@ class FirstWindow(QtGui.QMainWindow):
       #handle HRS data 
       print filename
       if infile.startswith('H') or infile.startswith('R'):
-          shutil.copy(filename, outfile)
+          os.symlink(filename, outfile)
           return iminfo
 
       if filename.count('.txt'): return iminfo
