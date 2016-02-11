@@ -549,7 +549,7 @@ class FirstWindow(QtGui.QMainWindow):
            name=self.addtoobsdict(infile)
            return name
        except Exception, e:
-           print e
+           print 'Returning none due to: %s' % (str(e))
            return None
        self.obsdict[name]=imlist
        return name

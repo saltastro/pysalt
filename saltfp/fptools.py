@@ -4,6 +4,7 @@ import numpy as np
 import scipy.ndimage as nd
 
 from saltfit import interfit
+from salterror import SaltError, SaltIOError
 from FPRing import FPRing, ringfit
 
 

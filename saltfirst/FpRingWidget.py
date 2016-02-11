@@ -119,23 +119,24 @@ class FpRingWidget (QtGui.QWidget):
 
         date = os.getcwd().split('/')[-1]
         
-        fits = "mbxgpP%s%04d.fits" % (date, self.filenumber)
+        self.getFitsHeader()
+        fits = "mbxpP%s%04d.fits" % (date, self.filenumber)
         if self.flatnumber != 0:
-            flat = "mbxgpP%s%04d.fits" % (date, self.flatnumber)
+            flat = "mbxpP%s%04d.fits" % (date, self.flatnumber)
         else:
-            flat="/home/erc/FP_utils/DefaultNeFlat.fits"
+            flat="/home/ccd/erc/FP_utils/DefaultNeFlat.fits"
 
         ffits='f'+fits
         fpfile='p'+ffits
         maskedfile='m'+fpfile
-        
+
 
         if (not os.path.isfile(maskedfile)): 
              saltflat(fits,ffits,'',flat, clobber='yes',verbose='no')
              
              saltfpprep(ffits,fpfile,'',clobber='yes',verbose='no')
              
-             saltfpmask(fpfile,maskedfile,'',axc=798,ayc=503,arad=450,clobber='yes', verbose='no')
+             saltfpmask(fpfile,maskedfile,'',axc=798*4/self.xbin,ayc=503*4/self.ybin,arad=450*4/self.xbin,clobber='yes', verbose='no')
 
         self.good, self.rsq, self.prof, self.fit, self.pars = fit_rings(maskedfile)
         self.resid = self.prof - self.fit
@@ -174,7 +175,7 @@ class FpRingWidget (QtGui.QWidget):
     def getFitsHeader(self):
 
         date = os.getcwd().split('/')[-1]
-        fits = "mbxgpP%s%04d.fits" % (date, self.filenumber)
+        fits = "mbxpP%s%04d.fits" % (date, self.filenumber)
         hdu = pyfits.open(fits)
         (data, header) = (hdu[0].data, hdu[0].header)
         etalon = int(header['ET-STATE'].split()[3])
@@ -185,6 +186,10 @@ class FpRingWidget (QtGui.QWidget):
         self.etalon_x=int(header[hetalon_x])
         self.etalon_y=int(header[hetalon_y])
         self.etalon_z=int(header[hetalon_z])
+        self.xbin=int(header['CCDSUM'].split()[0])
+        self.ybin=int(header['CCDSUM'].split()[1])
+        
+        print self.xbin,self.ybin
   
         return
 
