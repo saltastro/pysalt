@@ -187,6 +187,10 @@ class FpParallWidget (QtGui.QWidget):
         return
 
     def plotOutparams(self):
+        #reload outparams
+
+        self.loadOutparams()
+
         #set up the plot....
 
         self.cleanOutparams()
@@ -249,7 +253,7 @@ class FpParallWidget (QtGui.QWidget):
         datapoint = self.cleanarr[mask][0]
 
         #format it ready for the tooltip:
-        text="FileNumber: %i, \nX: %i, \nY: %i, \nZ:%i, \nAmp: %.2f, \nRMS: %.2f, \nGamma: %.2f, \nFWHM: %.3f" % (int(datapoint[0]), int(datapoint[1]),int(datapoint[2]),int(datapoint[3]),datapoint[4],datapoint[6],datapoint[7],datapoint[8])
+        text="FileNumber: %i, \nX: %i, \nY: %i, \nZ:%i, \nAmp: %.2f, \nRMS: %.2f, \nGamma: %.2f, \nFWHM: %.3f" % (int(datapoint[0]), int(datapoint[1]),int(datapoint[2]),int(datapoint[3]),datapoint[5],datapoint[6],datapoint[7],datapoint[8])
 
         #and plonk it on! :)
         QtGui.QToolTip.showText(QtCore.QPoint(338,314),text)
