@@ -8,6 +8,7 @@ SALTSPEC Tasks:
       specsens -- Calculate sensitivity curve from standards
        speccal -- calrect images for wavelength dispersion
       specslit -- Extract slits from RSS MOS image
+   specwavemap -- Create a wave map for an RSS image
 
 --------------------------------------------------------------------
 PySALT is a suite of PyRAF tools for the reduction and analysis of

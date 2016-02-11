@@ -54,7 +54,7 @@
 
 from __future__ import with_statement
 
-import os, string, sys, glob, pyfits, time
+import os, string, sys, glob, time
 from pyraf import iraf
 from pyraf.iraf import pysalt
 import numpy as np
@@ -251,6 +251,16 @@ def bias(struct,subover=True,trim=True, subbias=False, bstruct=None,
                #catch the error if it is a zero array
                ofit=np.array(yarr)*0.0
                osigma=0.0
+
+           #if it hasn't been already, convert image to
+           #double format
+           struct[i].data = 1.0 * struct[i].data
+           try:
+               struct[i].header.remove('BZERO')
+               struct[i].header.remove('BSCALE')
+           except:
+               pass
+
 
            #subtract the overscan region
            for j in range(len(struct[i].data[0])):

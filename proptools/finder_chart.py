@@ -37,6 +37,7 @@ def get_slitmask_xml(username, password, barcode):
 # grab 10' x 10' image from STScI server and pull it into pyfits
 def get_dss(imserver, ra, dec):
     url = "http://archive.stsci.edu/cgi-bin/dss_search?v=%s&r=%f&d=%f&e=J2000&h=10.0&w=10.0&f=fits&c=none" % (imserver, ra, dec)
+    print url
     fitsData = cStringIO.StringIO()
     data = urllib2.urlopen(url).read()
     fitsData.write(data)
@@ -189,7 +190,7 @@ def finderchart(xmlfile, image=None, outfile=None):
         hdu = pyfits.open(image)
         imserver='none'
     else:
-        imserver='poss1_red'
+        imserver='poss2ukstu_red'
         hdu = get_dss(imserver, ra, dec)
  
     #create the plot
