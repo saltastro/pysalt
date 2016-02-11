@@ -114,7 +114,7 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
 
     #loop through all the results and return only the Set of identical results
     caldict=create_caldict(results)
-
+    caldict=[]
     #insert the rss results into the database
     for k in caldict:
        #first check to see if it has already been entered
@@ -156,6 +156,60 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
                      
 
                    print k, cid," ".join([str(w) for w in caldict[k]])
+
+
+    #select all the HRS data from this obsdate
+
+    #+-----------------------+-------------------------------+
+    #| HrsCalibrationType_Id | CalibrationType               |
+    #+-----------------------+-------------------------------+
+    #|                     3 | Arc - Calsys                  |
+    #|                     2 | Arc - Internal                |
+    #|                     1 | Bias                          |
+    #|                     4 | Spectroscopic flat - Lamp     |
+    #|                     5 | Spectroscopic flat - Twilight |
+    #|                    11 | Standard - Lick               |
+    #|                     6 | Standard - Photometric        |
+    #|                     9 | Standard - RV                 |
+    #|                    10 | Standard - Smooth spectrum    |
+    #|                     8 | Standard - Spectrophotometric |
+    #|                     7 | Standard - Spectroscopic      |
+    #+-----------------------+-------------------------------+
+
+    hrsheaderlist='f.CCDTYPE, d.DETMODE, d.OBSMODE, CCDSUM, GAINSET, ROSPEED'
+    cmd_select='d.FileName,d.FileData_Id, %s' % hrsheaderlist
+    cmd_table=''' FileData as d
+  left join FitsHeaderImage as f using (FileData_Id) 
+  left join FitsHeaderHrs using (FileData_Id)
+  join ProposalCode using (ProposalCode_Id)
+'''
+    cmd_logic="d.FileName like 'H" + obsdate+"%' and CCDTYPE='Science' and Proposal_Code not like 'CAL_SPST'"
+
+    results=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)
+    print cmd_select
+    print cmd_table
+    print cmd_logic
+    print results
+
+    #loop through all the results and return only the Set of identical results
+    caldict=create_caldict(results)
+    print caldict
+
+    for k in caldict:
+       #first check to see if it has already been entered
+       record=saltmysql.select(sdb, 'FileData_Id', 'HrsNightlyCalibration', 'FileData_Id=%i' % k) 
+       if len(record)<1:
+           #period for checking for SPST.  If the uses requests this, it gets set to 
+           # 7 days, but the default is taken within the last month for non-requests
+           period=30
+
+           #check for block_id
+           blockid=saltmysql.select(sdb, 'Block_Id', 'FileData', 'FileData_Id=%i' % k)[0][0]
+
+           #get the calibration types requested
+           if not checkforbias(sdb, k, instr='hrs'):
+               cmd_insert='NightInfo_Id=%i, FileData_Id=%i, HrsCalibrationType_Id=%i' % (night_id, k, 1)
+               saltmysql.insert(sdb, cmd_insert, 'HrsNightlyCalibration')
 
     return
 
