@@ -233,13 +233,16 @@ def checkforbias(sdb, k, instr='rss'):
     #get all the bias requests
     logic='CalibrationTaken is Null and Ignored=0 and %s' %  logic
     record=saltmysql.select(sdb, 'FileData_Id', caltable, logic)
-
     # if no results return false
     if len(record)<1: return False
+
+    #hrs only uses one mode
+    if instr=='hrs': return True 
     
     select='CCDSUM,GAINSET, ROSPEED'
     table='FileData join %s using (FileData_Id)' % fitstable
     logic='FileData_Id=%i' % k
+    print select, table, logic
     kdata=saltmysql.select(sdb, select, table, logic)[0]
     for i in record:
         idata=saltmysql.select(sdb, select, table, 'FileData_Id=%i' % i)[0]
@@ -318,6 +321,52 @@ def checkforflats(sdb, fid, caltype, plist, instr='rss', keylist=None, period=90
         idata=saltmysql.select(sdb, select, table, 'FileData_Id=%i' % i)[0]
         if compare_configs(kdata, idata): return True
         
+    return False
+
+def checkforhrscal(sdb, obsmode, propid, cal_type, period=7):
+    """Check the sdb for HRS arcs for a certain mode.  Return true if the data have
+       been taken
+
+       fid: int
+           FileData_Id
+
+       obsmode: str 
+          Observation mode 
+
+       propid: str 
+          Proposal code 
+
+       cal_type: int
+          Calibration Type
+
+       period: int
+          number of days in the past to check if data were taken
+ 
+
+    """
+    utstart=datetime.datetime.now()
+
+    #set the period for to check for the data
+    utstart=utstart-datetime.timedelta(days=period)
+
+    #select all the HRS data from this obsdate
+    cmd_select='FileName,FileData_Id'
+    cmd_table=''' FileData  as d
+  join ProposalCode using (ProposalCode_Id)
+'''
+    cmd_logic="Proposal_Code like '%s' and OBSMODE like '%s' and UTSTART>'%s'" % (propid, obsmode, utstart)
+    results=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)
+
+    if len(results) > 0: return True
+
+    #now check the nightly calibrations table
+    table = 'HrsNightlyCalibration join FileData using (FileData_Id)'
+    logic='OBSMODE like "%s" and CalibrationTaken is Null and Ignored=0 and HrsCalibrationType_Id=%i' % (obsmode, cal_type)
+    record=saltmysql.select(sdb, 'FileData_Id', table, logic)
+
+    # if no results return false
+    if len(record) > 0: return True
+
     return False
 
 
