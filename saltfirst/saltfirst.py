@@ -583,7 +583,16 @@ class FirstWindow(QtGui.QMainWindow):
       #handle HRS data 
       print filename
       if infile.startswith('H') or infile.startswith('R'):
+          outfile = filename +'s'
           os.symlink(filename, outfile)
+
+          try:
+              log=None #open(logfile, 'a')
+              sdb=saltmysql.connectdb(self.sdbhost, self.sdbname, self.sdbuser, self.password)
+              sdbloadfits(outfile, sdb, log, False)
+              print 'SDBLOADFITS: SUCCESS'
+          except Exception, e:
+              print 'SDBLOADFITSERROR:', e
           return iminfo
 
       if filename.count('.txt'): return iminfo
