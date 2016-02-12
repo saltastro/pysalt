@@ -447,6 +447,12 @@ def updateFitsHeaders(db, imageStruct, FileData_Id, log=None):
        if not records :
            insert(db,insert_command,'FitsHeaderRss')
        updatefitstable(db, 'FitsHeaderRss', ImageHeader, logic)
+    elif InstrueNameString=='HRS':
+       records=select(db,'FileData_Id','FitsHeaderHrs',logic)
+       if not records :
+           insert(db,insert_command,'FitsHeaderHrs')
+       updatefitstable(db, 'FitsHeaderHrs', ImageHeader, logic)
+     
     else:
        message='Did not update the Instrument tables'
        if log is not None:  
