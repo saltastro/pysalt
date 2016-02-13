@@ -95,7 +95,7 @@ def put(keyword,value,hdu,infile=None):
 
 
     try:
-        hdu.header.update(keyword,value)
+        hdu.header[keyword] = value
     except:
         if infile is None: infile=getimagename(hdu, base=False)
         raise SaltIOError('Cannot update keyword '+keyword+' in '+infile)
@@ -129,7 +129,7 @@ def new(keyword,value,comment,hdu,infile=None):
     """add new keyword"""
 
     try:
-       hdu.header.update(keyword,value,comment)
+       hdu.header[keyword] = (value,comment)
     except Exception, e:
        if infile is None: infile=getimagename(hdu, base=False)
        msg='Cannot create keyword %s in %s because %s ' % (keyword, infile, e)
@@ -266,7 +266,7 @@ def copy(new,old,key):
     if found(key,old):
         try:
             oldcard=old.header.ascardlist()
-            new.header.update(key,old.header[key],oldcard[key].comment)
+            new.header[key] = (old.header[key],oldcard[key].comment)
         except:
             raise SaltIOError('Cannot COPY KEYWORD '+key)
 
