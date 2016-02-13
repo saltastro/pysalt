@@ -25,7 +25,6 @@ import os
 import time
 import numpy
 from scipy import ndimage as nd
-import pyfits as fits 
 from astropy.io import fits
 from pyraf import iraf
 
@@ -99,15 +98,15 @@ def saltmosaic(images, outimages, outpref, geomfile, interp='linear',
             saltkey.housekeeping(
                 ostruct[0],
                 'SMOSAIC',
-                'Images have been mosaicked ',
+                'Images have been mosaicked',
                 hist)
 
             # write the image out
-            saltio.writefits(ostruct, oimg, clobber=clobber)
+            ostruct.writeto(oimg, clobber=clobber, output_verify='ignore')
 
             # close the files
-            saltio.closefits(struct)
-            saltio.closefits(ostruct)
+            struct.close()
+            ostruct.close()
 
 
 def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
@@ -550,14 +549,15 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
         pass
 
     # Add keywords associated with geometry
-    gstr = '%i %f %f %f %f %f %f' % (gap,
-                                     xshift[0],
+    saltkey.new('SGEOMGAP', gap, 'SALT Chip Gap', outstruct[0])
+    c1str = '{:3.2f} {:3.2f} {:3.4f}'.format(xshift[0],
                                      yshift[0],
-                                     rotation[0],
-                                     xshift[1],
+                                     rotation[0])
+    saltkey.new('SGEOM1', c1str, 'SALT Chip 1 Transform', outstruct[0])
+    c2str = '{:3.2f} {:3.2f} {:3.4f}'.format(xshift[1],
                                      yshift[1],
                                      rotation[1])
-    saltkey.new('SALTGEOM', gstr, 'SALT geometry coefficients', outstruct[0])
+    saltkey.new('SGEOM2', c2str, 'SALT Chip 2 Transform', outstruct[0])
 
     # WCS keywords
     saltkey.new('CRPIX1', 0, 'WCS: X reference pixel', outstruct[1])
