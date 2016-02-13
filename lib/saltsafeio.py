@@ -272,7 +272,7 @@ def newfitstable(table,infile=None):
     """write FITS table"""
     struct=''
     try:
-        struct = fits.new_table(table)
+       struct = fits.BinTableHDU.from_columns(table)
     except Exception, e:
         raise SaltIOError('Cannot create new table because %s' % e)
     return struct
