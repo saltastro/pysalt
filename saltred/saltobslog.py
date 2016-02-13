@@ -126,17 +126,20 @@ def createobslogfits(headerDict):
    for k, f in zip(rssheaderList, rssformatList):
        print k,f, headerDict[k]
        col.append(fits.Column(name=k, format=f, array=headerDict[k]))
+
    # construct FITS table from columns
-   table = saltio.fitscolumns(col)
+   table = fits.ColDefs(col)
 
    # write FITS table to output file
-   struct=saltio.newfitstable(table)
+   struct = fits.BinTableHDU.from_columns(table)
 
    # name the table extension
-   saltkey.new('EXTNAME','OBSLOG','extension name', struct)
+   struct.header['EXTNAME'] = 'OBSLOG'
+   struct.header['SAL_TLM'] = time.asctime(time.localtime())
+   #saltkey.new('EXTNAME','OBSLOG','extension name', struct)
+   #saltkey.put('SAL-TLM',time.asctime(time.localtime()), struct)
 
    # housekeeping keywords
-   saltkey.put('SAL-TLM',time.asctime(time.localtime()), struct)
 
    return struct
 
