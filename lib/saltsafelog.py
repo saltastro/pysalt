@@ -200,7 +200,7 @@ def logging(logfile,debug=True,with_stdout=True,with_call=True):
             msg='%s completed' % fname
             log.message(msg)
 
-    except SaltError, e:
+    except Exception, e:
         # Catch and log any errors that may have occured
         log.error(e,debug)
 
@@ -211,7 +211,7 @@ def logging(logfile,debug=True,with_stdout=True,with_call=True):
 
         #raise the error to quit out of the program and allow any
         #wrapper program to catch the error
-        raise SaltError(e)
+        raise e
 
     finally:
         # Any additional cleanup code and logging goes here
