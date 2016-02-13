@@ -52,7 +52,7 @@ debug = True
 # core routine
 
 def specarcstraighten(images, outfile, function='poly', order=3, rstep=100,
-                      rstart='middlerow', nrows=1, dcoef=None, ndstep=10,
+                      rstart='middlerow', nrows=1, dcoef=None, 
                       y1=None, y2=None,
                       startext=0, clobber=False, logfile='salt.log', verbose=True):
 
@@ -141,7 +141,7 @@ def specarcstraighten(images, outfile, function='poly', order=3, rstep=100,
 
                     # calculate the transformation
                     ImageSolution = arcstraight(data, xarr, ystart, ws=None, function=function, order=order, dcoef=dcoef,
-                                                rstep=rstep, nrows=nrows, ndstep=ndstep, y1=y1, y2=y2, log=log, verbose=verbose)
+                                                rstep=rstep, nrows=nrows, y1=y1, y2=y2, log=log, verbose=verbose)
 
                     if outfile and len(ImageSolution):
                         writeIS(ImageSolution, outfile, dateobs=dateobs, utctime=utctime, instrume=instrume,
@@ -152,7 +152,7 @@ def specarcstraighten(images, outfile, function='poly', order=3, rstep=100,
 
 
 def arcstraight(data, xarr, istart, ws=None, function='poly', order=3,
-                rstep=1, nrows=1, dcoef=None, ndstep=50, y1=None, y2=None, log=None, verbose=True):
+                rstep=1, nrows=1, dcoef=None, y1=None, y2=None, log=None, verbose=True):
     """For a given image, assume that the line given by istart is the fiducial and then calculate
        the transformation between each line and that line in order to straighten the arc
 
@@ -170,6 +170,15 @@ def arcstraight(data, xarr, istart, ws=None, function='poly', order=3,
     ws = WavelengthSolution.WavelengthSolution(xarr, xarr, function, order)
     ws.fit()
     ImageSolution[istart] = ws
+    if isinstance(dcoef, str): 
+       if dcoef=='':
+          dcoef = None
+       else:
+          try:
+              dcoef = [float(w) for w in dcoef.replace('[','').replace(']','').split()]
+          except:
+              raise SaltError('dcoef is not the right format')
+      
     if dcoef is not None: ws.coef = dcoef
 
     data = nd.gaussian_filter(data, 3)
