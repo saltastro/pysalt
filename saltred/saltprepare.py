@@ -199,8 +199,8 @@ def CreateVariance(inhdu, sci_ext, var_ext):
    data=(data+(rdnoise/gain)**2)
 
    header=inhdu.header.copy()
-   header['EXTVER']=var_ext
-   header.update('SCIEXT',sci_ext,comment='Extension of science frame')
+   header['EXTVER'] = var_ext
+   header['SCIEXT'] = (sci_ext,'Extension of science frame')
    return fits.ImageHDU(data=data, header=header, name='VAR')
 
 def createbadpixel(inhdu, bphdu, sci_ext, bp_ext):
@@ -227,7 +227,7 @@ def createbadpixel(inhdu, bphdu, sci_ext, bp_ext):
 
    header=inhdu[sci_ext].header.copy()
    header['EXTVER']=bp_ext
-   header.update('SCIEXT',sci_ext,comment='Extension of science frame')
+   header['SCIEXT']=(sci_ext,'Extension of science frame')
    return fits.ImageHDU(data=data, header=header, name='BPM')
 
 
