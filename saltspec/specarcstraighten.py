@@ -52,7 +52,8 @@ debug = True
 # core routine
 
 def specarcstraighten(images, outfile, function='poly', order=3, rstep=100,
-                      rstart='middlerow', nrows=1, dcoef=None, ndstep=10,
+                      rstart='middlerow', nrows=1, dcoef=None, 
+                      y1=None, y2=None,
                       startext=0, clobber=False, logfile='salt.log', verbose=True):
 
     with logging(logfile, debug) as log:
@@ -134,12 +135,13 @@ def specarcstraighten(images, outfile, function='poly', order=3, rstep=100,
                     else:
                         ystart = rstart
 
+
                     # set up the xarr array based on the image
                     xarr = np.arange(len(data[ystart]), dtype='int64')
 
                     # calculate the transformation
                     ImageSolution = arcstraight(data, xarr, ystart, ws=None, function=function, order=order, dcoef=dcoef,
-                                                rstep=rstep, nrows=nrows, ndstep=ndstep, log=log, verbose=verbose)
+                                                rstep=rstep, nrows=nrows, y1=y1, y2=y2, log=log, verbose=verbose)
 
                     if outfile and len(ImageSolution):
                         writeIS(ImageSolution, outfile, dateobs=dateobs, utctime=utctime, instrume=instrume,
@@ -150,7 +152,7 @@ def specarcstraighten(images, outfile, function='poly', order=3, rstep=100,
 
 
 def arcstraight(data, xarr, istart, ws=None, function='poly', order=3,
-                rstep=1, nrows=1, dcoef=None, ndstep=50, log=None, verbose=True):
+                rstep=1, nrows=1, dcoef=None, y1=None, y2=None, log=None, verbose=True):
     """For a given image, assume that the line given by istart is the fiducial and then calculate
        the transformation between each line and that line in order to straighten the arc
 
@@ -158,12 +160,25 @@ def arcstraight(data, xarr, istart, ws=None, function='poly', order=3,
     """
     ImageSolution = {}
 
+    #set up the edges 
+    if y1 is None: y1=0
+    if y2 is None: y2=data.shape[0]
+
     # extract the central row
     oxarr = xarr.copy()
     ofarr = data[istart]
     ws = WavelengthSolution.WavelengthSolution(xarr, xarr, function, order)
     ws.fit()
     ImageSolution[istart] = ws
+    if isinstance(dcoef, str): 
+       if dcoef=='':
+          dcoef = None
+       else:
+          try:
+              dcoef = [float(w) for w in dcoef.replace('[','').replace(']','').split()]
+          except:
+              raise SaltError('dcoef is not the right format')
+      
     if dcoef is not None: ws.coef = dcoef
 
     data = nd.gaussian_filter(data, 3)
@@ -171,6 +186,7 @@ def arcstraight(data, xarr, istart, ws=None, function='poly', order=3,
     # now step around the central row
     for i in range(rstep, int(0.5 * len(data)), rstep):
         for k in [istart - i, istart + i]:
+            if k < y1 or k > y2: continue
             lws = getwsfromIS(k, ImageSolution)
             xarr = np.arange(len(data[k]))
             farr = apext.makeflat(data, k, k + nrows)
@@ -182,7 +198,6 @@ def arcstraight(data, xarr, istart, ws=None, function='poly', order=3,
                 lws,
                 interptype='interp')
             ImageSolution[k] = nws
-            print k, nws.coef
 
     return ImageSolution
 
