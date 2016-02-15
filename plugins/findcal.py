@@ -295,7 +295,7 @@ def checkforflats(sdb, fid, caltype, plist, instr='rss', keylist=None, period=90
   left join FitsHeaderRss using (FileData_Id)
   join ProposalCode using (ProposalCode_Id)
 '''
-       cmd_logic="Proposal_Code like 'CAL_FLAT' and UTSTART>'%s'" % (utstart)
+       cmd_logic=" UTSTART>'%s'" % (utstart)
        results=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)
 
        #compare results
