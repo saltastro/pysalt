@@ -24,8 +24,9 @@ LIMITATIONS
 
 """
 
-import pyfits as pf
-from pyfits import Column
+from astropy.io import fits 
+from astropy.io.fits import Column
+
 import pywcs
 
 import math
@@ -398,7 +399,7 @@ def slits_HDUtable(slit_pos, order):
         columns.append(Column(name='slit_%i_right_edge' % i, format='K',
                               array=slit_pos[i][2]))
 
-    tbhdu = pf.new_table(columns)
+    tbhdu = fits.BinTableHDU.from_columns(columns)
 
     return tbhdu
 

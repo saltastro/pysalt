@@ -34,7 +34,7 @@ import os
 import sys
 import numpy as np
 
-import pyfits
+from astropy.io import fits
 
 from pyraf import iraf
 
@@ -187,7 +187,7 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
 
             # write out the data to the new array
             # create the new file
-            hdulist = pyfits.HDUList([struct[0]])
+            hdulist = fits.HDUList([struct[0]])
 
             # log the extracted spectra if needed
             log.message('', with_stdout=verbose)
@@ -212,32 +212,28 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
                 y2 = spline_positions[i][1].max()
                 msg = 'Extracted Spectra %i between %i to %i' % (i + 1, y1, y2)
                 # log.message(msg, with_header=False, with_stdout=verbose)
-                sdu = pyfits.ImageHDU(
+                sdu = fits.ImageHDU(
                     extracted_spectra[i],
                     header=struct[1].header)
                 if varext:
-                    vdu = pyfits.ImageHDU(
+                    vdu = fits.ImageHDU(
                         extracted_var[i],
                         header=struct[varext].header)
-                    sdu.header.update('VAREXT', i + nslits + 1)
+                    sdu.header['VAREXT'] = i + nslits + 1
                     varlist.append(vdu)
                 if bpmext:
-                    bdu = pyfits.ImageHDU(
+                    bdu = fits.ImageHDU(
                         extracted_bpm[i],
                         header=struct[bpmext].header)
-                    sdu.header.update('BPMEXT', i + 2 * nslits + 1)
+                    sdu.header['BPMEXT']= i + 2 * nslits + 1
                     bpmlist.append(bdu)
                 imglist.append(sdu)
 
                 # add in some additional keywords
-                imglist[i].header.update(
-                    'MINY',
-                    y1,
-                    comment='Lower Y value in original image')
-                imglist[i].header.update(
-                    'MAXY',
-                    y2,
-                    comment='Upper Y value in original image')
+                imglist[i].header['MINY'] = (y1,
+                    'Lower Y value in original image')
+                imglist[i].header['MAXY'] = (y2,
+                    'Upper Y value in original image')
                 if regprefix:
                     xsize = struct[1].data.shape[1]
                     xsize = int(0.5 * xsize)
@@ -250,22 +246,14 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
 
                 # add slit information
                 if slitmask:
-                    imglist[i].header.update(
-                        'SLITNAME',
-                        slitmask.slitlets.data[i]['name'],
-                        comment='Slit Name')
-                    imglist[i].header.update(
-                        'SLIT_RA',
-                        slitmask.slitlets.data[i]['targ_ra'],
-                        comment='Slit RA')
-                    imglist[i].header.update(
-                        'SLIT_DEC',
-                        slitmask.slitlets.data[i]['targ_dec'],
-                        comment='Slit DEC')
-                    imglist[i].header.update(
-                        'SLIT',
-                        slitmask.slitlets.data[i]['slit_width'],
-                        comment='Slit Width')
+                    imglist[i].header['SLITNAME'] = (slitmask.slitlets.data[i]['name'],
+                        'Slit Name')
+                    imglist[i].header['SLIT_RA'] = (slitmask.slitlets.data[i]['targ_ra'],
+                        'Slit RA')
+                    imglist[i].header['SLIT_DEC'] = (slitmask.slitlets.data[i]['targ_dec'],
+                        'Slit DEC')
+                    imglist[i].header['SLIT'] = (slitmask.slitlets.data[i]['slit_width'],
+                        'Slit Width')
 
             # add to the hdulist
             hdulist += imglist
@@ -280,30 +268,21 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
             bintable_hdr = tbhdu.header
 
             # add the extname parameter to the extension
-            tbhdu.header.update('EXTNAME', 'BINTABLE')
+            tbhdu.header['EXTNAME'] = 'BINTABLE'
 
             # add the extname parameter to the extension
-            hdulist[0].header.update('SLITEXT', len(hdulist))
+            hdulist[0].header['SLITEXT'] = len(hdulist)
             hdulist.append(tbhdu)
 
             # add addition header information about the mask
             if slitmask:
-                hdulist[0].header.update(
-                    'MASKNAME',
-                    slitmask.mask_name,
-                    comment='SlitMask Name')
-                hdulist[0].header.update(
-                    'MASK_RA',
-                    slitmask.center_ra,
-                    comment='SlitMask RA')
-                hdulist[0].header.update(
-                    'MASK_DEC',
-                    slitmask.center_dec,
-                    comment='SlitMask DEC')
-                hdulist[0].header.update(
-                    'MASK_PA',
-                    slitmask.position_angle,
-                    comment='SlitMask Position Angle')
+                hdulist[0].header['MASKNAME'] = (slitmask.mask_name, 'SlitMask Name')
+                hdulist[0].header['MASK_RA'] = (slitmask.center_ra,
+                    'SlitMask RA')
+                hdulist[0].header['MASK_DEC'] = ( slitmask.center_dec,
+                    'SlitMask DEC')
+                hdulist[0].header['MASK_PA'] = ( slitmask.position_angle,
+                    'SlitMask Position Angle')
 
             # write out the image
             saltio.writefits(hdulist, oimg, clobber)
