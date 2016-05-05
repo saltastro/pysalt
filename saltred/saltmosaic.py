@@ -528,8 +528,8 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
     # add to the file
     outlist[1] = fits.ImageHDU(outdata)
     if varframe:
-        outlist[2] = fits.ImageHDU(vardata)
-        outlist[3] = fits.ImageHDU(bpmdata)
+        outlist[2] = fits.ImageHDU(vardata,name='VAR')
+        outlist[3] = fits.ImageHDU(bpmdata,name='BPM')
 
     # create the image structure
     outstruct = fits.HDUList(outlist)
