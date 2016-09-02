@@ -761,7 +761,11 @@ def readasciilinelist(linelist):
 def getslitsize(slitname, config_file=''):
     """Return the slit size for a given slit name"""
     slitname=slitname.strip()
-    return float(slitname[2:6])/100.0
+    try:
+       size = float(slitname[2:6])/100.0
+    except:
+       size = 1.5
+    return size
 
 
 def makesection(section):
