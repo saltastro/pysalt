@@ -206,7 +206,7 @@ def detect_lines(w_arr, f_arr, sigma=3, bsigma=None, niter=5, mask=None,
         xdiff = int(0.5 * len(kern) + 1)
         xp = xp * 1.0
         for i in range(len(xp)):
-            xp[i] = mcentroid(w_arr, f_arr, kern=kern, xdiff=xdiff, xc=w_arr[xp[i]])
+            xp[i] = mcentroid(w_arr, f_arr, kern=kern, xdiff=xdiff, xc=w_arr[int(xp[i])])
 
     return xp
 
