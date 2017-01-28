@@ -56,7 +56,7 @@ from pyraf.iraf import pysalt
 
 # Gui library imports
 from PyQt4 import QtGui, QtCore
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg, FigureCanvasQTAgg
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT
 from matplotlib.figure import Figure
 
 
@@ -374,13 +374,12 @@ class SlotViewWindow(QtGui.QMainWindow):
        self.plotpanel=QtGui.QWidget()
 
        self.lccanvas=MplCanvas()
-       #self.lccanvas=FigureCanvasQTAgg(self.lcfigure)
        self.plotlightcurve()
        #add the actions
        self.lccanvas.mpl_connect('button_press_event',self.onButtonPress)
 
        # Add navigation toolbars for each widget to enable zooming
-       self.toolbar=NavigationToolbar2QTAgg(self.lccanvas,self)
+       self.toolbar=NavigationToolbar2QT(self.lccanvas,self)
 
        # Set up the layout
        plotLayout = QtGui.QVBoxLayout(self.plotpanel)
@@ -451,7 +450,7 @@ class SlotViewWindow(QtGui.QMainWindow):
 
 
        # Add navigation toolbars for each widget to enable zooming
-       self.imagtoolbar=NavigationToolbar2QTAgg(self.imdisplay,self)
+       self.imagtoolbar=NavigationToolbar2QT(self.imdisplay,self)
 
        # Set up the layout
        imagLayout = QtGui.QVBoxLayout(self.imagpanel)
