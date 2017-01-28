@@ -185,14 +185,10 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
         imdata2 = saltio.readimage(struct, hdu + 1)
 
         # tile 2n amplifiers to yield n CCD images
-        outdata = numpy.zeros((ydsec1[1] +
-                               abs(ysh[i +
-                                       1] /
-                                   ybin), xdsec1[1] +
-                               xdsec2[1] +
-                               abs(xsh[i +
-                                       1] /
-                                   xbin)), numpy.float32)
+        outdata = numpy.zeros((int(ydsec1[1] + abs(ysh[i + 1] / ybin)),
+                               int(xdsec1[1] + xdsec2[1] +
+                               abs(xsh[i + 1] / xbin))), 
+                               numpy.float32)
 
         # set up the variance frame
         if varframe:
@@ -210,11 +206,11 @@ def make_mosaic(struct, gap, xshift, yshift, rotation, interp_type='linear',
                   % infile
             log.error(msg)
         if xsh[i + 1] < 0:
-            x1 += abs(xsh[i + 1] / xbin)
+            x1 += int(abs(xsh[i + 1] / xbin))
         x2 = x1 + xdsec1[1]
         y1 = ydsec1[0] - 1
         if ysh[i + 1] < 0:
-            y1 += abs(ysh[i + 1] / ybin)
+            y1 += int(abs(ysh[i + 1] / ybin))
         y2 = y1 + ydsec1[1]
         outdata[y1:y2, x1:x2] =\
             imdata1[ydsec1[0] - 1:ydsec1[1], xdsec1[0] - 1:xdsec1[1]]
