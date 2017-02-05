@@ -206,7 +206,7 @@ def detect_lines(w_arr, f_arr, sigma=3, bsigma=None, niter=5, mask=None,
         xdiff = int(0.5 * len(kern) + 1)
         xp = xp * 1.0
         for i in range(len(xp)):
-            xp[i] = mcentroid(w_arr, f_arr, kern=kern, xdiff=xdiff, xc=w_arr[xp[i]])
+            xp[i] = mcentroid(w_arr, f_arr, kern=kern, xdiff=xdiff, xc=w_arr[int(xp[i])])
 
     return xp
 
@@ -761,7 +761,11 @@ def readasciilinelist(linelist):
 def getslitsize(slitname, config_file=''):
     """Return the slit size for a given slit name"""
     slitname=slitname.strip()
-    return float(slitname[2:6])/100.0
+    try:
+       size = float(slitname[2:6])/100.0
+    except:
+       size = 1.5
+    return size
 
 
 def makesection(section):

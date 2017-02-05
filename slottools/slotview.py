@@ -55,11 +55,10 @@ import slottool as st
 
 import Tkinter as Tk
 from matplotlib.widgets import Cursor, SpanSelector, Slider, CheckButtons
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 
 # Gui library imports
 from PyQt4 import QtGui, QtCore
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT
 
 # Salt imports
 from saltgui import ImageDisplay, MplCanvas

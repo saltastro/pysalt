@@ -20,15 +20,15 @@ import os
 import pyfits
 import numpy as np
 import matplotlib
-matplotlib.use('GTkAgg')
 
 #pysalt imports
 from pyraf import iraf
 from pyraf.iraf import pysalt
 
 from scipy.ndimage.filters import median_filter
+from astropy.io import fits
 
-from specrectify import specrectify
+from specrectify import specrectify, entersolution, matchobservations
 from specextract import extract, write_extract
 from specsky import specsky
 from specslitnormalize import create_response 
@@ -44,17 +44,34 @@ import pylab as pl
 
 sky_lines = [4358.34, 5577.338, 6300.304,6363.8000,7715.0116]
 
-def quickspec(profile, lampid=None, findobj=False, objsection=None, skysection=None, clobber=False, logfile='saltclean.log', verbose=True):
+def quickspec(profile, lampid=None, solfile=None, findobj=False, objsection=None, skysection=None, clobber=False, logfile='saltclean.log', verbose=True):
    """From mosaicked data, produce wavelength calibrated files"""
    profile = os.path.basename(profile)
 
    #fill in the mosaic 
-   fillgaps(profile)
+   #fillgaps(profile)
 
    #specrectify
-   specrectify(profile, outimages='', outpref='s', solfile=None, caltype='rss',
+   caltype='rss'
+   if solfile:
+      soldict = entersolution(solfile)
+      hdu = fits.open(profile)
+      instrume = hdu[0].header['INSTRUME']
+      grating = hdu[0].header['GRATING']
+      grang = hdu[0].header['GRTILT']
+      arang = hdu[0].header['CAMANG']
+      filtername = hdu[0].header['FILTER']
+      slitid=None
+      for sol in soldict:
+         if matchobservations( soldict[sol], instrume, grating, grang, arang, filtername, slitid):
+            caltype='line'
+            break
+         
+
+   specrectify(profile, outimages='', outpref='s', solfile=solfile, caltype=caltype,
                    function='legendre',  order=3, inttype='interp', w1=None, w2=None, dw=None, nw=None,
                    blank=0.0, clobber=True, logfile=logfile, verbose=True)
+
    y1,y2=quickap('s' + profile, lampid, findobj, objsection, skysection, clobber, logfile, verbose)
 
    if skysection is None:

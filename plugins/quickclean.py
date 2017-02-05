@@ -95,7 +95,7 @@ def quickclean(filename, interp='linear', cleanup=True, clobber=False, logfile='
    saltio.writefits(struct, pinfile, clobber)
 
    saltred.saltmosaic(images=pinfile,
-                   outimages='',outpref=outpath+'m',geomfile=geomfile,
+                   outimages='',outpref=outpath+'m',geomfile=geomfile, fill=True,
                    interp=interp,cleanup=cleanup,clobber=clobber,logfile=logfile,
                    verbose=verbose)
    profile=outpath+'mbxp'+infile

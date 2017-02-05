@@ -583,8 +583,9 @@ class FirstWindow(QtGui.QMainWindow):
       #handle HRS data 
       print filename
       if infile.startswith('H') or infile.startswith('R'):
-          outfile = filename +'s'
-          os.symlink(filename, outfile)
+          outfile = os.path.basename(filename) +'s'
+          print filename, outfile
+          if not os.path.isfile(outfile): os.symlink(filename, outfile)
 
           try:
               log=None #open(logfile, 'a')
@@ -679,7 +680,9 @@ class FirstWindow(QtGui.QMainWindow):
 
       #If the images are spectral images, run specreduce on them
       if obsmode=='SPECTROSCOPY': # and not(target in ['FLAT', 'BIAS']):
-          y1,y2=quickspec(outfile, lampid, objsection=self.objsection, findobj=True, clobber=True, logfile=logfile, verbose=verbose)
+          solfile = iraf.osfn('pysalt$data/rss/RSSwave.db')
+          print solfile
+          y1,y2=quickspec(outfile, lampid, solfile=solfile, objsection=self.objsection, findobj=True, clobber=True, logfile=logfile, verbose=verbose)
           print y1,y2
           specfile=outpath+'smbxp'+infile.split('.fits')[0]+'.txt'
           #In here, so it doesn't break when the first checkdata  runs

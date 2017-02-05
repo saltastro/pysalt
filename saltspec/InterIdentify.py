@@ -1070,7 +1070,7 @@ class ArcDisplay(QtGui.QWidget):
         # lines
         if self.wp:
             slines = np.array(self.wp)
-            sfluxes = self.farr[self.xp]
+            sfluxes = self.farr[np.array(self.xp, dtype=int)]
             # sfluxes=np.zeros(len(slines))
             # for i in range(len(slines)):
             #    try:
