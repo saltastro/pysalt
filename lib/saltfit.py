@@ -63,6 +63,8 @@ from salterror import SaltError
 from scipy import optimize, interpolate
 from scipy.special import legendre, chebyt
 
+from astropy import modeling as mod
+
 
 class power:
     """A class to produce a polynomial term of power n.
@@ -150,11 +152,11 @@ class curfit:
         """
         self.function = function
         if self.function == 'poly' or self.function == 'polynomial' or self.function == 'power':
-            self.func = power
+            self.func = mod.models.Polynomial1D(self.order)
         elif self.function == 'legendre':
-            self.func = legendre
+            self.func = mod.models.Legendre1D(self.order)
         elif self.function == 'chebyshev':
-            self.func = chebyt
+            self.func = mod.models.Chebyshev1D(self.order)
         elif self.function == 'spline':
             self.func = None
         else:
@@ -173,10 +175,7 @@ class curfit:
         """Return the value of the function evaluated at x"""
         if self.function == 'spline':
             return interpolate.splev(x, self.coef, der=0)
-        v = x * 0.0
-        for i in range(self.order + 1):
-            v += self.coef[i] * self.func(i)(x)
-        return v
+        return self.func(x)
 
     def erf_weights(self, coef, x, y, v, weights=None):
         if weights is None:
@@ -211,10 +210,8 @@ class curfit:
             self.set_coef(self.results[0])
 
         else:
-            self.results = optimize.leastsq(self.erf, self.coef,
-                                            args=(self.x, self.y, self.yerr),
-                                            full_output=full_output)
-            self.set_coef(self.results[0])
+            fitter = mod.fitting.LinearLSQFitter()
+            self.func = fitter(self.func, self.x, self.y)
 
 
 class interfit(curfit):
@@ -289,28 +286,25 @@ class interfit(curfit):
             # we are robust to outliers
             # Initialize the weights to 1's
             weights = np.ones(len(self.x))
+            fitter = mod.fitting.LinearLSQFitter()
             # Do 4 iterations for now
             for i in range(self.niter):
                 # do a linear least squares fit
-                self.results = optimize.leastsq(self.erf_weights, self.coef,
-                                                args=(self.x, self.y,
-                                                      self.yerr, weights),
-                                                full_output=full_output)
-                self.set_coef(self.results[0])
+                self.func = fitter(self.func, self.x, self.y, weights=weights)
                 # Recalculate the weights (using the biweights)
                 # Start with the residuals
+
                 r = (self.y - self.__call__(self.x)) / self.yerr
                 # calculate the median absolute deviation
                 # and normalize it to 50% confidence level (0.6745 sigma for a gaussian)
                 s = np.median(abs(r - np.median(r))) / 0.6745
-                biweight = lambda x: ((abs(x) < self.thresh) * (1.0 - x ** 2) ** 2.0) ** 0.5
+                biweight = lambda x: ((abs(x) < self.thresh) * 1.0) #*  (1.0 - x ** 2) ** 2.0) ** 0.5
 
                 weights = biweight(r / s)
                 # We could update p0 to p1 but I would worry that could put us in a
                 # strange part of chi^2 space.
 
             self.mask = (weights>0)
-            self.set_coef(self.results[0])
 
 
 def poly(x, y, order, rej_lo, rej_hi, niter):
