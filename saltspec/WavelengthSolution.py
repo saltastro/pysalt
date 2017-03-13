@@ -58,7 +58,7 @@ class WavelengthSolution:
         if self.function in [
                 'poly', 'polynomial', 'spline', 'legendre', 'chebyshev']:
             self.func.interfit()
-            self.coef = self.func.coef
+            self.coef = self.func.func.parameters
         if self.function in ['model']:
             self.func.fit(cfit=self.cfit)
             self.coef = np.array([c() for c in self.func.coef])
@@ -67,8 +67,8 @@ class WavelengthSolution:
     def set_coef(self, coef):
         if self.function in [
                 'poly', 'polynomial', 'spline', 'legendre', 'chebyshev']:
-            self.func.coef = coef
-            self.coef = self.func.coef
+            self.func.func.parameters= coef
+            self.coef = self.func.func.parameters
         if self.function in ['model']:
             for i in range(len(self.func.coef)):
                 self.func.coef[i].set(coef[i])
