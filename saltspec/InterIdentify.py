@@ -973,13 +973,13 @@ class ArcDisplay(QtGui.QWidget):
         """Given a set of features, find other features that might
            correspond to those features
         """
-        self.set_wdiff()
+        #self.set_wdiff()
 
         # xp, wp=st.findfeatures(self.xarr, self.farr, self.slines, self.sfluxes,
         # self.ws, mdiff=self.mdiff, wdiff=self.wdiff, sigma=self.sigma,
         # niter=self.niter, sections=3)
         xp, wp = st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes, self.ws,
-                                   res=self.res, mdiff=self.mdiff, wdiff=20,
+                                   res=max(self.sigma*self.res, 3), mdiff=self.mdiff, wdiff=10,
                                    sections=self.sections, sigma=self.sigma, niter=self.niter)
         for x, w in zip(xp, wp):
             if w not in self.wp and w > -1:
