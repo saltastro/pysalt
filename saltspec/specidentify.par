@@ -17,6 +17,7 @@ inter,b,h,no,,,'Interactive?'
 startext,i,h,0,,,'Starting Extension number'
 clobber,b,h,no,,,'Overwrite exisitng files?'
 textcolor,s,h,'black',,,'color for wavelengths'
+preprocess,b,h,no,,,'Pre-process the measurement?'
 logfile,s,h,'salt.log',,,'Logfile'
 verbose,b,h,yes,,,'Verbose?'
 mode,s,h,"al" 

@@ -471,7 +471,9 @@ def findfit(xp, wp, ws=None, **kwargs):
         ws = WavelengthSolution.WavelengthSolution(xp, wp, **kwargs)
     else:
         ws.set_array(xp, wp)
+        domain = ws.func.func.domain
         ws.set_func()
+        ws.func.func.domain = domain
     if len(xp) < ws.order:
         msg = 'Not enough points to determine an accurate fit'
         raise SALTSpecError(msg)
