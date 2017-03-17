@@ -478,7 +478,6 @@ def findfit(xp, wp, ws=None, **kwargs):
         msg = 'Not enough points to determine an accurate fit'
         raise SALTSpecError(msg)
     ws.fit()
-    print(ws.func.func.domain)
     return ws
 
 
