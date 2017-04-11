@@ -140,8 +140,12 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
 
             # open the slit definition file or identify the slits in the image
             slitmask = None
+            ycheck = False
             if exttype == 'rsmt':
                 log.message('Using slits from %s' % sfile)
+                if yoffset is None:
+                   yoffset = 0 
+                   ycheck = True
                 slitmask = mt.read_slitmask_from_xml(sfile)
                 xpos = -0.3066
                 ypos = 0.0117
@@ -172,6 +176,10 @@ def specslit(image, outimage, outpref, exttype='auto', slitfile='', outputslitfi
                 if oslit:
                     log.message('Writing slit positions to %s' % oslit)
                     mt.write_outputslitfile(slit_positions, oslit, order)
+
+            if ycheck:
+               slit_positions, dy = check_ypos(slit_positions, struct[1].data) 
+               log.message('Using an offset of {}'.format(dy))
 
             # extract the slits
             spline_x = mt.divide_image(struct[1].data, sections)
@@ -327,8 +335,27 @@ def read_slits_from_fits(simg):
     return order, slit_positions
 
 
-# main code
+def check_ypos(slit_positions, data):
+    """Check the y-position"""
+    from scipy.signal import find_peaks_cwt
 
+    # determine the points that 
+    y = data.sum(axis=1)
+    yp = find_peaks_cwt(np.gradient(y), np.array([5]))
+    x = np.arange(len(y))
+    s_min= x.max()
+    s_max= x.min()
+    for n, ym, yx  in slit_positions: 
+        if ym < s_min: s_min = ym
+        if yx > s_max: s_max = yx
+    dy = yp[yp>10].min()-s_min
+    for i in range(len(slit_positions)):
+        n, ym, yx = slit_positions[i]
+        slit_positions[i] = [n, ym+dy, yx+dy]
+    
+    return slit_positions, dy
+
+# main code
 parfile = iraf.osfn("saltspec$specslit.par")
 t = iraf.IrafTaskFactory(taskname="specslit", value=parfile, function=specslit,
                          pkgname='saltspec')
