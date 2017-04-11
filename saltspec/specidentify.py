@@ -207,7 +207,7 @@ def specidentify(images, linelist, outfile, guesstype='rss', guessfile='',
                         except:
                             slitid = None
 
-                        function, order, coef = findlinesol(
+                        function, order, coef, domain = findlinesol(
                             soldict, ystart, True, timeobs, exptime, instrume, grating, grang, arang, filtername, slitid, xarr=xarr)
                         ws = WavelengthSolution.WavelengthSolution(
                             xarr, xarr, function=function, order=order)
