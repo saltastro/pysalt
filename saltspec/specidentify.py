@@ -211,6 +211,7 @@ def specidentify(images, linelist, outfile, guesstype='rss', guessfile='',
                             soldict, ystart, True, timeobs, exptime, instrume, grating, grang, arang, filtername, slitid, xarr=xarr)
                         ws = WavelengthSolution.WavelengthSolution(
                             xarr, xarr, function=function, order=order)
+                        ws.func.func.domain = domain
                         ws.set_coef(coef)
                     else:
                         raise SALTSpecError(
