@@ -196,6 +196,8 @@ def specidentify(images, linelist, outfile, guesstype='rss', guessfile='',
                         # set up the rss model
                         ws = st.useRSSModel(
                             xarr, rss, function=function, order=order, gamma=rss.gamma)
+                        if function in ['legendre', 'chebyshev']:
+                            ws.func.func.domain=[xarr.min(), xarr.max()]
                     elif guesstype == 'file':
                         soldict = {}
                         soldict = readsolascii(guessfile, soldict)
@@ -217,8 +219,6 @@ def specidentify(images, linelist, outfile, guesstype='rss', guessfile='',
                         raise SALTSpecError(
                             'This guesstype is not currently supported')
 
-                    if function in ['legendre', 'chebyshev']:
-                         ws.func.func.domain=[xarr.min(), xarr.max()]
 
                     # identify the spectral lines
                     ImageSolution = identify(data, slines, sfluxes, xarr, ystart, ws=ws, function=function,
