@@ -485,7 +485,7 @@ def findlinesol(soldict, yc, nearest, timeobs, exptime,
         id_min = t_arr.argmin()
         function = function_list[id_min]
         order = order_list[id_min]
-        domain = order_list[domain]
+        domain = order_list[id_min]
         coef = coef_list[id_min]
 
         # If xarr is None, return the solution closest in time to the
