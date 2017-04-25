@@ -485,17 +485,17 @@ def findlinesol(soldict, yc, nearest, timeobs, exptime,
         id_min = t_arr.argmin()
         function = function_list[id_min]
         order = order_list[id_min]
-        domain = order_list[id_min]
+        domain = domain_list[id_min]
         coef = coef_list[id_min]
 
         # If xarr is None, return the solution closest in time to the
         # obsevation
         if coef is None:
-            return function, order, coef
+            return function, order, coef, domain
 
         # if nearest, return that
         if nearest:
-            return function, order, coef
+            return function, order, coef, domain
 
         # If xarr, then calculation w_arr for each of the solutions available,
         # After calculating the solution, calculated the time weighted average
@@ -511,6 +511,8 @@ def findlinesol(soldict, yc, nearest, timeobs, exptime,
                 xarr,
                 function=function_list[i],
                 order=order_list[i])
+            if function in ['legendre', 'chebyshev']:
+                ws.func.func.domain=domain_list[i] 
             ws.set_coef(coef_list[i])
             try:
                 w_ave += ws.value(xarr) / t ** 2
@@ -525,6 +527,8 @@ def findlinesol(soldict, yc, nearest, timeobs, exptime,
             xarr[
                 ::j], w_ave[
                 ::j], function=function, order=order)
+        if function in ['legendre', 'chebyshev']:
+           ws.func.func.domain=[xarr.min(), xarr.max()]
         ws.fit()
         coef = ws.coef
 
