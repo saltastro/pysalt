@@ -19,7 +19,7 @@ class WavelengthSolution:
                     'chebyshev', 'model']
 
     def __init__(self, x, w, function='poly', order=3, niter=5, thresh=3,
-                 sgraph=None, cfit='both', xlen=3162, yval=0):
+                 sgraph=None, cfit='both', xlen=3162, yval=0, domain=None):
         self.sgraph = sgraph
         self.function = function
         self.order = order
@@ -30,7 +30,7 @@ class WavelengthSolution:
         self.yval = yval
 
         self.set_array(x, w)
-        self.set_func()
+        self.set_func(domain=domain)
 
     def set_array(self, x, w):
         self.x_arr = x
@@ -42,13 +42,15 @@ class WavelengthSolution:
     def set_niter(self, niter):
         self.niter = niter
 
-    def set_func(self):
+    def set_func(self, domain=None):
         if self.function in [
                 'poly', 'polynomial', 'spline', 'legendre', 'chebyshev']:
             self.func = interfit(self.x_arr, self.w_arr,
                                  function=self.function,
                                  order=self.order, niter=self.niter,
                                  thresh=self.thresh)
+            if domain: 
+                 self.func.func.domain=domain
         if self.function == 'model':
             self.func = ModelSolution(self.x_arr, self.w_arr,
                                       sgraph=self.sgraph, xlen=self.xlen,

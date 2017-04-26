@@ -252,7 +252,8 @@ def findwavelengthsolution(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, sigma=5,
     mask = (wp > 0)
     if mask.sum() >= ws.order:
         nws = WavelengthSolution.WavelengthSolution(
-            xp[mask], wp[mask], order=ws.order, function=ws.function)
+            xp[mask], wp[mask], order=ws.order, function=ws.function, 
+            domain = ws.func.func.domain)
         nws.fit()
     else:
         nws = None
@@ -348,7 +349,8 @@ def matchprob(x, w, f, xp, xf, sl, ws, dw=5):
         nws = copy.deepcopy(ws)
     except:
         nws = WavelengthSolution.WavelengthSolution(
-            ws.x_arr, ws.w_arr, ws.function, ws.order)
+            ws.x_arr, ws.w_arr, ws.function, ws.order, 
+            domain=ws.func.func.domain)
         nws.fit()
     nws.coef[0] = nws.coef[0] - (nws.value(x) - w)
 
@@ -471,9 +473,7 @@ def findfit(xp, wp, ws=None, **kwargs):
         ws = WavelengthSolution.WavelengthSolution(xp, wp, **kwargs)
     else:
         ws.set_array(xp, wp)
-        domain = ws.func.func.domain
-        ws.set_func()
-        ws.func.func.domain = domain
+        ws.set_func(domain = ws.func.func.domain)
     if len(xp) < ws.order:
         msg = 'Not enough points to determine an accurate fit'
         raise SALTSpecError(msg)
@@ -518,7 +518,8 @@ def fitxcor(xarr, farr, swarr, sfarr, ws, interptype='interp', method='Nelder-Me
         nws = copy.deepcopy(ws)
     except:
         nws = WavelengthSolution.WavelengthSolution(
-            ws.x_arr, ws.w_arr, ws.function, ws.order)
+            ws.x_arr, ws.w_arr, ws.function, ws.order, 
+            domain = ws.func.func.domain)
         nws.coef.set_coef(ws.coef)
 
     res = minimize(xcorfun, nws.coef, method=method,
@@ -564,7 +565,8 @@ def findxcor(xarr, farr, swarr, sfarr, ws, dcoef=None, ndstep=20, best=False,
         nws = copy.deepcopy(ws)
     except:
         nws = WavelengthSolution.WavelengthSolution(
-            ws.x_arr, ws.w_arr, ws.function, ws.order)
+            ws.x_arr, ws.w_arr, ws.function, ws.order, 
+            domain = ws.func.func.domain)
         nws.coef.set_coef(ws.coef)
  
     # create the range of coefficents
