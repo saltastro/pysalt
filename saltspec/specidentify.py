@@ -68,7 +68,7 @@ def specidentify(images, linelist, outfile, guesstype='rss', guessfile='',
                  automethod='Matchlines', function='poly', order=3, rstep=100,
                  rstart='middlerow', mdiff=5, thresh=3, niter=5, smooth=0,
                  subback=0, inter=True, startext=0,  clobber=False, 
-                 textcolor='black', logfile='salt.log', verbose=True):
+                 textcolor='black', preprocess=False,  logfile='salt.log', verbose=True):
 
     with logging(logfile, debug) as log:
 
@@ -196,6 +196,8 @@ def specidentify(images, linelist, outfile, guesstype='rss', guessfile='',
                         # set up the rss model
                         ws = st.useRSSModel(
                             xarr, rss, function=function, order=order, gamma=rss.gamma)
+                        if function in ['legendre', 'chebyshev']:
+                            ws.func.func.domain=[xarr.min(), xarr.max()]
                     elif guesstype == 'file':
                         soldict = {}
                         soldict = readsolascii(guessfile, soldict)
@@ -207,33 +209,34 @@ def specidentify(images, linelist, outfile, guesstype='rss', guessfile='',
                         except:
                             slitid = None
 
-                        function, order, coef = findlinesol(
+                        function, order, coef, domain = findlinesol(
                             soldict, ystart, True, timeobs, exptime, instrume, grating, grang, arang, filtername, slitid, xarr=xarr)
                         ws = WavelengthSolution.WavelengthSolution(
                             xarr, xarr, function=function, order=order)
+                        ws.func.func.domain = domain
                         ws.set_coef(coef)
                     else:
                         raise SALTSpecError(
                             'This guesstype is not currently supported')
 
+
                     # identify the spectral lines
                     ImageSolution = identify(data, slines, sfluxes, xarr, ystart, ws=ws, function=function,
                                              order=order, rstep=rstep,  mdiff=mdiff, thresh=thresh, niter=niter,
                                              method=automethod, res=res, dres=dres, smooth=smooth, inter=inter, filename=img,
-                                             subback=0, textcolor=textcolor, log=log, verbose=verbose)
+                                             subback=0, textcolor=textcolor, preprocess=preprocess, log=log, verbose=verbose)
 
                     if outfile and len(ImageSolution):
                         writeIS(ImageSolution, outfile, dateobs=dateobs, utctime=utctime, instrume=instrume,
                                 grating=grating, grang=grang, grasteps=grasteps, arsteps=arsteps,
                                 arang=arang, rfilter=rssfilter, slit=slit, xbin=xbin,
-                                ybin=ybin, objid=objid,
-                                filename=img, log=log, verbose=verbose)
+                                ybin=ybin, objid=objid, filename=img, log=log, verbose=verbose)
 
 
 def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', order=3,
              rstep=1, nrows=1, mdiff=5, thresh=3, niter=5, dc=3, ndstep=50, dsigma=5,
              method='Zeropoint', res=2, dres=0.2, filename=None, smooth=0, inter=True,
-             subback=0, textcolor='green', log=None, verbose=True):
+             subback=0, textcolor='green', preprocess=False, log=None, verbose=True):
     """For a given image, find the solution for each row in the file.  Use the appropriate first guess and
        guess type along with the appropriate function and order for the fit.
 
@@ -277,7 +280,7 @@ def identify(data, slines, sfluxes, xarr, istart, ws=None, function='poly', orde
                                       function=function, order=order, sigma=thresh, niter=niter,
                                       res=res, dres=dres, dc=dc, ndstep=ndstep, istart=istart,
                                       method=method, smooth=smooth, filename=filename,
-                                      subback=subback, textcolor=textcolor, log=log, verbose=True)
+                                      subback=subback, textcolor=textcolor, preprocess=preprocess, log=log, verbose=True)
     else:
         ImageSolution = AutoIdentify(xarr, data, slines, sfluxes, ws,
                                      rstep=rstep, method=method, istart=istart, nrows=nrows, mdiff=mdiff,
@@ -329,6 +332,8 @@ def writeIS(ImageSolution, outfile, dateobs=None, utctime=None, instrume=None,
         msg += '#slitid=%s\n' % objid
     msg += '#Function=%s\n' % function
     msg += '#Order=%s\n' % order
+    if ws.func.func.domain is not None: 
+        msg += '#domain={},{}\n'.format(ws.func.func.domain[0], ws.func.func.domain[1])
     msg += '#Starting Data\n'
     dout.write(msg)
 

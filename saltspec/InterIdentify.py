@@ -61,7 +61,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
     def __init__(self, xarr, specarr, slines, sfluxes, ws, hmin=150, wmin=400, mdiff=20,
                  filename=None, res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, smooth=0, niter=5, istart=None,
                  nrows=1, rstep=100, method='Zeropoint', ivar=None, cmap='gray', scale='zscale', contrast=1.0,
-                 subback=0, textcolor='green', log=None, verbose=True):
+                 subback=0, textcolor='green', preprocess=False, log=None, verbose=True):
         """Default constructor."""
 
         # set up the variables
@@ -96,6 +96,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         self.filename = filename
         self.ImageSolution = {}
         self.textcolor = textcolor
+        self.preprocess = preprocess
         self.log = log
         self.verbose = verbose
 
@@ -120,7 +121,8 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         self.arcdisplay = ArcDisplay(xarr, self.farr, slines, sfluxes, self.ws, specarr=self.specarr,
                                      res=self.res, dres=self.dres, dc=self.dc, ndstep=self.ndstep, xp=[], wp=[],
                                      method=self.method, smooth=self.smooth, niter=self.niter, mdiff=self.mdiff,
-                                     sigma=self.sigma, textcolor=self.textcolor, log=self.log, verbose=self.verbose)
+                                     sigma=self.sigma, textcolor=self.textcolor, preprocess=self.preprocess, 
+                                     log=self.log, verbose=self.verbose)
         self.arcPage = arcWidget(
             self.arcdisplay,
             hmin=hmin,
@@ -194,6 +196,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
             xp=[],
             wp=[],
             textcolor=self.textcolor,
+            preprocess=self.preprocess, 
             log=self.log,
             verbose=self.verbose)
         self.arcPage = arcWidget(
@@ -238,6 +241,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
                 self.ws.w_arr,
                 order=self.ws.order,
                 function=self.ws.function)
+            nws.func.func.domain = self.ws.func.func.domain
             try:
                 nws.fit()
             except Exception as e:
@@ -260,6 +264,7 @@ class InterIdentifyWindow(QtGui.QMainWindow):
                 ws.w_arr,
                 order=ws.order,
                 function=ws.function)
+            nws.func.func.domain = ws.domain
             nws.fit()
             return nws
         except:
@@ -673,7 +678,7 @@ class ArcDisplay(QtGui.QWidget):
 
     def __init__(self, xarr, farr, slines, sfluxes, ws, xp=[], wp=[], mdiff=20, specarr=None,
                  res=2.0, dres=0.1, dc=20, ndstep=20, sigma=5, smooth=0, niter=5, method='MatchZero',
-                 textcolor='green', log=None, verbose=True):
+                 textcolor='green', preprocess=False, log=None, verbose=True):
         """Default constructor."""
         QtGui.QWidget.__init__(self)
 
@@ -713,6 +718,7 @@ class ArcDisplay(QtGui.QWidget):
         self.ndstep = ndstep
         self.method = method
         self.textcolor = textcolor
+        self.preprocess = preprocess
         self.log = log
         self.verbose = True
 
@@ -758,6 +764,14 @@ class ArcDisplay(QtGui.QWidget):
         self.xmax = self.xarr.max()
         self.ymin = self.farr.min()
         self.ymax = self.farr.max()
+ 
+        #preprocess if asked
+        if self.preprocess: 
+             self.log.message("Preprocessing Spectra", with_header=False)
+             self.findzpd()
+             self.findfeatures()
+             self.findfit()
+             self.isFeature = True
 
     def help(self):
         helpoutput = """
@@ -973,13 +987,13 @@ class ArcDisplay(QtGui.QWidget):
         """Given a set of features, find other features that might
            correspond to those features
         """
-        self.set_wdiff()
+        #self.set_wdiff()
 
         # xp, wp=st.findfeatures(self.xarr, self.farr, self.slines, self.sfluxes,
         # self.ws, mdiff=self.mdiff, wdiff=self.wdiff, sigma=self.sigma,
         # niter=self.niter, sections=3)
         xp, wp = st.crosslinematch(self.xarr, self.farr, self.slines, self.sfluxes, self.ws,
-                                   res=self.res, mdiff=self.mdiff, wdiff=20,
+                                   res=max(self.sigma*self.res, 3), mdiff=self.mdiff, wdiff=10,
                                    sections=self.sections, sigma=self.sigma, niter=self.niter)
         for x, w in zip(xp, wp):
             if w not in self.wp and w > -1:
@@ -1216,13 +1230,14 @@ class ArcDisplay(QtGui.QWidget):
 def InterIdentify(xarr, specarr, slines, sfluxes, ws, mdiff=20, rstep=1, filename=None,
                   function='poly', order=3, sigma=3, smooth=0, niter=5, res=2, dres=0.1, dc=20, ndstep=20,
                   istart=None, method='Zeropoint', scale='zscale', cmap='gray', contrast=1.0,
-                  subback=0, textcolor='green', log=None, verbose=True):
+                  subback=0, textcolor='green', preprocess=False, log=None, verbose=True):
 
     # Create GUI
     App = QtGui.QApplication(sys.argv)
     aw = InterIdentifyWindow(xarr, specarr, slines, sfluxes, ws, rstep=rstep, mdiff=mdiff, sigma=sigma, niter=niter,
                              res=res, dres=dres, dc=dc, ndstep=ndstep, istart=istart, method=method, smooth=smooth,subback=subback,
-                             cmap=cmap, scale=scale, contrast=contrast, filename=filename, textcolor=textcolor, log=log)
+                             cmap=cmap, scale=scale, contrast=contrast, filename=filename, textcolor=textcolor, preprocess=preprocess, 
+                             log=log)
     aw.show()
     # Start application event loop
     exit = App.exec_()
