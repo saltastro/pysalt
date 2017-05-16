@@ -144,7 +144,7 @@ def readtimefix(hdu, dsteps=7, transtime=4e-3):
     newtime=newtime-datetime.timedelta(0, s, ms)
 
     #update the headkeywords
-    hdu.header.update("UTC-OBS", str(newtime.time()))
+    hdu.header["UTC-OBS"]=str(newtime.time())
     saltkey.put("UTC-OBS", str(newtime.time()), hdu)
     saltkey.put("TIME-OBS", str(newtime.time()), hdu)
     saltkey.put("DATE-OBS", str(newtime.date()), hdu)
