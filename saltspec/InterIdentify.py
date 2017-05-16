@@ -109,7 +109,6 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         # Set window title
         self.setWindowTitle("InterIdentify")
 
-        
         # create the Image page
         self.imagePage = imageWidget(self.specarr, y1=self.y1, y2=self.y2, hmin=self.hmin, wmin=self.wmin, cmap=self.cmap,
                                      rstep=self.rstep, name=self.filename, scale=self.scale, contrast=self.contrast, log=self.log)
@@ -134,14 +133,12 @@ class InterIdentifyWindow(QtGui.QMainWindow):
         # set up the residual page
         self.errPage = errWidget(self.arcdisplay, hmin=hmin, wmin=wmin)
 
-        
         # create the tabs
         self.tabWidget = QtGui.QTabWidget()
         self.tabWidget.addTab(self.imagePage, 'Image')
         self.tabWidget.addTab(self.arcPage, 'Arc')
         self.tabWidget.addTab(self.errPage, 'Residual')
 
-        
         # layout the widgets
         mainLayout = QtGui.QVBoxLayout(self.main)
         mainLayout.addWidget(self.tabWidget)
@@ -1257,12 +1254,3 @@ def InterIdentify(xarr, specarr, slines, sfluxes, ws, mdiff=20, rstep=1, filenam
             str(exit))
     del aw
     return imsol
-
-
-
-
-
-
-
-
-
