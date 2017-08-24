@@ -335,12 +335,12 @@ def makeinterpsolution(xarr, soldict, timeobs, exptime,
     wsrow = soldict[bsol][9]
     wscoef = []
     for y_i in wsrow:
-        function, order, coef = findlinesol(
+        function, order, coef, domain = findlinesol(
             soldict, y_i, nearest, timeobs, exptime, instrume, grating, grang, arang, filtername, slitid, xarr)
         wscoef.append(coef)
 
     return [timeobs, instrume, grating, grang, arang,
-            filtername, None, function, order, wsrow, wscoef]
+            filtername, None, function, order, wsrow, wscoef, domain]
 
 
 def findsol(xarr, soldict, y_i, caltype, nearest, timeobs, exptime, instrume, grating, grang, arang, filtername,
@@ -351,7 +351,7 @@ def findsol(xarr, soldict, y_i, caltype, nearest, timeobs, exptime, instrume, gr
     """
 
     if caltype == 'line':
-        function, order, coef = findlinesol(
+        function, order, coef, domain = findlinesol(
             soldict, y_i, nearest, timeobs, exptime, instrume, grating, grang, arang, filtername, slitid, xarr)
         if function is None:
             msg = 'No solution matches for %s, %s, %s, %s, %s, %s' % (
@@ -364,7 +364,8 @@ def findsol(xarr, soldict, y_i, caltype, nearest, timeobs, exptime, instrume, gr
             xarr,
             xarr,
             function=function,
-            order=order)
+            order=order) 
+        ws.func.func.domain = domain
         ws.set_coef(coef)
         w_arr = ws.value(xarr)
 
@@ -439,13 +440,15 @@ def findlinesol(soldict, yc, nearest, timeobs, exptime,
         function = soldict[sol][7]
         order = soldict[sol][8]
         coef = findcoef(yc, soldict[sol][9], soldict[sol][10])
-        return function, order, coef
+        domain = soldict[sol][11]
+        return function, order, coef, domain
 
     # first find the closest wavelength solution in time and use that for
     # a base sample
     time_list = []
     function_list = []
     order_list = []
+    domain_list = []
     coef_list = []
     for sol in soldict:
         if matchobservations(
@@ -455,12 +458,14 @@ def findlinesol(soldict, yc, nearest, timeobs, exptime,
                 function = soldict[sol][7]
                 order = soldict[sol][8]
                 coef = findcoef(yc, soldict[sol][9], soldict[sol][10])
-                return function, order, coef
+                domain = soldict[sol][11]
+                return function, order, coef, domain
             else:
                 t = timeobs + datetime.timedelta(seconds=exptime)
                 time_list.append(subtracttime(soldict[sol][0], t))
                 function_list.append(soldict[sol][7])
                 order_list.append(soldict[sol][8])
+                domain_list.append(soldict[sol][11])
                 coef_list.append(
                     findcoef(
                         yc,
@@ -470,25 +475,27 @@ def findlinesol(soldict, yc, nearest, timeobs, exptime,
     if len(time_list) == 1:
         function = function_list[0]
         order = order_list[0]
+        domain = domain_list[0]
         coef = coef_list[0]
     elif len(time_list) < 1:
-        return None, None, None
+        return None, None, None, None
     else:
         # determine the points closest in time to the observation
         t_arr = np.array(time_list)
         id_min = t_arr.argmin()
         function = function_list[id_min]
         order = order_list[id_min]
+        domain = domain_list[id_min]
         coef = coef_list[id_min]
 
         # If xarr is None, return the solution closest in time to the
         # obsevation
         if coef is None:
-            return function, order, coef
+            return function, order, coef, domain
 
         # if nearest, return that
         if nearest:
-            return function, order, coef
+            return function, order, coef, domain
 
         # If xarr, then calculation w_arr for each of the solutions available,
         # After calculating the solution, calculated the time weighted average
@@ -504,6 +511,8 @@ def findlinesol(soldict, yc, nearest, timeobs, exptime,
                 xarr,
                 function=function_list[i],
                 order=order_list[i])
+            if function in ['legendre', 'chebyshev']:
+                ws.func.func.domain=domain_list[i] 
             ws.set_coef(coef_list[i])
             try:
                 w_ave += ws.value(xarr) / t ** 2
@@ -518,10 +527,12 @@ def findlinesol(soldict, yc, nearest, timeobs, exptime,
             xarr[
                 ::j], w_ave[
                 ::j], function=function, order=order)
+        if function in ['legendre', 'chebyshev']:
+           ws.func.func.domain=[xarr.min(), xarr.max()]
         ws.fit()
         coef = ws.coef
 
-    return function, order, coef
+    return function, order, coef, domain
 
 # -----------------------------------------------------------------------------
 # Determine if two observations are the same
@@ -634,6 +645,11 @@ def readsolascii(solfile, soldict):
             name = name + '_' + slitid
         except:
             slitid = None
+        try:
+            domain = findwskeyword('domain', sol)
+            domain = [float(x) for x in domain.split(',')]
+        except:
+            domain = None
         wsrow = []
         wscoef = []
         j = finddata(sol)
@@ -653,7 +669,8 @@ def readsolascii(solfile, soldict):
             function,
             order,
             np.array(wsrow),
-            wscoef]
+            wscoef,
+            domain]
 
     return soldict
 

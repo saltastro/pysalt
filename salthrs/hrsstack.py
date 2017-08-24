@@ -101,7 +101,10 @@ def stack(hdu):
     print detector
 
     #get key parameters
-    nccd=saltkey.get('CCDAMPS', hdu[0])
+    try:
+       nccd=saltkey.get('CCDAMPS', hdu[0]) 
+    except:
+       nccd=saltkey.get('CCDNAMPS', hdu[0]) 
 
     #determine the shape of the CCD
     if detector=='hbdet':

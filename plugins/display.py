@@ -43,7 +43,7 @@ S M Crawford (SAAO)    0.1          19 Jun 2011
 
 """
 import os
-import ds9
+import pyds9 as ds9
 
 def display(filename, target='saltfirst', catname=None, rformat='xy'):
    d=ds9.ds9()

@@ -177,26 +177,17 @@ def find_peaks(f_arr, sigma, niter, bsigma=None):
     return t + 1
 
 
-def detect_lines(w_arr, f_arr, sigma=3, bsigma=None, niter=5, mask=None,
+def detect_lines(w_arr, f_arr, sigma=3, niter=5, 
                  kern=default_kernal, center=False):
     """Detect lines goes through a 1-D spectra and detect peaks
 
       w_arr--xaxis array (pixels, wavelength, etc)
       f_arr--yaxis array (flux, counts, etc)
       sigma--Threshold for detecting sources
-      bsigma--Threshold for determining background statistics
       niter--iterations to determine background
       center--return centroids and not pixels
       mask--Pixels not to use
     """
-    # set up the variables
-    if bsigma is None:
-        bsigma = sigma
-
-    if mask:
-        f_arr = f_arr[mask]
-        w_arr = w_arr[mask]
-
     # find all peaks
     xp = signal.find_peaks_cwt(f_arr, np.array([sigma]))
     xp = np.array(xp)
@@ -206,7 +197,7 @@ def detect_lines(w_arr, f_arr, sigma=3, bsigma=None, niter=5, mask=None,
         xdiff = int(0.5 * len(kern) + 1)
         xp = xp * 1.0
         for i in range(len(xp)):
-            xp[i] = mcentroid(w_arr, f_arr, kern=kern, xdiff=xdiff, xc=w_arr[xp[i]])
+            xp[i] = mcentroid(w_arr, f_arr, kern=kern, xdiff=xdiff, xc=w_arr[int(xp[i])])
 
     return xp
 
@@ -261,7 +252,8 @@ def findwavelengthsolution(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, sigma=5,
     mask = (wp > 0)
     if mask.sum() >= ws.order:
         nws = WavelengthSolution.WavelengthSolution(
-            xp[mask], wp[mask], order=ws.order, function=ws.function)
+            xp[mask], wp[mask], order=ws.order, function=ws.function, 
+            domain = ws.func.func.domain)
         nws.fit()
     else:
         nws = None
@@ -357,7 +349,8 @@ def matchprob(x, w, f, xp, xf, sl, ws, dw=5):
         nws = copy.deepcopy(ws)
     except:
         nws = WavelengthSolution.WavelengthSolution(
-            ws.x_arr, ws.w_arr, ws.function, ws.order)
+            ws.x_arr, ws.w_arr, ws.function, ws.order, 
+            domain=ws.func.func.domain)
         nws.fit()
     nws.coef[0] = nws.coef[0] - (nws.value(x) - w)
 
@@ -480,7 +473,7 @@ def findfit(xp, wp, ws=None, **kwargs):
         ws = WavelengthSolution.WavelengthSolution(xp, wp, **kwargs)
     else:
         ws.set_array(xp, wp)
-        ws.set_func()
+        ws.set_func(domain = ws.func.func.domain)
     if len(xp) < ws.order:
         msg = 'Not enough points to determine an accurate fit'
         raise SALTSpecError(msg)
@@ -525,7 +518,8 @@ def fitxcor(xarr, farr, swarr, sfarr, ws, interptype='interp', method='Nelder-Me
         nws = copy.deepcopy(ws)
     except:
         nws = WavelengthSolution.WavelengthSolution(
-            ws.x_arr, ws.w_arr, ws.function, ws.order)
+            ws.x_arr, ws.w_arr, ws.function, ws.order, 
+            domain = ws.func.func.domain)
         nws.coef.set_coef(ws.coef)
 
     res = minimize(xcorfun, nws.coef, method=method,
@@ -571,9 +565,10 @@ def findxcor(xarr, farr, swarr, sfarr, ws, dcoef=None, ndstep=20, best=False,
         nws = copy.deepcopy(ws)
     except:
         nws = WavelengthSolution.WavelengthSolution(
-            ws.x_arr, ws.w_arr, ws.function, ws.order)
+            ws.x_arr, ws.w_arr, ws.function, ws.order, 
+            domain = ws.func.func.domain)
         nws.coef.set_coef(ws.coef)
-
+ 
     # create the range of coefficents
     if dcoef is None:
         dcoef = ws.coef * 0.0 + 1.0
@@ -581,7 +576,7 @@ def findxcor(xarr, farr, swarr, sfarr, ws, dcoef=None, ndstep=20, best=False,
     dlist = mod_coef(ws.coef, dcoef, 0, ndstep)
     # loop through them and deteremine the best cofficient
     cc_arr = np.zeros(len(dlist), dtype=float)
-
+    
     for i in range(len(dlist)):
         # set the coeficient
         nws.set_coef(dlist[i])
@@ -597,7 +592,7 @@ def findxcor(xarr, farr, swarr, sfarr, ws, dcoef=None, ndstep=20, best=False,
         # calculate the correlation value
         cc_arr[i] = ncor(farr, asfarr)
         if debug:
-            print cc_arr[i], " ".join(["%f" % k for k in dlist[i]])
+            print(cc_arr[i], " ".join(["%f" % k for k in dlist[i]]))
 
     # now set the best coefficients
     i = cc_arr.argmax()
@@ -761,7 +756,11 @@ def readasciilinelist(linelist):
 def getslitsize(slitname, config_file=''):
     """Return the slit size for a given slit name"""
     slitname=slitname.strip()
-    return float(slitname[2:6])/100.0
+    try:
+       size = float(slitname[2:6])/100.0
+    except:
+       size = 1.5
+    return size
 
 
 def makesection(section):
@@ -872,7 +871,7 @@ def crosslinematch(xarr, farr, sl, sf, ws, mdiff=20, wdiff=20, res=2, dres=0.1,
         if sl[i] < warr.max() and sl[i] > warr.min():
             mask = abs(warr - sl[i]) < wdiff
             smask = abs(swarr - sl[i]) < wdiff
-            nws = findxcor(xarr[mask], farr[mask], swarr[smask], sfarr[smask],
+            nws = findxcor(xarr[mask], farr[mask].astype('float64'), swarr[smask], sfarr[smask],
                            ws, dcoef=dcoef, ndstep=20, best=False,
                            inttype='interp', debug=False)
             # now find the best matching point

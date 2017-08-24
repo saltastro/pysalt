@@ -44,7 +44,7 @@ from pyraf.iraf import pysalt
 
 # Gui library imports
 from PyQt4 import QtGui, QtCore
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT
 
 # Salt imports
 import saltsafeio
@@ -86,7 +86,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.imdisplay.contrast=contrast
 
         # Add navigation toolbars for each widget to enable zooming
-        self.toolbar=NavigationToolbar2QTAgg(self.imdisplay,self)
+        self.toolbar=NavigationToolbar2QT(self.imdisplay,self)
 
         # Add configuration widget and connect it to the display widget
         self.conf = PhotometryConfigWidget(imdisplay=self.imdisplay, imlist=imlist, number=number, config=config)

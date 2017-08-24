@@ -42,6 +42,8 @@ from xml.dom import minidom
 
 from slitmask import SlitMask
 
+from astropy import modeling as mod
+
 nullfmt = NullFormatter()
 
 MAX_REJECT = 0.5
@@ -688,7 +690,6 @@ def convert_slits_from_mask(
     ypixscale = pix_scale * ybin
 
     # convert the slitlets in the slit mask to slits for extraction
-    print xbin, ybin
     for i in range(slitmask.slitlets.nobjects):
         sid = slitmask.slitlets.data[i]['name']
         sra = slitmask.slitlets.data[i]['targ_ra']
@@ -746,3 +747,57 @@ def parsexml(xmlfile):
 
     # to convert the unicode to strings just do:
     # str(p1.getAttribute('name'))
+
+
+def extract_fit_flux(data, padding=1):
+    """For each column, fit the flux in that column to a model and return the flux.  This fits a 
+    flat baseline plus a guassian to the summed line profile and then fixes the mean and stddev
+    of the Guassian profile.  The amplitude and baseline are then fit to each wavelength in the 
+    data.
+
+    Prior to fitting, the function examines the slit to only include good data.
+    
+    Parameters
+    ----------
+    data: np.ndarray
+        2-D array of fluxes
+ 
+    padding: int
+        Padding around identify edges
+        
+    
+    Returns 
+    -------
+    flux
+    """
+    
+    #determine the upper and lower bounds of where the data are useful
+    s = data.sum(axis=1)
+    t = numpy.gradient(s)/numpy.median(s)
+    v = numpy.gradient(numpy.gradient(s)/numpy.median(s))
+    i_min = t.argmin()
+    i_max = t.argmax()
+    i_max = i_max + numpy.where(t[i_max:]<0.05)[0][0] + padding
+    i_min = numpy.where(t[:i_min]>-0.05)[0][-1] - padding
+    c = data[i_max:i_min, :]
+    
+    #build the best fit model 
+    sarr = c.sum(axis=1)
+    xarr = numpy.arange(len(sarr))
+    fitter=mod.fitting.LevMarLSQFitter()
+    m_init=mod.models.Gaussian1D(amplitude=sarr.max(), mean=xarr[sarr.argmax()], stddev=5) + mod.models.Polynomial1D(0)
+    m = fitter(m_init, xarr, sarr)
+    m.stddev_0.fixed=True
+    m.mean_0.fixed=True
+    
+    
+    # fit each row to the model 
+    ys, xs = c.shape
+    flux = numpy.zeros(xs)
+    sky = numpy.zeros(xs)
+    for i in range(xs):
+        n = fitter(m, xarr, c[:,i])
+        flux[i] = n.amplitude_0.value
+        sky[i] = n.c0_1.value
+        
+    return flux, sky

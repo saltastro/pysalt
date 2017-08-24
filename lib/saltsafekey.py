@@ -265,8 +265,8 @@ def copy(new,old,key):
 
     if found(key,old):
         try:
-            oldcard=old.header.ascardlist()
-            new.header[key] = (old.header[key],oldcard[key].comment)
+            oldcard=old.header.cards
+            new.header[key] = (oldcard[key].value,oldcard[key].comment)
         except:
             raise SaltIOError('Cannot COPY KEYWORD '+key)
 
