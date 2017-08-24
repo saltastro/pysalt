@@ -108,9 +108,8 @@ def fits_header_check(image, fits_header_dict=None, missing=False):
 
     if instrument == 'RSS':
        # check LAMPID
-       if hdu[0].header['CCDTYPE'] == 'ARC' and hdu[0].header['LAMPID']=='NONE':
+       if hdu[0].header['CCDTYPE'] == 'ARC' and hdu[0].header['LAMPID'].strip()=='NONE':
           wrong_list.append('LAMPID')
- 
 
     # check for extension keywords
 
@@ -123,7 +122,7 @@ def fits_header_check(image, fits_header_dict=None, missing=False):
 
     hdu.close()
 
-    if missing_list or empty_list or absent_list:
+    if missing_list or empty_list or absent_list or wrong_list:
        return missing_list, empty_list, wrong_list, absent_list
 
     return 
