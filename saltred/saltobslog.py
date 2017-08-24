@@ -76,7 +76,7 @@ from salterror import SaltError, SaltIOError
 # core routine
 
 headerList=['FILENAME', 'PROPID', 'PROPOSER', 'OBJECT', 'RA', 'DEC', 'OBJEPOCH', 'EPOCH', 'EQUINOX', 'DATE-OBS', 'UTC-OBS', 'TIME-OBS', 'EXPTIME', 'OBSMODE', 'DETMODE', 'CCDTYPE', 'DETSIZE', 'NCCDS', 'CCDSUM', 'GAINSET', 'ROSPEED', 'INSTRUME', 'FILTER', 'CAMFOCUS', 'TELHA', 'TELRA', 'TELDEC', 'TELPA', 'TELAZ', 'TELALT', 'TRKX', 'TRKY', 'TRKZ', 'TRKPHI', 'TRKTHETA', 'TRKRHO', 'TELFOCUS', 'COLPHI', 'COLTHETA', 'TELTEM', 'PAYLTEM', 'CCDTEM', 'DEWTEM', 'AMPTEM', 'CENTEM', 'DETSWV', 'BLOCKID', 'BVISITID']
-formatList=['32A', '50A', '20A', '100A', '1A', '12A', 'E', 'E', 'E', '10A', '12A', 
+formatList=['32A', '50A', '20A', '100A', '12A', '12A', 'E', 'E', 'E', '10A', '12A', 
             '12A', 'D', '20A', '20A', '8A', '23A', 'I', '5A', '6A', '4A', '8A', '8A',
             'J', '11A', '11A', '12A', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E',
             'E', 'E', 'E', 'E', 'E', 'E', 'D', 'E', 'E', 'D', '16A', 'E', 'E' ]
