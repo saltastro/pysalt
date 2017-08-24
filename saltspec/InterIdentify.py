@@ -1233,11 +1233,15 @@ def InterIdentify(xarr, specarr, slines, sfluxes, ws, mdiff=20, rstep=1, filenam
                   subback=0, textcolor='green', preprocess=False, log=None, verbose=True):
 
     # Create GUI
-    App = QtGui.QApplication(sys.argv)
+    global App
+    App = QtGui.QApplication.instance()
+    if App is None:
+        App = QtGui.QApplication(sys.argv)
     aw = InterIdentifyWindow(xarr, specarr, slines, sfluxes, ws, rstep=rstep, mdiff=mdiff, sigma=sigma, niter=niter,
                              res=res, dres=dres, dc=dc, ndstep=ndstep, istart=istart, method=method, smooth=smooth,subback=subback,
                              cmap=cmap, scale=scale, contrast=contrast, filename=filename, textcolor=textcolor, preprocess=preprocess, 
                              log=log)
+    
     aw.show()
     # Start application event loop
     exit = App.exec_()
