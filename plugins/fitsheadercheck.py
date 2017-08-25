@@ -110,6 +110,8 @@ def fits_header_check(image, fits_header_dict=None, missing=False):
        # check LAMPID
        if hdu[0].header['CCDTYPE'] == 'ARC' and hdu[0].header['LAMPID'].strip()=='NONE':
           wrong_list.append('LAMPID')
+       if hdu[0].header['CCDTYPE'] == 'FLAT' and hdu[0].header['LAMPID'].strip()=='NONE':
+          wrong_list.append('LAMPID')
 
     # check for extension keywords
 
