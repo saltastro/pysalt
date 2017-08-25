@@ -100,7 +100,7 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
     #+-----------------------+----------------------------------+
 
     #select all the RSS data from this obsdate
-    rssheaderlist='f.CCDTYPE, d.DETMODE, d.OBSMODE, CCDSUM, GAINSET, ROSPEED, FILTER, GRATING, GR_STA, AR_STA, MASKID'
+    rssheaderlist='f.CCDTYPE, d.DETMODE, d.OBSMODE, CCDSUM, GAINSET, ROSPEED, FILTER, GRATING, GRTILT, AR_STA, MASKID'
     cmd_select='d.FileName,d.FileData_Id, %s' % rssheaderlist
     # CCDTYPE, DETMODE, OBSMODE, CCDSUM, GAINSET, ROSPEED, FILTER, GRATING, GR_STA, AR_STA, MASKID'
     cmd_table=''' FileData as d
@@ -108,17 +108,18 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
   left join FitsHeaderRss using (FileData_Id)
   join ProposalCode using (ProposalCode_Id)
 '''
-    cmd_logic="d.FileName like 'P" + obsdate+"%' and CCDTYPE='OBJECT' and Proposal_Code not like 'CAL_SPST'"
+    cmd_logic="d.FileName like 'P" + obsdate+"%' and CCDTYPE='OBJECT' and Proposal_Code not like 'CAL_SPST' and GRTILT > 0"
 
     results=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)
 
     #loop through all the results and return only the Set of identical results
     caldict=create_caldict(results)
-    caldict=[]
+
     #insert the rss results into the database
     for k in caldict:
        #first check to see if it has already been entered
        record=saltmysql.select(sdb, 'FileData_Id', 'RssNightlyCalibration', 'FileData_Id=%i' % k) 
+
        if len(record)<1:
            #period for checking for SPST.  If the uses requests this, it gets set to 
            # 7 days, but the default is taken within the last month for non-requests
@@ -186,14 +187,9 @@ def findcal(obsdate, sdbhost, sdbname, sdbuser, password):
     cmd_logic="d.FileName like 'H" + obsdate+"%' and CCDTYPE='Science' and Proposal_Code not like 'CAL_SPST'"
 
     results=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)
-    print cmd_select
-    print cmd_table
-    print cmd_logic
-    print results
 
     #loop through all the results and return only the Set of identical results
     caldict=create_caldict(results)
-    print caldict
 
     for k in caldict:
        #first check to see if it has already been entered
@@ -242,7 +238,6 @@ def checkforbias(sdb, k, instr='rss'):
     select='CCDSUM,GAINSET, ROSPEED'
     table='FileData join %s using (FileData_Id)' % fitstable
     logic='FileData_Id=%i' % k
-    print select, table, logic
     kdata=saltmysql.select(sdb, select, table, logic)[0]
     for i in record:
         idata=saltmysql.select(sdb, select, table, 'FileData_Id=%i' % i)[0]
@@ -356,7 +351,6 @@ def checkforhrscal(sdb, obsmode, propid, cal_type, period=7):
 '''
     cmd_logic="Proposal_Code like '%s' and OBSMODE like '%s' and UTSTART>'%s'" % (propid, obsmode, utstart)
     results=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)
-
     if len(results) > 0: return True
 
     #now check the nightly calibrations table
@@ -370,7 +364,7 @@ def checkforhrscal(sdb, obsmode, propid, cal_type, period=7):
     return False
 
 
-def checkforspst(sdb, fid, keylist, plist, period=7):
+def checkforspst(sdb, fid, keylist, plist, period=7, utstart=None):
     """Check the sdb for SPST observations.  Returns true if the data have been taken in the 
        last period.
 
@@ -393,11 +387,12 @@ def checkforspst(sdb, fid, keylist, plist, period=7):
     """
     caltable='RssNightlyCalibration'
 
-    try:
-       utstart=saltmysql.select(sdb, 'UTStart', 'FileData', 'FileData_Id=%i' % fid)[0][0]
-    except Exception, e:
-       print e
-       return False
+    if utstart is None:
+       try:
+          utstart=saltmysql.select(sdb, 'UTStart', 'FileData', 'FileData_Id=%i' % fid)[0][0]
+       except Exception, e:
+          print e
+          return False
 
     #set the period for to check for the data
     utstart=utstart-datetime.timedelta(days=period)

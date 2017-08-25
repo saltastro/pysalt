@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 import argparse
 
@@ -97,7 +98,7 @@ def fits_header_check(image, fits_header_dict=None, missing=False):
         if key in hdu[0].header:
            value = hdu[0].header[key]
            if not value:
-              if fits_header_dict[key] not in ["J", "E"]: empty_list.append(key)
+              if fits_header_dict[key] not in ["J", "E", "D", "I"]: empty_list.append(key)
         else:
            missing_list.append(key)
            
@@ -107,9 +108,10 @@ def fits_header_check(image, fits_header_dict=None, missing=False):
 
     if instrument == 'RSS':
        # check LAMPID
-       if hdu[0].header['CCDTYPE'] == 'ARC' and hdu[0].header['LAMPID']=='NONE':
-          wrong_list.append('ARC')
- 
+       if hdu[0].header['CCDTYPE'] == 'ARC' and hdu[0].header['LAMPID'].strip()=='NONE':
+          wrong_list.append('LAMPID')
+       if hdu[0].header['CCDTYPE'] == 'FLAT' and hdu[0].header['LAMPID'].strip()=='NONE':
+          wrong_list.append('LAMPID')
 
     # check for extension keywords
 
@@ -122,7 +124,7 @@ def fits_header_check(image, fits_header_dict=None, missing=False):
 
     hdu.close()
 
-    if missing_list or empty_list or absent_list:
+    if missing_list or empty_list or absent_list or wrong_list:
        return missing_list, empty_list, wrong_list, absent_list
 
     return 
@@ -134,9 +136,22 @@ if __name__=='__main__':
    parser.add_argument('-d', dest='database', default=False, action='store_true', help='Use database keywords')
    args = parser.parse_args()
 
+   infile = args.infile
+
    fits_header_dict = None
    if args.database:
       fits_header_dict='sdb'
 
-   results = fits_header_check(sys.argv[1], fits_header_dict=fits_header_dict, missing=args.missing)
-   print(results)
+   results = fits_header_check(infile, fits_header_dict=fits_header_dict, missing=args.missing)
+   if results==None:
+      exit()
+
+   # print out results
+   missing, empty, wrong, absent = results
+
+   hdu = fits.open(infile)
+   print('{} {}'.format(infile, hdu[0].header['OBJECT']))
+   if missing: print("Keywords that are missing: {}\n".format(missing))
+   if empty: print("Keywords that are empty: {}\n".format(empty))
+   if wrong: print("Keywords that are wrong: {}\n".format(wrong))
+   hdu.close()

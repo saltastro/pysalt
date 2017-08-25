@@ -308,8 +308,13 @@ class FirstWindow(QtGui.QMainWindow):
 
        #display the image
        try:
-           rfile='mbxp'+name
-           cfile=rfile.replace('.fits', '.cat')
+           if name.startswith('S') or name.startswith('P'):
+              rfile='mbxp'+name
+              cfile=rfile.replace('.fits', '.cat')
+           else:
+              rfile = name + 's'
+              cfile = None
+    
            display(rfile, cfile)
        except  Exception, e:
            print e
@@ -586,6 +591,14 @@ class FirstWindow(QtGui.QMainWindow):
           outfile = os.path.basename(filename) +'s'
           print filename, outfile
           if not os.path.isfile(outfile): os.symlink(filename, outfile)
+
+          #display the image
+          if display_image:
+              print "Displaying %s" % outfile
+              try:
+                 display(outfile)
+              except Exception, e:
+                 print e
 
           try:
               log=None #open(logfile, 'a')
