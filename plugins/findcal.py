@@ -351,7 +351,6 @@ def checkforhrscal(sdb, obsmode, propid, cal_type, period=7):
 '''
     cmd_logic="Proposal_Code like '%s' and OBSMODE like '%s' and UTSTART>'%s'" % (propid, obsmode, utstart)
     results=saltmysql.select(sdb, cmd_select, cmd_table, cmd_logic)
-    
     if len(results) > 0: return True
 
     #now check the nightly calibrations table
