@@ -60,16 +60,15 @@ def runfast(filename, propcode, obsdate, server, readmefile, sdbhost, sdbname, s
    sdb=saltmysql.connectdb(sdbhost,sdbname, sdbuser, password)
    select_term='Distinct Surname, email, username, ProposalCode_Id'
    from_term='''
-Block join Pointing using (Block_Id) 
+      Block join Pointing using (Block_Id) 
       join PipelineConfig using (Pointing_Id)
-      join Proposal using (Proposal_Id)
       join ProposalCode using (ProposalCode_Id)
       join PipelineDataAccessMethod using (PipelineDataAccessMethod_Id)
-      join ProposalContact using (Proposal_Id)
+      join ProposalContact using (ProposalCode_Id)
       join Investigator on (Investigator_Id=Contact_Id)
       join PiptUser using (PiptUser_Id)
    '''
-   where_term="Proposal_Code like '%s' and current=1 and DataAccessMethod='Fast'" \
+   where_term="Proposal_Code like '%s' and DataAccessMethod='Fast'" \
               % (propcode)
    #print 'Select %s from %s where %s' % (select_term, from_term, where_term)
    try:

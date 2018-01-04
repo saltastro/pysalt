@@ -517,8 +517,8 @@ def updateheaderinfo(db,Table,ImageHeader, ColumnName, HeaderName,column,logic):
 def getpiptusername(sdb, pid):
    #log into database and determine username from proposer name
    state_select='distinct p.Username'
-   state_from='Proposal as pr join ProposalCode as c using  (ProposalCode_Id) join ProposalContact as pc using (Proposal_Id) join Investigator as i on (pc.Contact_Id=i.Investigator_Id) join PiptUser as p using (PiptUser_Id)'
-   state_logic="pr.current=1 and  c.Proposal_Code='%s'" % pid
+   state_from='ProposalCode as c join ProposalContact as pc using (ProposalCode_Id) join Investigator as i on (pc.Contact_Id=i.Investigator_Id) join PiptUser as p using (PiptUser_Id)'
+   state_logic="c.Proposal_Code='%s'" % pid
    record=select(sdb,state_select,state_from,state_logic)
 
    #check to see if it was successful and raise an error if not
