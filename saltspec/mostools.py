@@ -363,6 +363,9 @@ def extract_slits(slits, spline_x, im, order=2, padding=0):
             spline_left_edge = new_x * 0.0 + edge_left[0] - padding
             spline_right_edge = new_x * 0.0 + edge_right[0] + padding
 
+        spline_left_edge = spline_left_edge.astype(int)
+        spline_right_edge = spline_right_edge.astype(int)
+
         # create the mask section for the spectra
         for k in range(0, x_dim - 1):
             mask[spline_left_edge[k]:spline_right_edge[k], k] = True

@@ -76,12 +76,12 @@ from salterror import SaltError, SaltIOError
 # core routine
 
 headerList=['FILENAME', 'PROPID', 'PROPOSER', 'OBJECT', 'RA', 'DEC', 'OBJEPOCH', 'EPOCH', 'EQUINOX', 'DATE-OBS', 'UTC-OBS', 'TIME-OBS', 'EXPTIME', 'OBSMODE', 'DETMODE', 'CCDTYPE', 'DETSIZE', 'NCCDS', 'CCDSUM', 'GAINSET', 'ROSPEED', 'INSTRUME', 'FILTER', 'CAMFOCUS', 'TELHA', 'TELRA', 'TELDEC', 'TELPA', 'TELAZ', 'TELALT', 'TRKX', 'TRKY', 'TRKZ', 'TRKPHI', 'TRKTHETA', 'TRKRHO', 'TELFOCUS', 'COLPHI', 'COLTHETA', 'TELTEM', 'PAYLTEM', 'CCDTEM', 'DEWTEM', 'AMPTEM', 'CENTEM', 'DETSWV', 'BLOCKID', 'BVISITID']
-formatList=['32A', '50A', '20A', '100A', '12A', '12A', 'E', 'E', 'E', '10A', '12A', 
+formatList=['32A', '50A', '20A', '100A', '12A', '12A', 'E', 'E', 'I', '10A', '12A', 
             '12A', 'D', '20A', '20A', '8A', '23A', 'I', '5A', '6A', '4A', '8A', '8A',
             'J', '11A', '11A', '12A', 'E', 'E', 'E', 'E', 'E', 'E', 'E', 'E',
-            'E', 'E', 'E', 'E', 'E', 'E', 'D', 'E', 'E', 'D', '16A', 'E', 'E' ]
+            'E', 'E', 'E', 'E', 'E', 'E', 'D', 'E', 'E', 'D', '16A', 'A', 'A' ]
 rssheaderList=['DEWPRE', 'POSANG', 'LAMPID', 'CALFILT', 'CALND', 'TELRHO', 'PELLICLE', 'INSTPORT', 'CF-STATE', 'SM-STATE', 'SM-STA', 'SM-STEPS', 'SM-VOLTS', 'SM-STA-S', 'SM-STA-V', 'MASKID', 'MASKTYP', 'WP-STATE', 'HWP-CMD', 'HW-STEPS', 'HWP-STA', 'QWP-CMD', 'QW-STEPS', 'QWP-STA', 'QWP-ANG', 'HWP-ANG', 'SH-STATE', 'FO-STATE', 'FO-POS', 'FO-VOLTS', 'FO-POS-S', 'FO-POS-V', 'GR-STATE', 'GR-STA', 'GR-ANGLE', 'GM-STEPS', 'GM-VOLTS', 'GR-STA-S', 'GR-STA-V', 'GR-STEPS', 'GRATING', 'GRTILT', 'BS-STATE', 'FI-STATE', 'FI-STA', 'FM-STEPS', 'FM-VOLTS', 'FM-STA-S', 'FM-STA-V', 'AR-STATE', 'AR-STA', 'CAMANG', 'AR-STA-S', 'AR-ANGLE', 'COLTEMP', 'CAMTEMP', 'PROC', 'PCS-VER', 'WPPATERN']
-rssformatList=['D', 'E', '8A', '8A', 'E', 'E', '8A', '8A', '20A', '20A', '8A', 'J', 'E', 'E', 'E', '16A', '16A', '20A', '16A', 'J', 'E', '16A', 'J', 'E', 'E', 'E', '20A', '20A', 'E', 'E', 'E', 'E', '20A', '10A', 'E', 'J', 'E', 'E', 'E', 'J', '8A', 'E', '24A', '20A', '7A', 'J', 'E', 'E', 'E', '24A', '16A', 'E', 'E', 'E', 'E', 'E', '20A', '4A', '20A']
+rssformatList=['D', 'E', '8A', '8A', 'E', 'E', '8A', '8A', '20A', '20A', '8A', 'I', 'E', 'E', 'E', '16A', '16A', '20A', '16A', 'I', 'E', '16A', 'I', 'E', 'E', 'E', '20A', '20A', 'E', 'E', 'E', 'E', '20A', '10A', 'E', 'I', 'E', 'E', 'E', 'I', '8A', 'E', '24A', '20A', '7A', 'I', 'E', 'E', 'E', '24A', '16A', 'E', 'E', 'E', 'E', 'E', '20A', '4A', '20A']
 scamheaderList=['FILPOS']
 scamformatList=['I']
 
@@ -205,8 +205,10 @@ def finddefault(f):
    """return the default value given a format"""
    if f.count('A'): 
        default="UNKNOWN"
-   else: 
+   elif f.count('I'):
        default=-999
+   else: 
+       default=-999.99
    return default
 
 def getkey(struct,keyword,default,warn=True, log=None):
@@ -221,11 +223,12 @@ def getkey(struct,keyword,default,warn=True, log=None):
         message = 'WARNING: cannot find keyword %s in %s' %(keyword, infile)
         if warn and log: log.message(message, with_header=False)
    if (str(value).strip() == ''): value = default
-   #if (type(value) != type(default)):
-   #     infile=struct._file.name
-   #     message='WARNING: Type mismatch for %s for  %s in %s[0]' % (str(value), keyword, infile)
-   #     if warn and log: log.message(message, with_header=False)
-   #     value=default
+   if (type(value) != type(default)):
+        infile=struct._file.name
+        message='WARNING: Type mismatch for %s for  %s in %s[0]' % (str(value), keyword, infile)
+        message += '/n '+str(type(value)) + ' '+str(type(default))
+        if warn and log: log.message(message, with_header=False)
+        value=default
 
    return value
 
