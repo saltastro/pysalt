@@ -772,6 +772,7 @@ class ArcDisplay(QtGui.QWidget):
              self.findfeatures()
              self.findfit()
              self.isFeature = True
+             self.emit(QtCore.SIGNAL("fitUpdate()"))
 
     def help(self):
         helpoutput = """

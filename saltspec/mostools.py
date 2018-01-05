@@ -752,7 +752,7 @@ def parsexml(xmlfile):
     # str(p1.getAttribute('name'))
 
 
-def extract_fit_flux(data, padding=1):
+def extract_fit_flux(data, mask=None, err=None, padding=1, bounds=True):
     """For each column, fit the flux in that column to a model and return the flux.  This fits a 
     flat baseline plus a guassian to the summed line profile and then fixes the mean and stddev
     of the Guassian profile.  The amplitude and baseline are then fit to each wavelength in the 
@@ -764,9 +764,18 @@ def extract_fit_flux(data, padding=1):
     ----------
     data: np.ndarray
         2-D array of fluxes
+
+    mask: np.ndarray
+        Array of masked pixels (optional)
+ 
+    err: np.ndarray
+        Array of error values (optional)
  
     padding: int
         Padding around identify edges
+
+    bounds: boolean
+        Determine the lower and upper bounds.  If False, uses the entire array.
         
     
     Returns 
@@ -775,14 +784,29 @@ def extract_fit_flux(data, padding=1):
     """
     
     #determine the upper and lower bounds of where the data are useful
-    s = data.sum(axis=1)
-    t = numpy.gradient(s)/numpy.median(s)
-    v = numpy.gradient(numpy.gradient(s)/numpy.median(s))
-    i_min = t.argmin()
-    i_max = t.argmax()
-    i_max = i_max + numpy.where(t[i_max:]<0.05)[0][0] + padding
-    i_min = numpy.where(t[:i_min]>-0.05)[0][-1] - padding
-    c = data[i_max:i_min, :]
+    if bounds:
+       s = data.sum(axis=1)
+       t = numpy.gradient(s)/numpy.median(s)
+       v = numpy.gradient(numpy.gradient(s)/numpy.median(s))
+       i_min = t.argmin()
+       i_max = t.argmax()
+       i_max = i_max + numpy.where(t[i_max:]<0.05)[0][0] + padding
+       i_min = numpy.where(t[:i_min]>-0.05)[0][-1] - padding
+       c = data[i_max:i_min, :]
+       if err is not None:
+           e = err[i_max:i_min, :]
+       if mask is not None:
+           k = err[i_max:i_min, :]
+    else:
+       c = 1.0 * data
+       if err is None: 
+          e = 0.0 * c + 1.0 
+       else: 
+          e = 1.0 * err
+       if mask is None: 
+          k = 0.0 * c
+       else:
+          k = 1.0 * mask
     
     #build the best fit model 
     sarr = c.sum(axis=1)
@@ -799,8 +823,18 @@ def extract_fit_flux(data, padding=1):
     flux = numpy.zeros(xs)
     sky = numpy.zeros(xs)
     for i in range(xs):
-        n = fitter(m, xarr, c[:,i])
-        flux[i] = n.amplitude_0.value
-        sky[i] = n.c0_1.value
+        if mask is not None:
+           l = (k[:,i]==0)
+           if l.sum() > 0.5*len(l): # at least half the pixels must
+              n = fitter(m, xarr[l], c[:,i][l], weights=1.0/(e[:,i][l]))
+              flux[i] = n.amplitude_0.value
+              sky[i] = n.c0_1.value
+           else:
+              flux[i] = numpy.nan
+              sky[i] = 0.0
+        else:
+           n = fitter(m, xarr, c[:,i])
+           flux[i] = n.amplitude_0.value
+           sky[i] = n.c0_1.value
         
     return flux, sky

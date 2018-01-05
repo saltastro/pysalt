@@ -51,9 +51,9 @@ debug = True
 # -----------------------------------------------------------
 # core routine
 
-def specarcstraighten(images, outfile, function='poly', order=3, rstep=100,
-                      rstart='middlerow', nrows=1, dcoef=None, 
-                      y1=None, y2=None,
+def specarcstraighten(images, outfile, function='poly', order=3, rstep=1,
+                      rstart='middlerow', nrows=1, 
+                      y1=None, y2=None, sigma=5, sections=3, niter=5,
                       startext=0, clobber=False, logfile='salt.log', verbose=True):
 
     with logging(logfile, debug) as log:
@@ -97,21 +97,21 @@ def specarcstraighten(images, outfile, function='poly', order=3, rstep=100,
                     if masktype == 'LONGSLIT':
                         slit = st.getslitsize(slitname)
                         objid = None
-                    elif masktype == 'MOS':
-                        slit = 1.5
+                    #elif masktype == 'MOS':
+                        #slit = 1.5
                         # slit=saltkey.get('SLIT', hdu[i])
 
                         # set up the x and y positions
-                        miny = hdu[i].header['MINY']
-                        maxy = hdu[i].header['MAXY']
-                        ras = hdu[i].header['SLIT_RA']
-                        des = hdu[i].header['SLIT_DEC']
-                        objid = hdu[i].header['SLITNAME']
+                        #miny = hdu[i].header['MINY']
+                        #maxy = hdu[i].header['MAXY']
+                        #ras = hdu[i].header['SLIT_RA']
+                        #des = hdu[i].header['SLIT_DEC']
+                        #objid = hdu[i].header['SLITNAME']
 
-                        # TODO: Check the perfomance of masks at different PA
-                        rac = hdu[0].header['MASK_RA']
-                        dec = hdu[0].header['MASK_DEC']
-                        pac = hdu[0].header['PA']
+                        # Check the perfomance of masks at different PA
+                        #rac = hdu[0].header['MASK_RA']
+                        #dec = hdu[0].header['MASK_DEC']
+                        #pac = hdu[0].header['PA']
 
                     else:
                         msg = '%s is not a currently supported masktype' % masktype
@@ -140,8 +140,9 @@ def specarcstraighten(images, outfile, function='poly', order=3, rstep=100,
                     xarr = np.arange(len(data[ystart]), dtype='int64')
 
                     # calculate the transformation
-                    ImageSolution = arcstraight(data, xarr, ystart, ws=None, function=function, order=order, dcoef=dcoef,
-                                                rstep=rstep, nrows=nrows, y1=y1, y2=y2, log=log, verbose=verbose)
+                    ImageSolution = arcstraight(data, xarr, ystart, function=function, order=order, 
+                                                rstep=rstep, y1=y1, y2=y2, sigma=sigma, sections=sections,
+                                                niter=niter, log=log, verbose=verbose)
 
                     if outfile and len(ImageSolution):
                         writeIS(ImageSolution, outfile, dateobs=dateobs, utctime=utctime, instrume=instrume,
@@ -151,55 +152,57 @@ def specarcstraighten(images, outfile, function='poly', order=3, rstep=100,
                                 filename=img, log=log, verbose=verbose)
 
 
-def arcstraight(data, xarr, istart, ws=None, function='poly', order=3,
-                rstep=1, nrows=1, dcoef=None, y1=None, y2=None, log=None, verbose=True):
+def arcstraight(data, xarr, istart, function='poly', order=3,
+                rstep=1, y1=None, y2=None, sigma=5, sections=3, niter=5, 
+                log=None, verbose=True):
     """For a given image, assume that the line given by istart is the fiducial and then calculate
        the transformation between each line and that line in order to straighten the arc
 
        returns Wavlenght solution
     """
-    ImageSolution = {}
 
     #set up the edges 
     if y1 is None: y1=0
     if y2 is None: y2=data.shape[0]
 
     # extract the central row
-    oxarr = xarr.copy()
-    ofarr = data[istart]
-    ws = WavelengthSolution.WavelengthSolution(xarr, xarr, function, order)
-    ws.fit()
-    ImageSolution[istart] = ws
-    if isinstance(dcoef, str): 
-       if dcoef=='':
-          dcoef = None
-       else:
-          try:
-              dcoef = [float(w) for w in dcoef.replace('[','').replace(']','').split()]
-          except:
-              raise SaltError('dcoef is not the right format')
-      
-    if dcoef is not None: ws.coef = dcoef
+    ys, xs = data.shape
+    farr = data[istart,:]
+    xp, xf = st.findpoints(xarr, farr, sigma, niter, sections=sections)
 
-    data = nd.gaussian_filter(data, 3)
+    #short function to return closest peak
+    def get_closest_x(y_arr, i):
+        y = np.arange(len(y_arr))
+        j = (abs(y[y_arr >0] - i)).argmin()
+        return y_arr[y[y_arr >0][j]]
 
-    # now step around the central row
-    for i in range(rstep, int(0.5 * len(data)), rstep):
-        for k in [istart - i, istart + i]:
-            if k < y1 or k > y2: continue
-            lws = getwsfromIS(k, ImageSolution)
-            xarr = np.arange(len(data[k]))
-            farr = apext.makeflat(data, k, k + nrows)
-            nws = st.fitxcor(
-                xarr,
-                farr,
-                oxarr,
-                ofarr,
-                lws,
-                interptype='interp')
-            ImageSolution[k] = nws
+    #loop through all lines and rows to trace the lines
+    line_dict = {}
+    yc = int(ys/2.0)
+    xdiff = 5
+    for x in xp:
+        y_arr = np.zeros(ys)
+        y_arr[yc] = x
+        for i in range(1, yc):
+            if yc+i < y2:
+                y_arr[yc+i] = st.mcentroid(xarr, data[yc+i,:], kern=st.default_kernal, 
+                                       xdiff=xdiff, xc=get_closest_x(y_arr, yc+i))
+            if yc+i > y1:
+                y_arr[yc-i] = st.mcentroid(xarr, data[yc-i,:], kern=st.default_kernal, 
+                                       xdiff=xdiff, xc=get_closest_x(y_arr, yc-i))
+        line_dict[x] = y_arr
 
-    return ImageSolution
+    #find the solution for each row
+    iws={}
+    xp = np.array(line_dict.keys())
+    for i in range(y1, y2):  
+        wp = [line_dict[x][i] for x in xp]
+        ws = WavelengthSolution.WavelengthSolution(np.array(wp), xp, order=3, function='polynomial')
+        ws.fit()
+        exit()
+        iws[i] = ws
+
+    return iws
 
 
 def writeIS(ImageSolution, outfile, dateobs=None, utctime=None, instrume=None,
