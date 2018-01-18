@@ -113,6 +113,10 @@ def fits_header_check(image, fits_header_dict=None, missing=False):
        if hdu[0].header['CCDTYPE'] == 'FLAT' and hdu[0].header['LAMPID'].strip()=='NONE':
           wrong_list.append('LAMPID')
 
+    if instrument == 'HRS':
+       if hdu[0].header['OBJECT'] == 'Bias' and hdu[0].header['OBSTYPE']!='Bias':
+          wrong_list.append('OBSTYPE')
+
     # check for extension keywords
 
     # if missing, check for any headers not in the list
